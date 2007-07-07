@@ -1,0 +1,293 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{XmlRpc}} : XmlRpc Light}
+\label{module:XmlRpc}\index{XmlRpc@\verb`XmlRpc`}
+
+
+
+    XmlRpc Light is a minimal XmlRpc client based on Xml Light and Ocamlnet.
+
+
+    It provides a type for values, a client class with a simple calling
+    interface, and low-level tools that can be used to implement a server.
+
+
+    {\it (c) 2007 Dave Benjamin}
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+High-level interface
+
+
+
+Example: \begin{ocamldoccode}
+
+    let rpc = new XmlRpc.client "http://localhost:8000" in
+    let result = rpc#call "echo" [`String "hello!"] in
+    print_endline (XmlRpc.dump result) 
+\end{ocamldoccode}
+
+
+
+
+\label{exception:XmlRpc.Error}\begin{ocamldoccode}
+exception Error of (int * string)
+\end{ocamldoccode}
+\index{Error@\verb`Error`}
+\begin{ocamldocdescription}
+Raised for all errors including XmlRpc faults (code, string).
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:XmlRpc.value}\begin{ocamldoccode}
+type value = [ `Array of value list
+  | `Binary of string
+  | `Boolean of bool
+  | `DateTime of int * int * int * int * int * int * int
+  | `Double of float
+  | `Int of int
+  | `String of string
+  | `Struct of (string * value) list ] 
+\end{ocamldoccode}
+\index{value@\verb`value`}
+\begin{ocamldocdescription}
+Polymorphic variant type for XmlRpc values:\begin{itemize}
+\item {\tt{`Array}}: An ordered list of values
+\item {\tt{`Binary}}: A string containing binary data
+\item {\tt{`Boolean}}: A boolean
+\item {\tt{`DateTime}}: A date-time value
+      (year, month, day, hour, minute, second, timezone offset in minutes)
+\item {\tt{`Double}}: A floating-point value
+\item {\tt{`Int}}: An integer
+\item {\tt{`String}}: A string
+\item {\tt{`Struct}}: An association list of (name, value) pairs
+\end{itemize}
+
+    Note that base64-encoding of {\tt{`Binary}} values is done automatically.
+    You do not need to do the encoding yourself.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\begin{ocamldoccode}
+{\tt{class client : }}{\tt{string -> }}\end{ocamldoccode}
+\label{class:XmlRpc.client}\index{client@\verb`client`}
+
+\begin{ocamldocobjectend}
+
+
+\label{val:XmlRpc.client.url}\begin{ocamldoccode}
+val url : string
+\end{ocamldoccode}
+\index{url@\verb`url`}
+\begin{ocamldocdescription}
+Url of the remote XmlRpc server.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpc.client.useragent}\begin{ocamldoccode}
+val mutable useragent : string
+\end{ocamldoccode}
+\index{useragent@\verb`useragent`}
+\begin{ocamldocdescription}
+User-agent to send in request headers.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpc.client.debug}\begin{ocamldoccode}
+val mutable debug : bool
+\end{ocamldoccode}
+\index{debug@\verb`debug`}
+\begin{ocamldocdescription}
+If true, Xml messages will be printed to standard output.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.url}\begin{ocamldoccode}
+method url : string
+\end{ocamldoccode}
+\index{url@\verb`url`}
+\begin{ocamldocdescription}
+Gets {\tt{url}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.useragent}\begin{ocamldoccode}
+method useragent : string
+\end{ocamldoccode}
+\index{useragent@\verb`useragent`}
+\begin{ocamldocdescription}
+Gets {\tt{useragent}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoreuseragent}\begin{ocamldoccode}
+method set_useragent : string -> unit
+\end{ocamldoccode}
+\index{set-underscoreuseragent@\verb`set_useragent`}
+\begin{ocamldocdescription}
+Sets {\tt{useragent}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.debug}\begin{ocamldoccode}
+method debug : bool
+\end{ocamldoccode}
+\index{debug@\verb`debug`}
+\begin{ocamldocdescription}
+Gets {\tt{debug}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoredebug}\begin{ocamldoccode}
+method set_debug : bool -> unit
+\end{ocamldoccode}
+\index{set-underscoredebug@\verb`set_debug`}
+\begin{ocamldocdescription}
+Sets {\tt{debug}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.call}\begin{ocamldoccode}
+method call : string -> XmlRpc.value list -> XmlRpc.value
+\end{ocamldoccode}
+\index{call@\verb`call`}
+\begin{ocamldocdescription}
+{\tt{call name params}} invokes an XmlRpc method and returns the result,
+      or raises {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] on error.
+
+
+\end{ocamldocdescription}
+\end{ocamldocobjectend}
+
+
+\begin{ocamldocdescription}
+Class for XmlRpc clients. Takes a single argument, the Url.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Utility functions
+
+
+
+\label{val:XmlRpc.dump}\begin{ocamldoccode}
+val dump : value -> string
+\end{ocamldoccode}
+\index{dump@\verb`dump`}
+\begin{ocamldocdescription}
+Converts an XmlRpc value to a human-readable string for debugging.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Low-level interface
+
+
+
+\label{type:XmlRpc.message}\begin{ocamldoccode}
+type message =
+  | MethodCall of (string * value list)
+  | MethodResponse of value
+  | Fault of (int * string)
+\end{ocamldoccode}
+\index{message@\verb`message`}
+\begin{ocamldocdescription}
+Type for XmlRpc messages.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.message-underscoreof-underscorexml-underscoreelement}\begin{ocamldoccode}
+val message_of_xml_element : Xml.xml -> message
+\end{ocamldoccode}
+\index{message-underscoreof-underscorexml-underscoreelement@\verb`message_of_xml_element`}
+\begin{ocamldocdescription}
+Converts an Xml Light element to an XmlRpc message.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.xml-underscoreelement-underscoreof-underscoremessage}\begin{ocamldoccode}
+val xml_element_of_message : message -> Xml.xml
+\end{ocamldoccode}
+\index{xml-underscoreelement-underscoreof-underscoremessage@\verb`xml_element_of_message`}
+\begin{ocamldocdescription}
+Converts an XmlRpc message to an Xml Light element.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.value-underscoreof-underscorexml-underscoreelement}\begin{ocamldoccode}
+val value_of_xml_element : Xml.xml -> value
+\end{ocamldoccode}
+\index{value-underscoreof-underscorexml-underscoreelement@\verb`value_of_xml_element`}
+\begin{ocamldocdescription}
+Converts an Xml Light element to an XmlRpc value.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.xml-underscoreelement-underscoreof-underscorevalue}\begin{ocamldoccode}
+val xml_element_of_value : value -> Xml.xml
+\end{ocamldoccode}
+\index{xml-underscoreelement-underscoreof-underscorevalue@\verb`xml_element_of_value`}
+\begin{ocamldocdescription}
+Converts an XmlRpc value to an Xml Light element.
+
+
+\end{ocamldocdescription}
+
+
+\end{document}
