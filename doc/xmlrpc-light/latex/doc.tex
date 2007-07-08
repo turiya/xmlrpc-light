@@ -6,6 +6,140 @@
 \usepackage{ocamldoc}
 \begin{document}
 \tableofcontents
+\section{Module {\tt{XmlRpcBase64}} : Base64 codec.}
+\label{module:XmlRpcBase64}\index{XmlRpcBase64@\verb`XmlRpcBase64`}
+
+
+
+	8-bit characters are encoded into 6-bit ones using ASCII lookup tables.
+	Default tables maps 0..63 values on characters A-Z, a-z, 0-9, '+' and '/'
+	(in that order).
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{exception:XmlRpcBase64.Invalid-underscorechar}\begin{ocamldoccode}
+exception Invalid_char
+\end{ocamldoccode}
+\index{Invalid-underscorechar@\verb`Invalid_char`}
+\begin{ocamldocdescription}
+This exception is raised when reading an invalid character
+	from a base64 input.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{exception:XmlRpcBase64.Invalid-underscoretable}\begin{ocamldoccode}
+exception Invalid_table
+\end{ocamldoccode}
+\index{Invalid-underscoretable@\verb`Invalid_table`}
+\begin{ocamldocdescription}
+This exception is raised if the encoding or decoding table
+	size is not correct.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:XmlRpcBase64.encoding-underscoretable}\begin{ocamldoccode}
+type encoding_table = char array 
+\end{ocamldoccode}
+\index{encoding-underscoretable@\verb`encoding_table`}
+\begin{ocamldocdescription}
+An encoding table maps integers 0..63 to the corresponding char.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:XmlRpcBase64.decoding-underscoretable}\begin{ocamldoccode}
+type decoding_table = int array 
+\end{ocamldoccode}
+\index{decoding-underscoretable@\verb`decoding_table`}
+\begin{ocamldocdescription}
+A decoding table maps chars 0..255 to the corresponding 0..63 value
+ or -1 if the char is not accepted.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.str-underscoreencode}\begin{ocamldoccode}
+val str_encode : ?tbl:encoding_table -> string -> string
+\end{ocamldoccode}
+\index{str-underscoreencode@\verb`str_encode`}
+\begin{ocamldocdescription}
+Encode a string into Base64.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.str-underscoredecode}\begin{ocamldoccode}
+val str_decode : ?tbl:decoding_table -> string -> string
+\end{ocamldoccode}
+\index{str-underscoredecode@\verb`str_decode`}
+\begin{ocamldocdescription}
+Decode a string encoded into Base64, raise {\tt{Invalid\_char}} if a
+	character in the input string is not a valid one.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.encode}\begin{ocamldoccode}
+val encode : ?tbl:encoding_table -> char Stream.t -> char Stream.t
+\end{ocamldoccode}
+\index{encode@\verb`encode`}
+\begin{ocamldocdescription}
+Generic base64 encoding over a character stream.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.decode}\begin{ocamldoccode}
+val decode : ?tbl:decoding_table -> char Stream.t -> char Stream.t
+\end{ocamldoccode}
+\index{decode@\verb`decode`}
+\begin{ocamldocdescription}
+Generic base64 decoding over a character stream.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.make-underscoredecoding-underscoretable}\begin{ocamldoccode}
+val make_decoding_table : encoding_table -> decoding_table
+\end{ocamldoccode}
+\index{make-underscoredecoding-underscoretable@\verb`make_decoding_table`}
+\begin{ocamldocdescription}
+Create a valid decoding table from an encoding one.
+
+
+\end{ocamldocdescription}
+
+
 \section{Module {\tt{XmlRpc}} : XmlRpc Light}
 \label{module:XmlRpc}\index{XmlRpc@\verb`XmlRpc`}
 

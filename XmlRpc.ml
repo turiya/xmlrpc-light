@@ -17,8 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
-open ExtLib
-
 exception Error of (int * string)
 
 type value =
@@ -36,17 +34,6 @@ type message =
     | MethodResponse of value
     | Fault of (int * string)
 
-let base64_encode s =
-  if s = "" then "" else
-    let s = Base64.str_encode s in
-    let pad = 3 - (String.length s - 1) mod 4 in
-    if pad = 0 then s else s ^ String.make pad '='
-
-let base64_decode s =
-  if s = "" then "" else
-    Base64.str_decode
-      (String.replace_chars (function '\r' | '\n' | '=' -> "" | c -> String.make 1 c) s)
-
 let string_of_tz_offset offset =
   Printf.sprintf "%c%02d%02d"
     (if offset >= 0 then '+' else '-')
@@ -61,12 +48,12 @@ let tz_offset_of_string = function
            min + hour * (if sign = '-' then -60 else 60))
 
 let datetime_of_iso8601 string =
-  Scanf.sscanf string "%04d-%02d-%02d%c%02d:%02d:%02d%s"
+  Scanf.sscanf string "%04d%02d%02d%c%02d:%02d:%02d%s"
     (fun y m d _ h m' s tz ->
        (y, m, d, h, m', s, (tz_offset_of_string tz)))
 
 let iso8601_of_datetime (y, m, d, h, m', s, tz_offset) =
-  Printf.sprintf "%04d-%02d-%02dT%02d:%02d:%02d%s"
+  Printf.sprintf "%04d%02d%02dT%02d:%02d:%02d%s"
     y m d h m' s (string_of_tz_offset tz_offset)
 
 let rec dump = function
@@ -92,7 +79,7 @@ let rec xml_element_of_value value =
        | `Boolean data -> ("boolean", [], [Xml.PCData
                                              (if data then "1" else "0")])
        | `Double data -> ("double", [], [Xml.PCData (string_of_float data)])
-       | `Binary data -> ("base64", [], [Xml.PCData (base64_encode data)])
+       | `Binary data -> ("base64", [], [Xml.PCData (XmlRpcBase64.str_encode data)])
        | `Array data ->
            ("array", [], [Xml.Element
                             ("data", [],
@@ -126,7 +113,7 @@ let rec value_of_xml_element = function
       `Double (float_of_string data)
   | Xml.Element ("base64", [], []) -> `Binary ""
   | Xml.Element ("base64", [], [Xml.PCData data]) ->
-      `Binary (base64_decode data)
+      `Binary (XmlRpcBase64.str_decode data)
   | Xml.Element ("array", [], [Xml.Element ("data", [], data)]) ->
       `Array
         (List.map
@@ -205,9 +192,9 @@ let xml_element_of_message =
 
 class client url =
   (* Workaround for Xml-Light, which doesn't like dots in tag names. *)
-  let fix_datetime_tags str =
-    String.join "dateTime:iso8601>"
-      (String.nsplit str "dateTime.iso8601>") in
+  let fix_datetime_tags =
+    Str.global_replace
+      (Str.regexp_string "dateTime.iso8601>") "dateTime:iso8601>" in
 object (self)
   val url = url
   val mutable useragent = "OCaml " ^ Sys.ocaml_version
