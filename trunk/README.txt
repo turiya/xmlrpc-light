@@ -18,26 +18,23 @@ XmlRpc Light, a small XmlRpc client based on Xml Light and Ocamlnet
 What is XmlRpc Light?
 ---------------------
 
-XmlRpc Light is an XmlRpc client written in OCaml. It requires extlib,
-xml-light, and Ocamlnet. This code should be considered Alpha software,
-and the interface may change to better fit the needs of the community.
+XmlRpc Light is an XmlRpc client written in OCaml. It requires Xml-Light and
+Ocamlnet. This code should be considered Alpha software, and the interface may
+change to better fit the needs of the community.
 
 Installation:
 -------------
 
 For Debian users:
 
-    sudo apt-get install libextlib-ocaml-dev \
-                         libxml-light-ocaml-dev \
-                         libocamlnet-ocaml-dev
+    sudo apt-get install libxml-light-ocaml-dev libocamlnet-ocaml-dev
 
     make
     sudo make install
 
-For other environments, install extlib, xml-light, and ocamlnet from sources
-available at the following locations:
+For other environments, install xml-light and ocamlnet from sources available
+at the following locations:
 
-    ExtLib: http://ocaml-lib.sourceforge.net/
     Xml-Light: http://tech.motion-twin.com/xmllight.html
     Ocamlnet: http://sourceforge.net/projects/ocamlnet
 
