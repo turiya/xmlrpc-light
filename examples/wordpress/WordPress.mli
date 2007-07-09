@@ -135,6 +135,7 @@ object
   val std_args : XmlRpc.value list
   val username : string
   method delete_page : int -> unit
+  method delete_post : int -> unit
   method edit_page : int -> Page.t -> bool -> unit
   method edit_post : int -> Post.t -> bool -> unit
   method get_authors : unit -> User.t list

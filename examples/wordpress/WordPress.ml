@@ -345,10 +345,6 @@ object (self)
       (rpc#call "wp.newPage"
          (std_args @ [Page.to_xmlrpc content; `Boolean publish]))
 
-  method delete_page page_id =
-    ignore
-      (rpc#call "wp.deletePage" (std_args @ [`Int page_id]))
-
   method edit_page page_id content publish =
     ignore
       (rpc#call "wp.editPage" [`Int blog_id;
@@ -357,6 +353,10 @@ object (self)
                                `String password;
                                Page.to_xmlrpc content;
                                `Boolean publish])
+
+  method delete_page page_id =
+    ignore
+      (rpc#call "wp.deletePage" (std_args @ [`Int page_id]))
 
   method get_post post_id =
     Post.of_xmlrpc (rpc#call "metaWeblog.getPost"
@@ -380,6 +380,14 @@ object (self)
                                        `String password;
                                        Post.to_xmlrpc content;
                                        `Boolean publish])
+
+  method delete_post post_id =
+    ignore
+      (rpc#call "metaWeblog.deletePost" [`Int blog_id;
+                                         `Int post_id;
+                                         `String username;
+                                         `String password;
+                                         `Boolean false])
 
   method get_authors () =
     map_array User.of_xmlrpc (rpc#call "wp.getAuthors" std_args)
