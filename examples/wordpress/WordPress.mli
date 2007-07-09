@@ -124,10 +124,10 @@ sig
 end
 
 class api :
-  string ->
-  int ->
-  string ->
-  string ->
+  url:string ->
+  blog_id:int ->
+  username:string ->
+  password:string ->
 object
   val blog_id : int
   val password : string
@@ -150,10 +150,8 @@ object
   method new_page : Page.t -> bool -> int
   method new_post : Post.t -> bool -> int
   method rpc : XmlRpc.client
-  method suggest_categories :
-    string -> int -> CategorySearchResult.t list
+  method suggest_categories : string -> int -> CategorySearchResult.t list
   method upload_file :
     name:string ->
-    typ:string ->
-    bits:string -> overwrite:bool -> string * string * string
+    typ:string -> bits:string -> overwrite:bool -> string * string * string
 end

@@ -317,7 +317,7 @@ module Post = struct
              "wp_author_id", `Int post.wp_author_id]
 end
 
-class api url blog_id username password =
+class api ~url ~blog_id ~username ~password =
 object (self)
   val rpc = new XmlRpc.client url
   val std_args = [`Int blog_id; `String username; `String password]
