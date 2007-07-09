@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
-exception TypeError of string
-exception UnknownField of string
+exception Type_error of string
+exception Unknown_field of string
 
 type datetime = int * int * int * int * int * int * int
 
@@ -98,6 +98,31 @@ sig
   val to_xmlrpc : t -> XmlRpc.value
 end
 
+module Post :
+sig
+  type t = {
+             mutable user_id : int;
+             mutable post_id : int;
+             mutable date_created : datetime;
+             mutable description : string;
+             mutable title : string;
+             mutable link : string;
+             mutable permalink : string;
+             mutable categories : string list;
+             mutable excerpt : string;
+             mutable text_more : string;
+             mutable mt_allow_comments : bool;
+             mutable mt_allow_pings : bool;
+             mutable wp_slug : string;
+             mutable wp_password : string;
+             mutable wp_author_id : int;
+             mutable wp_author_display_name : string;
+           }
+  val make : unit -> t
+  val of_xmlrpc : XmlRpc.value -> t
+  val to_xmlrpc : t -> XmlRpc.value
+end
+
 class api :
   string ->
   int ->
@@ -111,18 +136,24 @@ object
   val username : string
   method delete_page : int -> unit
   method edit_page : int -> Page.t -> bool -> unit
+  method edit_post : int -> Post.t -> bool -> unit
   method get_authors : unit -> User.t list
   method get_categories : unit -> Category.t list
   method get_page : int -> Page.t
   method get_page_list : unit -> PageListItem.t list
   method get_pages : unit -> Page.t list
+  method get_post : int -> Post.t
+  method get_recent_posts : int -> Post.t list
   method new_category :
     name:string ->
     slug:string -> parent_id:int -> description:string -> int
   method new_page : Page.t -> bool -> int
+  method new_post : Post.t -> bool -> int
   method rpc : XmlRpc.client
-  method suggest_categories : string -> int -> CategorySearchResult.t list
+  method suggest_categories :
+    string -> int -> CategorySearchResult.t list
   method upload_file :
     name:string ->
-    typ:string -> bits:string -> overwrite:bool -> string * string * string
+    typ:string ->
+    bits:string -> overwrite:bool -> string * string * string
 end
