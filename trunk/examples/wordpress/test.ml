@@ -19,7 +19,10 @@
 
 let wp =
   new WordPress.api
-    "http://localhost/wordpress/xmlrpc.php" 1 "admin" "secret"
+    ~url:"http://localhost/wordpress/xmlrpc.php"
+    ~blog_id:1
+    ~username:"admin"
+    ~password:"secret"
 
 let () =
   List.iter
