@@ -317,9 +317,28 @@ module Post = struct
              "wp_author_id", `Int post.wp_author_id]
 end
 
+let string_of_tz_offset offset =
+  Printf.sprintf "%c%02d%02d"
+    (if offset >= 0 then '+' else '-')
+    (abs (offset / 60))
+    (abs (offset mod 60))
+
+let wordpress_of_datetime (y, m, d, h, m', s, tz) =
+  Printf.sprintf "%04d%02d%02dT%02d:%02d:%02d%s"
+    y m d h m' s (string_of_tz_offset tz)
+
+let datetime_of_wordpress string =
+  Scanf.sscanf string "%04d%02d%02dT%02d:%02d:%02dZ"
+    (fun y m d h m' s -> (y, m, d, h, m', s, 0))
+
 class api ~url ~blog_id ~username ~password =
+  let rpc = new XmlRpc.client url in
+  let () =
+    rpc#set_datetime_encode wordpress_of_datetime;
+    rpc#set_datetime_decode datetime_of_wordpress;
+  in
 object (self)
-  val rpc = new XmlRpc.client url
+  val rpc = rpc
   val std_args = [`Int blog_id; `String username; `String password]
   val blog_id = blog_id
   val username = username

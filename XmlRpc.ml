@@ -47,14 +47,14 @@ let tz_offset_of_string = function
         (fun sign hour min ->
            min + hour * (if sign = '-' then -60 else 60))
 
-let datetime_of_iso8601 string =
-  Scanf.sscanf string "%04d%02d%02d%c%02d:%02d:%02d%s"
-    (fun y m d _ h m' s tz ->
-       (y, m, d, h, m', s, (tz_offset_of_string tz)))
-
 let iso8601_of_datetime (y, m, d, h, m', s, tz_offset) =
-  Printf.sprintf "%04d%02d%02dT%02d:%02d:%02d%s"
+  Printf.sprintf "%04d-%02d-%02dT%02d:%02d:%02d%s"
     y m d h m' s (string_of_tz_offset tz_offset)
+
+let datetime_of_iso8601 string =
+  Scanf.sscanf string "%04d-%02d-%02dT%02d:%02d:%02d%s"
+    (fun y m d h m' s tz ->
+       (y, m, d, h, m', s, (tz_offset_of_string tz)))
 
 let rec dump = function
   | `String data -> data
@@ -71,7 +71,10 @@ let rec dump = function
                                 data)) ^ "}"
   | `DateTime data -> iso8601_of_datetime data
 
-let rec xml_element_of_value value =
+let rec xml_element_of_value
+    ?(base64_encode=fun s -> XmlRpcBase64.str_encode s)
+    ?(datetime_encode=iso8601_of_datetime)
+    value =
   Xml.Element
     (match value with
        | `String data -> ("string", [], [Xml.PCData data])
@@ -79,14 +82,17 @@ let rec xml_element_of_value value =
        | `Boolean data -> ("boolean", [], [Xml.PCData
                                              (if data then "1" else "0")])
        | `Double data -> ("double", [], [Xml.PCData (string_of_float data)])
-       | `Binary data -> ("base64", [], [Xml.PCData (XmlRpcBase64.str_encode data)])
+       | `Binary data -> ("base64", [], [Xml.PCData (base64_encode data)])
        | `Array data ->
            ("array", [], [Xml.Element
                             ("data", [],
                              List.map
                                (fun item ->
                                   Xml.Element ("value", [],
-                                               [xml_element_of_value item]))
+                                               [xml_element_of_value
+                                                  ~base64_encode
+                                                  ~datetime_encode
+                                                  item]))
                                data)])
        | `Struct data ->
            ("struct", [],
@@ -96,59 +102,107 @@ let rec xml_element_of_value value =
                    ("member", [],
                     [Xml.Element ("name", [], [Xml.PCData name]);
                      Xml.Element ("value", [],
-                                  [xml_element_of_value value])]))
+                                  [xml_element_of_value
+                                     ~base64_encode
+                                     ~datetime_encode
+                                     value])]))
               data)
        | `DateTime data ->
            ("dateTime.iso8601", [],
-            [Xml.PCData (iso8601_of_datetime data)]))
+            [Xml.PCData (datetime_encode data)]))
 
-let rec value_of_xml_element = function
-  | Xml.Element ("string", [], []) -> `String ""
-  | Xml.Element ("string", [], [Xml.PCData data]) -> `String data
-  | Xml.Element ("int", [], [Xml.PCData data])
-  | Xml.Element ("i4", [], [Xml.PCData data]) -> `Int (int_of_string data)
-  | Xml.Element ("boolean", [], [Xml.PCData data]) ->
-      `Boolean (data <> "0")
-  | Xml.Element ("double", [], [Xml.PCData data]) ->
-      `Double (float_of_string data)
-  | Xml.Element ("base64", [], []) -> `Binary ""
-  | Xml.Element ("base64", [], [Xml.PCData data]) ->
-      `Binary (XmlRpcBase64.str_decode data)
-  | Xml.Element ("array", [], [Xml.Element ("data", [], data)]) ->
-      `Array
-        (List.map
-           (function
-              | Xml.Element ("value", [], [value]) ->
-                  value_of_xml_element value
-              | _ -> raise (Error (-32700, "parse error")))
-           data)
-  | Xml.Element ("struct", [], members) ->
-      `Struct
-        (List.map
-           (function
-              | Xml.Element ("member", [],
-                             [Xml.Element ("name", [], [Xml.PCData name]);
-                              Xml.Element ("value", [], [value])]) ->
-                  (name, value_of_xml_element value)
-              | _ -> raise (Error (-32700, "parse error")))
-           members)
-  | Xml.Element ("dateTime:iso8601", [], [Xml.PCData data]) ->
-      (* The colon above is intentional. (See fix_dotted_tags.) *)
-      `DateTime (datetime_of_iso8601 data)
-  | _ -> raise (Error (-32700, "parse error"))
+let rec value_of_xml_element
+    ?(base64_decode=fun s -> XmlRpcBase64.str_decode s)
+    ?(datetime_decode=datetime_of_iso8601)
+    = function
+      | Xml.Element ("string", [], []) -> `String ""
+      | Xml.Element ("string", [], [Xml.PCData data]) -> `String data
+      | Xml.Element ("int", [], [Xml.PCData data])
+      | Xml.Element ("i4", [], [Xml.PCData data]) ->
+          `Int (int_of_string data)
+      | Xml.Element ("boolean", [], [Xml.PCData data]) ->
+          `Boolean (data <> "0")
+      | Xml.Element ("double", [], [Xml.PCData data]) ->
+          `Double (float_of_string data)
+      | Xml.Element ("base64", [], []) -> `Binary ""
+      | Xml.Element ("base64", [], [Xml.PCData data]) ->
+          `Binary (base64_decode data)
+      | Xml.Element ("array", [], [Xml.Element ("data", [], data)]) ->
+          `Array
+            (List.map
+               (function
+                  | Xml.Element ("value", [], [value]) ->
+                      value_of_xml_element
+                        ~base64_decode
+                        ~datetime_decode
+                        value
+                  | _ -> raise (Error (-32700, "parse error")))
+               data)
+      | Xml.Element ("struct", [], members) ->
+          `Struct
+            (List.map
+               (function
+                  | Xml.Element ("member", [],
+                                 [Xml.Element ("name", [], [Xml.PCData name]);
+                                  Xml.Element ("value", [], [value])]) ->
+                      (name,
+                       value_of_xml_element
+                         ~base64_decode
+                         ~datetime_decode
+                         value)
+                  | _ -> raise (Error (-32700, "parse error")))
+               members)
+      | Xml.Element ("dateTime:iso8601", [], [Xml.PCData data]) ->
+          (* The colon above is intentional. (See fix_dotted_tags.) *)
+          `DateTime (datetime_decode data)
+      | _ -> raise (Error (-32700, "parse error"))
 
-let message_of_xml_element xml_element =
+let xml_element_of_message
+    ?(base64_encode=fun s -> XmlRpcBase64.str_encode s)
+    ?(datetime_encode=iso8601_of_datetime)
+    message =
+  let make_param param =
+    Xml.Element ("param", [],
+                 [Xml.Element ("value", [],
+                               [xml_element_of_value
+                                  ~base64_encode
+                                  ~datetime_encode
+                                  param])]) in
+  let make_fault code string =
+    Xml.Element ("value", [],
+                 [xml_element_of_value ~base64_encode ~datetime_encode
+                    (`Struct ["faultCode", `Int code;
+                              "faultString", `String string])]) in
+  match message with
+    | MethodCall (name, params) ->
+        Xml.Element
+          ("methodCall", [],
+           [Xml.Element ("methodName", [], [Xml.PCData name]);
+            Xml.Element ("params", [], List.map make_param params)])
+    | MethodResponse value ->
+        Xml.Element
+          ("methodResponse", [],
+           [Xml.Element ("params", [], [make_param value])])
+    | Fault (code, string) ->
+        Xml.Element ("methodResponse", [],
+                     [Xml.Element ("fault", [], [make_fault code string])])
+
+let message_of_xml_element
+    ?(base64_decode=fun s -> XmlRpcBase64.str_decode s)
+    ?(datetime_decode=datetime_of_iso8601)
+    xml_element =
   let parse_params params =
     List.map
       (function
          | Xml.Element ("param", [], 
                         [Xml.Element ("value", [], [element])]) ->
-             value_of_xml_element element
+             value_of_xml_element ~base64_decode ~datetime_decode element
          | _ -> raise (Error (-32700, "parse error")))
       params in
   let parse_fault = function
     | [Xml.Element ("value", [], [element])] ->
-        (match value_of_xml_element element with
+        (match value_of_xml_element ~base64_decode ~datetime_decode element
+         with
            | `Struct ["faultCode", `Int code;
                       "faultString", `String string] ->
                (code, string)
@@ -165,30 +219,6 @@ let message_of_xml_element xml_element =
     | Xml.Element (_, [], [Xml.Element ("fault", [], fault)]) ->
         Fault (parse_fault fault)
     | _ -> raise (Error (-32700, "parse error"))
-
-let xml_element_of_message =
-  let make_param param =
-    Xml.Element ("param", [],
-                 [Xml.Element ("value", [],
-                               [xml_element_of_value param])]) in
-  let make_fault code string =
-    Xml.Element ("value", [],
-                 [xml_element_of_value
-                    (`Struct ["faultCode", `Int code;
-                              "faultString", `String string])]) in
-  function
-    | MethodCall (name, params) ->
-        Xml.Element
-          ("methodCall", [],
-           [Xml.Element ("methodName", [], [Xml.PCData name]);
-            Xml.Element ("params", [], List.map make_param params)])
-    | MethodResponse value ->
-        Xml.Element
-          ("methodResponse", [],
-           [Xml.Element ("params", [], [make_param value])])
-    | Fault (code, string) ->
-        Xml.Element ("methodResponse", [],
-                     [Xml.Element ("fault", [], [make_fault code string])])
 
 (* Workaround for Xml-Light, which doesn't like dots in tag names. *)
 let fix_dotted_tags s =
@@ -208,14 +238,30 @@ object (self)
   val mutable useragent = "OCaml " ^ Sys.ocaml_version
   val mutable debug = false
 
+  val mutable base64_encode = fun s -> XmlRpcBase64.str_encode s
+  val mutable base64_decode = fun s -> XmlRpcBase64.str_decode s
+
+  val mutable datetime_encode = iso8601_of_datetime
+  val mutable datetime_decode = datetime_of_iso8601
+
   method url = url
   method useragent = useragent
   method set_useragent useragent' = useragent <- useragent'
   method debug = debug
   method set_debug debug' = debug <- debug'
 
+  method set_datetime_encode f = datetime_encode <- f
+  method set_datetime_decode f = datetime_decode <- f
+
+  method set_base64_encode f = base64_encode <- f
+  method set_base64_decode f = base64_decode <- f
+
   method call name params =
-    let xml_element = xml_element_of_message (MethodCall (name, params)) in
+    let xml_element =
+      xml_element_of_message
+        ~base64_encode
+        ~datetime_encode
+        (MethodCall (name, params)) in
     let xml = Xml.to_string_fmt xml_element in
     if debug then print_endline xml;
     let call = new Http_client.post_raw url xml in
@@ -228,7 +274,11 @@ object (self)
           let contents = call#get_resp_body () in
           if debug then print_endline contents;
           fix_dotted_tags contents;
-          (match message_of_xml_element (Xml.parse_string contents) with
+          (match message_of_xml_element
+               ~base64_decode
+               ~datetime_decode
+               (Xml.parse_string contents)
+           with
              | MethodResponse value -> value
              | Fault (code, string) -> raise (Error (code, string))
              | _ -> raise (Error (-32700, "parse error")))
