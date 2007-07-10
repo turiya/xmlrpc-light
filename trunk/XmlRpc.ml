@@ -133,7 +133,7 @@ let rec value_of_xml_element = function
               | _ -> raise (Error (-32700, "parse error")))
            members)
   | Xml.Element ("dateTime:iso8601", [], [Xml.PCData data]) ->
-      (* The colon above is intentional. (See fix_datetime_tags.) *)
+      (* The colon above is intentional. (See fix_dotted_tags.) *)
       `DateTime (datetime_of_iso8601 data)
   | _ -> raise (Error (-32700, "parse error"))
 
@@ -190,11 +190,19 @@ let xml_element_of_message =
         Xml.Element ("methodResponse", [],
                      [Xml.Element ("fault", [], [make_fault code string])])
 
+(* Workaround for Xml-Light, which doesn't like dots in tag names. *)
+let fix_dotted_tags s =
+  let len = String.length s in
+  let in_tag = ref false in
+  for i = 0 to len - 1 do
+    match s.[i] with
+      | '<' -> in_tag := true
+      | '>' -> in_tag := false
+      | '.' when !in_tag -> s.[i] <- ':'
+      | _ -> ()
+  done
+
 class client url =
-  (* Workaround for Xml-Light, which doesn't like dots in tag names. *)
-  let fix_datetime_tags =
-    Str.global_replace
-      (Str.regexp_string "dateTime.iso8601>") "dateTime:iso8601>" in
 object (self)
   val url = url
   val mutable useragent = "OCaml " ^ Sys.ocaml_version
@@ -219,7 +227,7 @@ object (self)
       | `Successful ->
           let contents = call#get_resp_body () in
           if debug then print_endline contents;
-          let contents = fix_datetime_tags contents in
+          fix_dotted_tags contents;
           (match message_of_xml_element (Xml.parse_string contents) with
              | MethodResponse value -> value
              | Fault (code, string) -> raise (Error (code, string))
