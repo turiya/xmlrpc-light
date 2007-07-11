@@ -265,7 +265,7 @@ object (self)
     let xml = Xml.to_string_fmt xml_element in
     if debug then print_endline xml;
     let call = new Http_client.post_raw url xml in
-    call#set_req_header "User-agent" useragent;
+    call#set_req_header "User-Agent" useragent;
     let pipeline = new Http_client.pipeline in
     pipeline#add call;
     pipeline#run ();
