@@ -105,16 +105,16 @@ Converts an XmlRpc value to a human-readable string for debugging.<br>
 Type for XmlRpc messages.<br>
 </div>
 
-<pre><span class="keyword">val</span> <a name="VALmessage_of_xml_element"></a>message_of_xml_element : <code class="type">Xml.xml -> <a href="XmlRpc.html#TYPEmessage">message</a></code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALmessage_of_xml_element"></a>message_of_xml_element : <code class="type">?base64_decode:(string -> string) -><br>       ?datetime_decode:(string -> int * int * int * int * int * int * int) -><br>       Xml.xml -> <a href="XmlRpc.html#TYPEmessage">message</a></code></pre><div class="info">
 Converts an Xml Light element to an XmlRpc message.<br>
 </div>
-<pre><span class="keyword">val</span> <a name="VALxml_element_of_message"></a>xml_element_of_message : <code class="type"><a href="XmlRpc.html#TYPEmessage">message</a> -> Xml.xml</code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALxml_element_of_message"></a>xml_element_of_message : <code class="type">?base64_encode:(string -> string) -><br>       ?datetime_encode:(int * int * int * int * int * int * int -> string) -><br>       <a href="XmlRpc.html#TYPEmessage">message</a> -> Xml.xml</code></pre><div class="info">
 Converts an XmlRpc message to an Xml Light element.<br>
 </div>
-<pre><span class="keyword">val</span> <a name="VALvalue_of_xml_element"></a>value_of_xml_element : <code class="type">Xml.xml -> <a href="XmlRpc.html#TYPEvalue">value</a></code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALvalue_of_xml_element"></a>value_of_xml_element : <code class="type">?base64_decode:(string -> string) -><br>       ?datetime_decode:(string -> int * int * int * int * int * int * int) -><br>       Xml.xml -> <a href="XmlRpc.html#TYPEvalue">value</a></code></pre><div class="info">
 Converts an Xml Light element to an XmlRpc value.<br>
 </div>
-<pre><span class="keyword">val</span> <a name="VALxml_element_of_value"></a>xml_element_of_value : <code class="type"><a href="XmlRpc.html#TYPEvalue">value</a> -> Xml.xml</code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALxml_element_of_value"></a>xml_element_of_value : <code class="type">?base64_encode:(string -> string) -><br>       ?datetime_encode:(int * int * int * int * int * int * int -> string) -><br>       <a href="XmlRpc.html#TYPEvalue">value</a> -> Xml.xml</code></pre><div class="info">
 Converts an XmlRpc value to an Xml Light element.<br>
 </div>
 </body></html>

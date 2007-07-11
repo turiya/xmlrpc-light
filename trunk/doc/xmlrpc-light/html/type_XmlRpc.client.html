@@ -20,6 +20,12 @@
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;<span class="keyword">mutable</span>&nbsp;useragent&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;call&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">XmlRpc</span>.value&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">XmlRpc</span>.value<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;debug&nbsp;:&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_base64_decode&nbsp;:&nbsp;(string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_base64_encode&nbsp;:&nbsp;(string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_datetime_decode&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_datetime_encode&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_debug&nbsp;:&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_useragent&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;url&nbsp;:&nbsp;string<br>

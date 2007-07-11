@@ -315,6 +315,52 @@ Sets {\tt{debug}}.
 \end{ocamldocdescription}
 
 
+\label{method:XmlRpc.client.set-underscorebase64-underscoreencode}\begin{ocamldoccode}
+method set_base64_encode : (string -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscorebase64-underscoreencode@\verb`set_base64_encode`}
+\begin{ocamldocdescription}
+Sets an alternate Base-64 binary encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscorebase64-underscoredecode}\begin{ocamldoccode}
+method set_base64_decode : (string -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscorebase64-underscoredecode@\verb`set_base64_decode`}
+\begin{ocamldocdescription}
+Sets an alternate Base-64 binary decoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoredatetime-underscoreencode}\begin{ocamldoccode}
+method set_datetime_encode :
+  (int * int * int * int * int * int * int -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscoredatetime-underscoreencode@\verb`set_datetime_encode`}
+\begin{ocamldocdescription}
+Sets an alternate ISO-8601 date/time encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoredatetime-underscoredecode}\begin{ocamldoccode}
+method set_datetime_decode :
+  (string -> int * int * int * int * int * int * int) -> unit
+\end{ocamldoccode}
+\index{set-underscoredatetime-underscoredecode@\verb`set_datetime_decode`}
+\begin{ocamldocdescription}
+Sets an alternate ISO-8601 date/time decoding function.
+
+
+\end{ocamldocdescription}
+
+
 \label{method:XmlRpc.client.call}\begin{ocamldoccode}
 method call : string -> XmlRpc.value list -> XmlRpc.value
 \end{ocamldoccode}
@@ -375,7 +421,10 @@ Type for XmlRpc messages.
 
 
 \label{val:XmlRpc.message-underscoreof-underscorexml-underscoreelement}\begin{ocamldoccode}
-val message_of_xml_element : Xml.xml -> message
+val message_of_xml_element :
+  ?base64_decode:(string -> string) ->
+  ?datetime_decode:(string -> int * int * int * int * int * int * int) ->
+  Xml.xml -> message
 \end{ocamldoccode}
 \index{message-underscoreof-underscorexml-underscoreelement@\verb`message_of_xml_element`}
 \begin{ocamldocdescription}
@@ -388,7 +437,10 @@ Converts an Xml Light element to an XmlRpc message.
 
 
 \label{val:XmlRpc.xml-underscoreelement-underscoreof-underscoremessage}\begin{ocamldoccode}
-val xml_element_of_message : message -> Xml.xml
+val xml_element_of_message :
+  ?base64_encode:(string -> string) ->
+  ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
+  message -> Xml.xml
 \end{ocamldoccode}
 \index{xml-underscoreelement-underscoreof-underscoremessage@\verb`xml_element_of_message`}
 \begin{ocamldocdescription}
@@ -401,7 +453,10 @@ Converts an XmlRpc message to an Xml Light element.
 
 
 \label{val:XmlRpc.value-underscoreof-underscorexml-underscoreelement}\begin{ocamldoccode}
-val value_of_xml_element : Xml.xml -> value
+val value_of_xml_element :
+  ?base64_decode:(string -> string) ->
+  ?datetime_decode:(string -> int * int * int * int * int * int * int) ->
+  Xml.xml -> value
 \end{ocamldoccode}
 \index{value-underscoreof-underscorexml-underscoreelement@\verb`value_of_xml_element`}
 \begin{ocamldocdescription}
@@ -414,7 +469,10 @@ Converts an Xml Light element to an XmlRpc value.
 
 
 \label{val:XmlRpc.xml-underscoreelement-underscoreof-underscorevalue}\begin{ocamldoccode}
-val xml_element_of_value : value -> Xml.xml
+val xml_element_of_value :
+  ?base64_encode:(string -> string) ->
+  ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
+  value -> Xml.xml
 \end{ocamldoccode}
 \index{xml-underscoreelement-underscoreof-underscorevalue@\verb`xml_element_of_value`}
 \begin{ocamldocdescription}
