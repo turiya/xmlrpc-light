@@ -90,10 +90,16 @@ object
   (** Sets [debug]. *)
   method set_debug : bool -> unit
 
+  (** Sets an alternate Base-64 binary encoding function. *)
   method set_base64_encode : (string -> string) -> unit
+
+  (** Sets an alternate Base-64 binary decoding function. *)
   method set_base64_decode : (string -> string) -> unit
 
+  (** Sets an alternate ISO-8601 date/time encoding function. *)
   method set_datetime_encode : (int * int * int * int * int * int * int -> string) -> unit
+
+  (** Sets an alternate ISO-8601 date/time decoding function. *)
   method set_datetime_decode : (string -> int * int * int * int * int * int * int) -> unit
 
   (** [call name params] invokes an XmlRpc method and returns the result,
