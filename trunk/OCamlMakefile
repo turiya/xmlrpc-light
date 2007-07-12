@@ -1048,8 +1048,8 @@ $(BCDIDIR)/%.di $(NCDIDIR)/%.di:	%.mli
 			fi
 
 doc/$(RESULT)/html: $(DOC_FILES)
-	#rm -rf $@
-	#mkdir -p $@
+	mkdir -p $@
+	find $@ -type f -maxdepth 1 -delete
 	$(QUIET)pp=`sed -n -e '/^#/d' -e 's/(\*pp \([^*]*\) \*)/\1/p;q' $<`; \
 	if [ -z "$$pp" ]; then \
 	  echo $(OCAMLDOC) -html -d $@ $(OCAMLDOCFLAGS) $(INCFLAGS) $(DOC_FILES); \
@@ -1062,8 +1062,8 @@ doc/$(RESULT)/html: $(DOC_FILES)
 	fi
 
 doc/$(RESULT)/latex: $(DOC_FILES)
-	#rm -rf $@
-	#mkdir -p $@
+	mkdir -p $@
+	find $@ -type f -maxdepth 1 -delete
 	$(QUIET)pp=`sed -n -e '/^#/d' -e 's/(\*pp \([^*]*\) \*)/\1/p;q' $<`; \
 	if [ -z "$$pp" ]; then \
 	  echo $(OCAMLDOC) -latex $(OCAMLDOCFLAGS) $(INCFLAGS) \
