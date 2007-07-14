@@ -34,6 +34,9 @@ type message =
     | MethodResponse of value
     | Fault of (int * string)
 
+let safe_map f xs =
+  List.rev (List.rev_map f xs)
+
 let string_of_tz_offset offset =
   Printf.sprintf "%c%02d%02d"
     (if offset >= 0 then '+' else '-')
@@ -63,9 +66,9 @@ let rec dump = function
   | `Double data -> string_of_float data
   | `Binary data -> data
   | `Array data -> "[" ^ (String.concat ", "
-                            (List.map dump data)) ^ "]"
+                            (safe_map dump data)) ^ "]"
   | `Struct data -> "{" ^ (String.concat ", "
-                             (List.map
+                             (safe_map
                                 (fun (n, v) ->
                                    n ^ ": " ^ (dump v))
                                 data)) ^ "}"
@@ -86,7 +89,7 @@ let rec xml_element_of_value
        | `Array data ->
            ("array", [], [Xml.Element
                             ("data", [],
-                             List.map
+                             safe_map
                                (fun item ->
                                   Xml.Element ("value", [],
                                                [xml_element_of_value
@@ -96,7 +99,7 @@ let rec xml_element_of_value
                                data)])
        | `Struct data ->
            ("struct", [],
-            List.map
+            safe_map
               (fun (name, value) ->
                  Xml.Element
                    ("member", [],
@@ -129,7 +132,7 @@ let rec value_of_xml_element
           `Binary (base64_decode data)
       | Xml.Element ("array", [], [Xml.Element ("data", [], data)]) ->
           `Array
-            (List.map
+            (safe_map
                (function
                   | Xml.Element ("value", [], [value]) ->
                       value_of_xml_element
@@ -140,7 +143,7 @@ let rec value_of_xml_element
                data)
       | Xml.Element ("struct", [], members) ->
           `Struct
-            (List.map
+            (safe_map
                (function
                   | Xml.Element ("member", [],
                                  [Xml.Element ("name", [], [Xml.PCData name]);
@@ -178,7 +181,7 @@ let xml_element_of_message
         Xml.Element
           ("methodCall", [],
            [Xml.Element ("methodName", [], [Xml.PCData name]);
-            Xml.Element ("params", [], List.map make_param params)])
+            Xml.Element ("params", [], safe_map make_param params)])
     | MethodResponse value ->
         Xml.Element
           ("methodResponse", [],
@@ -192,7 +195,7 @@ let message_of_xml_element
     ?(datetime_decode=datetime_of_iso8601)
     xml_element =
   let parse_params params =
-    List.map
+    safe_map
       (function
          | Xml.Element ("param", [], 
                         [Xml.Element ("value", [], [element])]) ->
