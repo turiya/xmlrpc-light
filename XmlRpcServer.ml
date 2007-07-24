@@ -1,8 +1,12 @@
-let invalid_method () =
-  raise (XmlRpc.Error (-32601, "server error. requested method not found"))
+let invalid_method name =
+  raise
+    (XmlRpc.Error
+       (-32601, "server error. requested method " ^ name ^ " not found"))
 
 let invalid_params () =
-  raise (XmlRpc.Error (-32602, "server error. invalid method parameters"))
+  raise
+    (XmlRpc.Error
+       (-32602, "server error. invalid method parameters"))
 
 class netplex ?(parallelizer=Netplex_mp.mp()) ?(handler="xmlrpc") () =
 object (self)
@@ -60,7 +64,7 @@ object (self)
                      | `Struct ["params", `Array params;
                                 "methodName", `String name] ->
                          (try `Array [(try Hashtbl.find methods name
-                                       with Not_found -> invalid_method ())
+                                       with Not_found -> invalid_method name)
                                         params]
                           with
                             | XmlRpc.Error (code, string) ->
@@ -76,7 +80,7 @@ object (self)
                   calls)
          | _ -> invalid_params ());
 
-  method process (cgi : Netcgi_types.cgi_activation) =
+  method private process (cgi : Netcgi_types.cgi_activation) =
     let input = cgi#argument_value "BODY" in
     let output =
       XmlRpc.serve
@@ -84,7 +88,7 @@ object (self)
         ~datetime_encode ~datetime_decode
         (fun name ->
            try Hashtbl.find methods name
-           with Not_found -> invalid_method ())
+           with Not_found -> invalid_method name)
         input in
     cgi#output#output_string output;
     cgi#output#commit_work ()

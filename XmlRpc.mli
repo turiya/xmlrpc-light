@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
-(** XmlRpc Light
+(** XmlRpc Light.
 
     XmlRpc Light is a minimal XmlRpc client based on Xml Light and Ocamlnet.
 
@@ -144,9 +144,16 @@ val xml_element_of_value :
   ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
   value -> Xml.xml
 
+(** Converts a date/time tuple to an ISO-8601 string. *)
 val iso8601_of_datetime : int * int * int * int * int * int * int -> string
+
+(** Converts an ISO-8601 string to a date/time tuple. *)
 val datetime_of_iso8601 : string -> int * int * int * int * int * int * int
 
+(** Given a handler function, parses an XmlRpc method call and returns the
+    result as a string. This function can be used to build servers of all
+    kinds since it makes no assumptions about the network library used. It
+    catches all exceptions and converts them into faults. *)
 val serve :
   ?base64_encode:(string -> string) ->
   ?base64_decode:(string -> string) ->
