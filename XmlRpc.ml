@@ -37,6 +37,10 @@ type message =
 let safe_map f xs =
   List.rev (List.rev_map f xs)
 
+let invalid_xml () =
+  raise (Error (-32600,
+                "server error. invalid xml-rpc. not conforming to spec."))
+
 let string_of_tz_offset offset =
   Printf.sprintf "%c%02d%02d"
     (if offset >= 0 then '+' else '-')
@@ -139,7 +143,7 @@ let rec value_of_xml_element
                         ~base64_decode
                         ~datetime_decode
                         value
-                  | _ -> raise (Error (-32700, "parse error")))
+                  | _ -> invalid_xml ())
                data)
       | Xml.Element ("struct", [], members) ->
           `Struct
@@ -153,12 +157,12 @@ let rec value_of_xml_element
                          ~base64_decode
                          ~datetime_decode
                          value)
-                  | _ -> raise (Error (-32700, "parse error")))
+                  | _ -> invalid_xml ())
                members)
       | Xml.Element ("dateTime:iso8601", [], [Xml.PCData data]) ->
           (* The colon above is intentional. (See fix_dotted_tags.) *)
           `DateTime (datetime_decode data)
-      | _ -> raise (Error (-32700, "parse error"))
+      | _ -> invalid_xml ()
 
 let xml_element_of_message
     ?(base64_encode=fun s -> XmlRpcBase64.str_encode s)
@@ -200,17 +204,19 @@ let message_of_xml_element
          | Xml.Element ("param", [], 
                         [Xml.Element ("value", [], [element])]) ->
              value_of_xml_element ~base64_decode ~datetime_decode element
-         | _ -> raise (Error (-32700, "parse error")))
+         | _ -> invalid_xml ())
       params in
   let parse_fault = function
     | [Xml.Element ("value", [], [element])] ->
         (match value_of_xml_element ~base64_decode ~datetime_decode element
          with
            | `Struct ["faultCode", `Int code;
-                      "faultString", `String string] ->
+                      "faultString", `String string]
+           | `Struct ["faultString", `String string;
+                      "faultCode", `Int code] ->
                (code, string)
-           | _ -> raise (Error (-32700, "parse error")))
-    | _ -> raise (Error (-32700, "parse error")) in
+           | _ -> invalid_xml ())
+    | _ -> invalid_xml () in
   match xml_element with
     | Xml.Element ("methodCall", [],
                    [Xml.Element ("methodName", [], [Xml.PCData name]);
@@ -221,7 +227,7 @@ let message_of_xml_element
         MethodResponse (List.hd (parse_params params))
     | Xml.Element (_, [], [Xml.Element ("fault", [], fault)]) ->
         Fault (parse_fault fault)
-    | _ -> raise (Error (-32700, "parse error"))
+    | _ -> invalid_xml ()
 
 (* Workaround for Xml-Light, which doesn't like dots in tag names. *)
 let fix_dotted_tags s =
@@ -253,11 +259,11 @@ object (self)
   method debug = debug
   method set_debug debug' = debug <- debug'
 
-  method set_datetime_encode f = datetime_encode <- f
-  method set_datetime_decode f = datetime_decode <- f
-
   method set_base64_encode f = base64_encode <- f
   method set_base64_decode f = base64_decode <- f
+
+  method set_datetime_encode f = datetime_encode <- f
+  method set_datetime_decode f = datetime_decode <- f
 
   method call name params =
     let xml_element =
@@ -277,17 +283,44 @@ object (self)
           let contents = call#get_resp_body () in
           if debug then print_endline contents;
           fix_dotted_tags contents;
-          (match message_of_xml_element
-               ~base64_decode
-               ~datetime_decode
-               (Xml.parse_string contents)
+          (match (message_of_xml_element
+                    ~base64_decode
+                    ~datetime_decode
+                    (Xml.parse_string contents))
            with
              | MethodResponse value -> value
              | Fault (code, string) -> raise (Error (code, string))
-             | _ -> raise (Error (-32700, "parse error")))
-      | `Client_error -> raise (Error (-32300, "client error"))
-      | `Http_protocol_error e -> raise (Error (-32300, "protocol error"))
-      | `Redirection -> raise (Error (-32300, "redirected"))
-      | `Server_error -> raise (Error (-32300, "server error"))
-      | `Unserved -> assert false
+             | _ -> invalid_xml ())
+      | `Client_error ->
+          raise (Error (-32300, "transport error. client error"))
+      | `Http_protocol_error e ->
+          raise (Error (-32300, "transport error. protocol error"))
+      | `Redirection ->
+          raise (Error (-32300, "transport error. redirected"))
+      | `Server_error ->
+          raise (Error (-32300, "transport error. server error"))
+      | `Unserved ->
+          assert false
 end
+
+let serve
+    ?(base64_encode=fun s -> XmlRpcBase64.str_encode s)
+    ?(base64_decode=fun s -> XmlRpcBase64.str_decode s)
+    ?(datetime_encode=iso8601_of_datetime)
+    ?(datetime_decode=datetime_of_iso8601)
+    f s =
+  match (message_of_xml_element
+           ~base64_decode
+           ~datetime_decode
+           (Xml.parse_string s))
+  with
+    | MethodCall (name, params) ->
+        Xml.to_string_fmt
+          (xml_element_of_message
+             ~base64_encode
+             ~datetime_encode
+             (try MethodResponse (f name params) with
+                | Error (code, string) -> Fault (code, string)
+                | e -> Fault (-32500,
+                              "application error. " ^ Printexc.to_string e)))
+    | _ -> invalid_xml ()

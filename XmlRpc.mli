@@ -143,3 +143,13 @@ val xml_element_of_value :
   ?base64_encode:(string -> string) ->
   ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
   value -> Xml.xml
+
+val iso8601_of_datetime : int * int * int * int * int * int * int -> string
+val datetime_of_iso8601 : string -> int * int * int * int * int * int * int
+
+val serve :
+  ?base64_encode:(string -> string) ->
+  ?base64_decode:(string -> string) ->
+  ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
+  ?datetime_decode:(string -> int * int * int * int * int * int * int) ->
+  (string -> value list -> value) -> string -> string
