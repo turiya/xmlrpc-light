@@ -81,17 +81,23 @@ object (self)
          | _ -> invalid_params ());
 
   method private process (cgi : Netcgi_types.cgi_activation) =
-    let input = cgi#argument_value "BODY" in
-    let output =
-      XmlRpc.serve
-        ~base64_encode ~base64_decode
-        ~datetime_encode ~datetime_decode
-        (fun name ->
-           try Hashtbl.find methods name
-           with Not_found -> invalid_method name)
-        input in
-    cgi#output#output_string output;
-    cgi#output#commit_work ()
+    match cgi#request_method with
+      | `POST ->
+          let input = cgi#argument_value "BODY" in
+          let output =
+            XmlRpc.serve
+              ~base64_encode ~base64_decode
+              ~datetime_encode ~datetime_decode
+              (fun name ->
+                 try Hashtbl.find methods name
+                 with Not_found -> invalid_method name)
+              input in
+          cgi#output#output_string output;
+          cgi#output#commit_work ()
+      | _ ->
+          cgi#output#output_string
+            "XML-RPC server accepts POST requests only.\n";
+          cgi#output#commit_work ()
 
   method run () =
     let (opt_list, cmdline_cfg) = Netplex_main.args () in
