@@ -66,7 +66,7 @@ let system_multicall methods = function
            calls)
   | _ -> invalid_params ()
 
-class base =
+class virtual base =
 object (self)
   val methods =
     (Hashtbl.create 0 : (string, XmlRpc.value list -> XmlRpc.value) Hashtbl.t)
@@ -77,11 +77,15 @@ object (self)
   val mutable datetime_encode = XmlRpc.iso8601_of_datetime
   val mutable datetime_decode = XmlRpc.datetime_of_iso8601
 
+  val mutable error_handler = XmlRpc.default_error_handler
+
   method set_base64_encode f = base64_encode <- f
   method set_base64_decode f = base64_decode <- f
 
   method set_datetime_encode f = datetime_encode <- f
   method set_datetime_decode f = datetime_decode <- f
+
+  method set_error_handler f = error_handler <- f
 
   method register name f =
     Hashtbl.replace methods name f
@@ -89,10 +93,18 @@ object (self)
   method unregister name =
     Hashtbl.remove methods name
 
+  method virtual run : unit -> unit
+
   initializer
     self#register "system.getCapabilities" system_get_capabilities;
     self#register "system.listMethods" (system_list_methods methods);
     self#register "system.multicall" (system_multicall methods);
+end
+
+class type server =
+object
+  inherit base
+  method run : unit -> unit
 end
 
 class cgi () =
@@ -107,6 +119,7 @@ object (self)
             XmlRpc.serve
               ~base64_encode ~base64_decode
               ~datetime_encode ~datetime_decode
+              ~error_handler
               (fun name ->
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)
@@ -142,6 +155,7 @@ object (self)
             XmlRpc.serve
               ~base64_encode ~base64_decode
               ~datetime_encode ~datetime_decode
+              ~error_handler
               (fun name ->
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)

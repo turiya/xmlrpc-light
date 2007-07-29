@@ -109,8 +109,14 @@ end
 
 (** {6 Utility functions} *)
 
-(** Converts an XmlRpc value to a human-readable string for debugging. *)
+(** Converts an XmlRpc value to a human-readable string. *)
 val dump : value -> string
+
+(** Converts a date/time tuple to an ISO-8601 string. *)
+val iso8601_of_datetime : int * int * int * int * int * int * int -> string
+
+(** Converts an ISO-8601 string to a date/time tuple. *)
+val datetime_of_iso8601 : string -> int * int * int * int * int * int * int
 
 (** {6 Low-level interface} *)
 
@@ -144,19 +150,41 @@ val xml_element_of_value :
   ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
   value -> Xml.xml
 
-(** Converts a date/time tuple to an ISO-8601 string. *)
-val iso8601_of_datetime : int * int * int * int * int * int * int -> string
-
-(** Converts an ISO-8601 string to a date/time tuple. *)
-val datetime_of_iso8601 : string -> int * int * int * int * int * int * int
+(** {6 Server tools} *)
 
 (** Given a handler function, parses an XmlRpc method call and returns the
-    result as a string. This function can be used to build servers of all
-    kinds since it makes no assumptions about the network library used. It
-    catches all exceptions and converts them into faults. *)
+    result as a string. This function can be used to build many different
+    kinds of XmlRpc servers since it makes no assumptions about the network
+    library (or other communications method) used.
+
+    If an exception other than {!XmlRpc.Error} occurs, the exception is
+    passed to [error_handler]. If [error_handler] returns a message,
+    the message will be used as the result. If an {!XmlRpc.Error} is
+    raised by either the main function or [error_handler], it will be
+    converted to an XmlRpc [Fault]. Any other exception raised by
+    [error_handler] is allowed to escape.
+
+    For a full-featured, network-capable server implementation, see the
+    {!XmlRpcServer} module. *)
 val serve :
   ?base64_encode:(string -> string) ->
   ?base64_decode:(string -> string) ->
   ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
   ?datetime_decode:(string -> int * int * int * int * int * int * int) ->
+  ?error_handler:(exn -> message) ->
   (string -> value list -> value) -> string -> string
+
+(** The default error handler for [serve].
+
+    This error handler catches all exceptions and converts them into
+    faults by wrapping them in [XmlRpc.Error]. *)
+val default_error_handler : exn -> message
+
+(** A "quiet" error handler for [serve].
+
+    This error handler simply re-raises the exception. Use this if you
+    want exceptions to remain unhandled so that they will escape to the
+    error log. The client will receive a generic "transport error",
+    which is more secure since it does not reveal any information about
+    the specific exception that occurred. *)
+val quiet_error_handler : exn -> message

@@ -313,11 +313,18 @@ object (self)
           assert false
 end
 
+let default_error_handler e =
+  raise (Error (-32500, "application error. " ^ Printexc.to_string e))
+
+let quiet_error_handler e =
+  raise e
+
 let serve
     ?(base64_encode=fun s -> XmlRpcBase64.str_encode s)
     ?(base64_decode=fun s -> XmlRpcBase64.str_decode s)
     ?(datetime_encode=iso8601_of_datetime)
     ?(datetime_decode=datetime_of_iso8601)
+    ?(error_handler=default_error_handler)
     f s =
   try
     begin
@@ -336,9 +343,7 @@ let serve
                      ~datetime_encode
                      (try MethodResponse (f name params) with
                         | Error _ as e -> raise e
-                        | e -> raise (Error (-32500,
-                                             "application error. "
-                                             ^ Printexc.to_string e))))
+                        | e -> error_handler e))
             | _ -> invalid_xmlrpc ()
         end
       with Xml.Error _ -> invalid_xml ()
