@@ -12,13 +12,25 @@ let system_get_capabilities _ =
   `Struct
     [
       "system.multicall",
-      `Struct ["specUrl", `String "http://www.xmlrpc.com/discuss/msgReader$1208";
-               "specVersion", `Int 1];
+      `Struct
+        [
+          "specUrl", `String "http://www.xmlrpc.com/discuss/msgReader$1208";
+          "specVersion", `Int 1;
+        ];
+
       "xmlrpc",
-      `Struct ["specUrl", `String "http://www.xmlrpc.com/spec"; "specVersion", `Int 1];
+      `Struct
+        [
+          "specUrl", `String "http://www.xmlrpc.com/spec";
+          "specVersion", `Int 1;
+        ];
+
       "faults_interop",
-      `Struct ["specUrl", `String "http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php";
-               "specVersion", `Int 20010516];
+      `Struct
+        [
+          "specUrl", `String "http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php";
+          "specVersion", `Int 20010516;
+        ];
     ]
 
 let system_list_methods methods _ =
@@ -148,7 +160,7 @@ object (self)
     Arg.parse
       opt_list
       (fun s -> raise (Arg.Bad ("Don't know what to do with: " ^ s)))
-      "usage: netplex [options]";
+      ("usage: " ^ Sys.executable_name ^ " [options]");
 
     let xmlrpc =
       { Nethttpd_services.dyn_handler = self#process;
