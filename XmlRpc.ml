@@ -45,7 +45,7 @@ let invalid_xmlrpc () =
                 "server error. invalid xml-rpc. not conforming to spec"))
 
 let string_of_tz_offset offset =
-  Printf.sprintf "%c%02d%02d"
+  Printf.sprintf "%c%02d:%02d"
     (if offset >= 0 then '+' else '-')
     (abs (offset / 60))
     (abs (offset mod 60))
@@ -53,16 +53,16 @@ let string_of_tz_offset offset =
 let tz_offset_of_string = function
   | "" | "Z" -> 0
   | string ->
-      Scanf.sscanf string "%c%02d%02d"
+      Scanf.sscanf string "%c%02d:%02d"
         (fun sign hour min ->
            min + hour * (if sign = '-' then -60 else 60))
 
 let iso8601_of_datetime (y, m, d, h, m', s, tz_offset) =
-  Printf.sprintf "%04d-%02d-%02dT%02d:%02d:%02d%s"
+  Printf.sprintf "%04d%02d%02dT%02d:%02d:%02d%s"
     y m d h m' s (string_of_tz_offset tz_offset)
 
 let datetime_of_iso8601 string =
-  Scanf.sscanf string "%04d-%02d-%02dT%02d:%02d:%02d%s"
+  Scanf.sscanf string "%04d%02d%02dT%02d:%02d:%02d%s"
     (fun y m d h m' s tz ->
        (y, m, d, h, m', s, (tz_offset_of_string tz)))
 
@@ -278,6 +278,7 @@ object (self)
     if debug then print_endline xml;
     let call = new Http_client.post_raw url xml in
     call#set_req_header "User-Agent" useragent;
+    call#set_req_header "Content-Type" "text/xml";
     let pipeline = new Http_client.pipeline in
     pipeline#add call;
     pipeline#run ();
@@ -316,6 +317,7 @@ let serve
     begin
       try
         begin
+          fix_dotted_tags s;
           match (message_of_xml_element
                    ~base64_decode
                    ~datetime_decode
