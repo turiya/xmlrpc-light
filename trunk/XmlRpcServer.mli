@@ -3,28 +3,35 @@
 (** Abstract base class for XmlRpc servers. *)
 class virtual base :
 object
+  (** Hashtable mapping method names to implementation functions. *)
   val methods : (string, XmlRpc.value list -> XmlRpc.value) Hashtbl.t
 
-  val mutable base64_encode : string -> string
-  val mutable base64_decode : string -> string
-
-  val mutable datetime_encode :
-      int * int * int * int * int * int * int -> string
-  val mutable datetime_decode :
-      string -> int * int * int * int * int * int * int
-
+  (** Sets an alternate Base-64 binary encoding function. *)
   method set_base64_encode : (string -> string) -> unit
+
+  (** Sets an alternate Base-64 binary decoding function. *)
   method set_base64_decode : (string -> string) -> unit
 
+  (** Sets an alternate ISO-8601 date/time encoding function. *)
   method set_datetime_encode :
     (int * int * int * int * int * int * int -> string) -> unit
+
+  (** Sets an alternate ISO-8601 date/time decoding function. *)
   method set_datetime_decode :
     (string -> int * int * int * int * int * int * int) -> unit
 
+  (** Sets an alternate handler for unhandled exceptions.
+      See {!XmlRpc.default_error_handler} and
+      {!XmlRpc.quiet_error_handler} for examples. *)
   method set_error_handler : (exn -> XmlRpc.message) -> unit
 
+  (** Registers a method with the server. *)
   method register : string -> (XmlRpc.value list -> XmlRpc.value) -> unit
+
+  (** Removes a method from the server. *)
   method unregister : string -> unit
+
+  (** Starts the main server process. *)
   method virtual run : unit -> unit
 end
 
@@ -32,6 +39,8 @@ end
 class type server =
 object
   inherit base
+
+  (** Starts the main server process. *)
   method run : unit -> unit
 end
 
