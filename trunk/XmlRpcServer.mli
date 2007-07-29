@@ -19,6 +19,19 @@
 
 (** XmlRpc Light server. *)
 
+(** Example: {[
+    let server = new XmlRpcServer.cgi () in
+    server#register "demo.sayHello"
+      (fun _ -> `String "Hello!");
+    server#run () ]}
+
+    By inheriting from {!XmlRpcServer.base}, all servers provide
+    the following introspection functions by default: [system.listMethods],
+    [system.getCapabilities]. To prevent their use, use [server#unregister].
+*)
+
+(** {6 Base classes} *)
+
 (** Abstract base class for XmlRpc servers. *)
 class virtual base :
 object
@@ -62,6 +75,8 @@ object
   (** Starts the main server process. *)
   method run : unit -> unit
 end
+
+(** {6 Server implementations} *)
 
 (** CGI XmlRpc server based on Netcgi2. *)
 class cgi : unit -> server

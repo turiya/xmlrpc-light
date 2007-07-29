@@ -152,10 +152,15 @@ val xml_element_of_value :
 
 (** {6 Server tools} *)
 
-(** Given a handler function, parses an XmlRpc method call and returns the
-    result as a string. This function can be used to build many different
-    kinds of XmlRpc servers since it makes no assumptions about the network
-    library (or other communications method) used.
+(** Creates a function from string (Xml representing a [MethodCall]) to
+    string (Xml representing a [MethodResult] or [Fault]) given a function
+    of the form: ([name] -> [params] -> [result]), where [name] is the
+    name of the method, [params] is a list of parameter values, and
+    [result] is the result value.
+
+    This function can be used to build many different kinds of XmlRpc
+    servers since it makes no assumptions about the network library
+    or other communications method used.
 
     If an exception other than {!XmlRpc.Error} occurs, the exception is
     passed to [error_handler]. If [error_handler] returns a message,
@@ -164,8 +169,8 @@ val xml_element_of_value :
     converted to an XmlRpc [Fault]. Any other exception raised by
     [error_handler] is allowed to escape.
 
-    For a full-featured, network-capable server implementation, see the
-    {!XmlRpcServer} module. *)
+    For a full-featured, easy-to-use, network-capable server implementation,
+    see the {!XmlRpcServer} module. *)
 val serve :
   ?base64_encode:(string -> string) ->
   ?base64_decode:(string -> string) ->
