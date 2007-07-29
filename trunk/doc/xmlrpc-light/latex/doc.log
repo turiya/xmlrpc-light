@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=latex 2007.6.20)  11 JUL 2007 22:06
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=latex 2007.6.20)  29 JUL 2007 10:19
 entering extended mode
  %&-line parsing enabled.
 **doc.tex
@@ -86,18 +86,31 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 69.
  [1
 
-] [2] [3] [4] (./doc.aux)
+] [2] [3]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 396.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 396.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 396.
+ [4] [5]
+Overfull \hbox (56.47348pt too wide) in paragraph at lines 658--658
+[]\T1/cmtt/m/n/10.95 class netplex : ?parallelizer:Netplex_types.parallelizer -
+> ?handler:string -> unit -> server 
+ []
+
+[6] [7] (./doc.aux)
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
- 657 strings out of 93946
- 8330 string characters out of 1162066
+ 695 strings out of 93946
+ 9436 string characters out of 1162066
  52927 words of memory out of 1500000
- 3983 multiletter control sequences out of 10000+50000
- 8608 words of font info for 23 fonts, out of 1200000 for 2000
+ 4015 multiletter control sequences out of 10000+50000
+ 10790 words of font info for 30 fonts, out of 1200000 for 2000
  743 hyphenation exceptions out of 8191
- 21i,4n,20p,231b,231s stack positions out of 5000i,500n,6000p,200000b,5000s
+ 21i,4n,20p,232b,242s stack positions out of 5000i,500n,6000p,200000b,5000s
 
-Output written on doc.dvi (4 pages, 7308 bytes).
+Output written on doc.dvi (7 pages, 13000 bytes).

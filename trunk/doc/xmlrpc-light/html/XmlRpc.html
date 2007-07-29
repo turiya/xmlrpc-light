@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="style.css" type="text/css">
 <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
 <link rel="Start" href="index.html">
-<link rel="next" href="XmlRpcBase64.html">
+<link rel="next" href="XmlRpcServer.html">
 <link rel="Up" href="index.html">
 <link title="Index of types" rel=Appendix href="index_types.html">
 <link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
@@ -12,23 +12,26 @@
 <link title="Index of class attributes" rel=Appendix href="index_attributes.html">
 <link title="Index of class methods" rel=Appendix href="index_methods.html">
 <link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
+<link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
 <link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><link title="High-level interface" rel="Section" href="#6_Highlevelinterface">
 <link title="Utility functions" rel="Section" href="#6_Utilityfunctions">
 <link title="Low-level interface" rel="Section" href="#6_Lowlevelinterface">
+<link title="Server tools" rel="Section" href="#6_Servertools">
 <title>XmlRpc</title>
 </head>
 <body>
 <div class="navbar">&nbsp;<a href="index.html">Up</a>
-&nbsp;<a href="XmlRpcBase64.html">Next</a>
+&nbsp;<a href="XmlRpcServer.html">Next</a>
 </div>
 <center><h1>Module <a href="type_XmlRpc.html">XmlRpc</a></h1></center>
 <br>
-<pre><span class="keyword">module</span> XmlRpc: <code class="code">sig</code> <a href="XmlRpc.html">..</a> <code class="code">end</code></pre>XmlRpc Light
+<pre><span class="keyword">module</span> XmlRpc: <code class="code">sig</code> <a href="XmlRpc.html">..</a> <code class="code">end</code></pre>XmlRpc Light.
 <p>
 
-    XmlRpc Light is a minimal XmlRpc client based on Xml Light and Ocamlnet.
+    XmlRpc Light is a minimal XmlRpc library based on Xml Light and Ocamlnet.
 <p>
 
     It provides a type for values, a client class with a simple calling
@@ -73,7 +76,13 @@ Class for XmlRpc clients.
 <a name="6_Utilityfunctions"></a>
 <h6>Utility functions</h6><br>
 <pre><span class="keyword">val</span> <a name="VALdump"></a>dump : <code class="type"><a href="XmlRpc.html#TYPEvalue">value</a> -> string</code></pre><div class="info">
-Converts an XmlRpc value to a human-readable string for debugging.<br>
+Converts an XmlRpc value to a human-readable string.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALiso8601_of_datetime"></a>iso8601_of_datetime : <code class="type">int * int * int * int * int * int * int -> string</code></pre><div class="info">
+Converts a date/time tuple to an ISO-8601 string.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALdatetime_of_iso8601"></a>datetime_of_iso8601 : <code class="type">string -> int * int * int * int * int * int * int</code></pre><div class="info">
+Converts an ISO-8601 string to a date/time tuple.<br>
 </div>
 <br>
 <a name="6_Lowlevelinterface"></a>
@@ -116,5 +125,49 @@ Converts an Xml Light element to an XmlRpc value.<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALxml_element_of_value"></a>xml_element_of_value : <code class="type">?base64_encode:(string -> string) -><br>       ?datetime_encode:(int * int * int * int * int * int * int -> string) -><br>       <a href="XmlRpc.html#TYPEvalue">value</a> -> Xml.xml</code></pre><div class="info">
 Converts an XmlRpc value to an Xml Light element.<br>
+</div>
+<br>
+<a name="6_Servertools"></a>
+<h6>Server tools</h6><br>
+<pre><span class="keyword">val</span> <a name="VALserve"></a>serve : <code class="type">?base64_encode:(string -> string) -><br>       ?base64_decode:(string -> string) -><br>       ?datetime_encode:(int * int * int * int * int * int * int -> string) -><br>       ?datetime_decode:(string -> int * int * int * int * int * int * int) -><br>       ?error_handler:(exn -> <a href="XmlRpc.html#TYPEmessage">message</a>) -><br>       (string -> <a href="XmlRpc.html#TYPEvalue">value</a> list -> <a href="XmlRpc.html#TYPEvalue">value</a>) -> string -> string</code></pre><div class="info">
+Creates a function from string (Xml representing a <code class="code">MethodCall</code>) to
+    string (Xml representing a <code class="code">MethodResult</code> or <code class="code">Fault</code>) given a function
+    of the form: (<code class="code">name</code> -&gt; <code class="code">params</code> -&gt; <code class="code">result</code>), where <code class="code">name</code> is the
+    name of the method, <code class="code">params</code> is a list of parameter values, and
+    <code class="code">result</code> is the result value.
+<p>
+
+    This function can be used to build many different kinds of XmlRpc
+    servers since it makes no assumptions about the network library
+    or other communications method used.
+<p>
+
+    If an exception other than <a href="XmlRpc.html#EXCEPTIONError"><code class="code">XmlRpc.Error</code></a> occurs, the exception is
+    passed to <code class="code">error_handler</code>. If <code class="code">error_handler</code> returns a message,
+    the message will be used as the result. If an <a href="XmlRpc.html#EXCEPTIONError"><code class="code">XmlRpc.Error</code></a> is
+    raised by either the main function or <code class="code">error_handler</code>, it will be
+    converted to an XmlRpc <code class="code">Fault</code>. Any other exception raised by
+    <code class="code">error_handler</code> is allowed to escape.
+<p>
+
+    For a full-featured, easy-to-use, network-capable server implementation,
+    see the <a href="XmlRpcServer.html"><code class="code">XmlRpcServer</code></a> module.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALdefault_error_handler"></a>default_error_handler : <code class="type">exn -> <a href="XmlRpc.html#TYPEmessage">message</a></code></pre><div class="info">
+The default error handler for <code class="code">serve</code>.
+<p>
+
+    This error handler catches all exceptions and converts them into
+    faults by wrapping them in <code class="code">XmlRpc.Error</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALquiet_error_handler"></a>quiet_error_handler : <code class="type">exn -> <a href="XmlRpc.html#TYPEmessage">message</a></code></pre><div class="info">
+A "quiet" error handler for <code class="code">serve</code>.
+<p>
+
+    This error handler simply re-raises the exception. Use this if you
+    want exceptions to remain unhandled so that they will escape to the
+    error log. The client will receive a generic "transport error",
+    which is more secure since it does not reveal any information about
+    the specific exception that occurred.<br>
 </div>
 </body></html>
