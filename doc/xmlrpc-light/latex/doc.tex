@@ -6,12 +6,12 @@
 \usepackage{ocamldoc}
 \begin{document}
 \tableofcontents
-\section{Module {\tt{XmlRpc}} : XmlRpc Light}
+\section{Module {\tt{XmlRpc}} : XmlRpc Light.}
 \label{module:XmlRpc}\index{XmlRpc@\verb`XmlRpc`}
 
 
 
-    XmlRpc Light is a minimal XmlRpc client based on Xml Light and Ocamlnet.
+    XmlRpc Light is a minimal XmlRpc library based on Xml Light and Ocamlnet.
 
 
     It provides a type for values, a client class with a simple calling
@@ -258,7 +258,33 @@ val dump : value -> string
 \end{ocamldoccode}
 \index{dump@\verb`dump`}
 \begin{ocamldocdescription}
-Converts an XmlRpc value to a human-readable string for debugging.
+Converts an XmlRpc value to a human-readable string.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.iso8601-underscoreof-underscoredatetime}\begin{ocamldoccode}
+val iso8601_of_datetime : int * int * int * int * int * int * int -> string
+\end{ocamldoccode}
+\index{iso8601-underscoreof-underscoredatetime@\verb`iso8601_of_datetime`}
+\begin{ocamldocdescription}
+Converts a date/time tuple to an ISO-8601 string.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.datetime-underscoreof-underscoreiso8601}\begin{ocamldoccode}
+val datetime_of_iso8601 : string -> int * int * int * int * int * int * int
+\end{ocamldoccode}
+\index{datetime-underscoreof-underscoreiso8601@\verb`datetime_of_iso8601`}
+\begin{ocamldocdescription}
+Converts an ISO-8601 string to a date/time tuple.
 
 
 \end{ocamldocdescription}
@@ -343,6 +369,329 @@ val xml_element_of_value :
 \index{xml-underscoreelement-underscoreof-underscorevalue@\verb`xml_element_of_value`}
 \begin{ocamldocdescription}
 Converts an XmlRpc value to an Xml Light element.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Server tools
+
+
+
+\label{val:XmlRpc.serve}\begin{ocamldoccode}
+val serve :
+  ?base64_encode:(string -> string) ->
+  ?base64_decode:(string -> string) ->
+  ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
+  ?datetime_decode:(string -> int * int * int * int * int * int * int) ->
+  ?error_handler:(exn -> message) ->
+  (string -> value list -> value) -> string -> string
+\end{ocamldoccode}
+\index{serve@\verb`serve`}
+\begin{ocamldocdescription}
+Creates a function from string (Xml representing a {\tt{MethodCall}}) to
+    string (Xml representing a {\tt{MethodResult}} or {\tt{Fault}}) given a function
+    of the form: ({\tt{name}} $\rightarrow$ {\tt{params}} $\rightarrow$ {\tt{result}}), where {\tt{name}} is the
+    name of the method, {\tt{params}} is a list of parameter values, and
+    {\tt{result}} is the result value.
+
+
+    This function can be used to build many different kinds of XmlRpc
+    servers since it makes no assumptions about the network library
+    or other communications method used.
+
+
+    If an exception other than {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] occurs, the exception is
+    passed to {\tt{error\_handler}}. If {\tt{error\_handler}} returns a message,
+    the message will be used as the result. If an {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] is
+    raised by either the main function or {\tt{error\_handler}}, it will be
+    converted to an XmlRpc {\tt{Fault}}. Any other exception raised by
+    {\tt{error\_handler}} is allowed to escape.
+
+
+    For a full-featured, easy-to-use, network-capable server implementation,
+    see the {\tt{XmlRpcServer}}[\ref{module:XmlRpcServer}] module.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.default-underscoreerror-underscorehandler}\begin{ocamldoccode}
+val default_error_handler : exn -> message
+\end{ocamldoccode}
+\index{default-underscoreerror-underscorehandler@\verb`default_error_handler`}
+\begin{ocamldocdescription}
+The default error handler for {\tt{serve}}.
+
+
+    This error handler catches all exceptions and converts them into
+    faults by wrapping them in {\tt{XmlRpc.Error}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.quiet-underscoreerror-underscorehandler}\begin{ocamldoccode}
+val quiet_error_handler : exn -> message
+\end{ocamldoccode}
+\index{quiet-underscoreerror-underscorehandler@\verb`quiet_error_handler`}
+\begin{ocamldocdescription}
+A "quiet" error handler for {\tt{serve}}.
+
+
+    This error handler simply re-raises the exception. Use this if you
+    want exceptions to remain unhandled so that they will escape to the
+    error log. The client will receive a generic "transport error",
+    which is more secure since it does not reveal any information about
+    the specific exception that occurred.
+
+
+\end{ocamldocdescription}
+
+
+\section{Module {\tt{XmlRpcServer}} : XmlRpc Light server.}
+\label{module:XmlRpcServer}\index{XmlRpcServer@\verb`XmlRpcServer`}
+
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+Example: \begin{ocamldoccode}
+
+    let server = new XmlRpcServer.cgi () in
+    server#register "demo.sayHello"
+      (fun _ -> `String "Hello!");
+    server#run () 
+\end{ocamldoccode}
+
+
+
+    By inheriting from {\tt{XmlRpcServer.base}}[\ref{class:XmlRpcServer.base}], all servers provide
+    the following introspection functions by default: {\tt{system.listMethods}},
+    {\tt{system.getCapabilities}}. To prevent their use, use {\tt{server\verb`#`unregister}}.
+
+
+
+Base classes
+
+
+
+\begin{ocamldoccode}
+{\tt{class virtual base : }}\end{ocamldoccode}
+\label{class:XmlRpcServer.base}\index{base@\verb`base`}
+
+\begin{ocamldocobjectend}
+
+
+\label{val:XmlRpcServer.base.methods}\begin{ocamldoccode}
+val methods : (string, XmlRpc.value list -> XmlRpc.value) Hashtbl.t
+\end{ocamldoccode}
+\index{methods@\verb`methods`}
+\begin{ocamldocdescription}
+Hashtable mapping method names to implementation functions.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscorebase64-underscoreencode}\begin{ocamldoccode}
+method set_base64_encode : (string -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscorebase64-underscoreencode@\verb`set_base64_encode`}
+\begin{ocamldocdescription}
+Sets an alternate Base-64 binary encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscorebase64-underscoredecode}\begin{ocamldoccode}
+method set_base64_decode : (string -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscorebase64-underscoredecode@\verb`set_base64_decode`}
+\begin{ocamldocdescription}
+Sets an alternate Base-64 binary decoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscoredatetime-underscoreencode}\begin{ocamldoccode}
+method set_datetime_encode :
+  (int * int * int * int * int * int * int -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscoredatetime-underscoreencode@\verb`set_datetime_encode`}
+\begin{ocamldocdescription}
+Sets an alternate ISO-8601 date/time encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscoredatetime-underscoredecode}\begin{ocamldoccode}
+method set_datetime_decode :
+  (string -> int * int * int * int * int * int * int) -> unit
+\end{ocamldoccode}
+\index{set-underscoredatetime-underscoredecode@\verb`set_datetime_decode`}
+\begin{ocamldocdescription}
+Sets an alternate ISO-8601 date/time decoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscoreerror-underscorehandler}\begin{ocamldoccode}
+method set_error_handler : (exn -> XmlRpc.message) -> unit
+\end{ocamldoccode}
+\index{set-underscoreerror-underscorehandler@\verb`set_error_handler`}
+\begin{ocamldocdescription}
+Sets an alternate handler for unhandled exceptions.
+      See {\tt{XmlRpc.default\_error\_handler}}[\ref{val:XmlRpc.default-underscoreerror-underscorehandler}] and
+      {\tt{XmlRpc.quiet\_error\_handler}}[\ref{val:XmlRpc.quiet-underscoreerror-underscorehandler}] for examples.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.register}\begin{ocamldoccode}
+method register : string -> (XmlRpc.value list -> XmlRpc.value) -> unit
+\end{ocamldoccode}
+\index{register@\verb`register`}
+\begin{ocamldocdescription}
+Registers a method with the server.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.unregister}\begin{ocamldoccode}
+method unregister : string -> unit
+\end{ocamldoccode}
+\index{unregister@\verb`unregister`}
+\begin{ocamldocdescription}
+Removes a method from the server.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.run}\begin{ocamldoccode}
+method virtual run : unit -> unit
+\end{ocamldoccode}
+\index{run@\verb`run`}
+\begin{ocamldocdescription}
+Starts the main server process.
+
+
+\end{ocamldocdescription}
+\end{ocamldocobjectend}
+
+
+\begin{ocamldocdescription}
+Abstract base class for XmlRpc servers.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\begin{ocamldoccode}
+{\tt{class type server = }}\end{ocamldoccode}
+\label{classtype:XmlRpcServer.server}\index{server@\verb`server`}
+
+\begin{ocamldocobjectend}
+
+
+{\tt{inherit XmlRpcServer.base}} [\ref{class:XmlRpcServer.base}]
+
+\label{method:XmlRpcServer.server.run}\begin{ocamldoccode}
+method run : unit -> unit
+\end{ocamldoccode}
+\index{run@\verb`run`}
+\begin{ocamldocdescription}
+Starts the main server process.
+
+
+\end{ocamldocdescription}
+\end{ocamldocobjectend}
+
+
+\begin{ocamldocdescription}
+Type of concrete XmlRpc server classes.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Server implementations
+
+
+
+\begin{ocamldoccode}
+{\tt{class cgi : }}{\tt{unit -> }}{\tt{server}}\end{ocamldoccode}
+\label{class:XmlRpcServer.cgi}\index{cgi@\verb`cgi`}
+
+
+
+\begin{ocamldocdescription}
+CGI XmlRpc server based on Netcgi2.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\begin{ocamldoccode}
+{\tt{class netplex : }}{\tt{?parallelizer:Netplex\_types.parallelizer -> ?handler:string -> unit -> }}{\tt{server}}\end{ocamldoccode}
+\label{class:XmlRpcServer.netplex}\index{netplex@\verb`netplex`}
+
+
+
+\begin{ocamldocdescription}
+Stand-alone XmlRpc server based on Netplex.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Utility functions
+
+
+
+\label{val:XmlRpcServer.invalid-underscoremethod}\begin{ocamldoccode}
+val invalid_method : string -> 'a
+\end{ocamldoccode}
+\index{invalid-underscoremethod@\verb`invalid_method`}
+\begin{ocamldocdescription}
+Raise an {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] indicating a method name not found.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcServer.invalid-underscoreparams}\begin{ocamldoccode}
+val invalid_params : unit -> 'a
+\end{ocamldoccode}
+\index{invalid-underscoreparams@\verb`invalid_params`}
+\begin{ocamldocdescription}
+Raise an {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] indicating invalid method parameters.
 
 
 \end{ocamldocdescription}
