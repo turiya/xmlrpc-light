@@ -62,9 +62,15 @@ let iso8601_of_datetime (y, m, d, h, m', s, tz_offset) =
     y m d h m' s (string_of_tz_offset tz_offset)
 
 let datetime_of_iso8601 string =
-  Scanf.sscanf string "%04d%02d%02dT%02d:%02d:%02d%s"
-    (fun y m d h m' s tz ->
-       (y, m, d, h, m', s, (tz_offset_of_string tz)))
+  try
+    Scanf.sscanf string "%04d%02d%02dT%02d:%02d:%02d%s"
+      (fun y m d h m' s tz ->
+         (y, m, d, h, m', s, (tz_offset_of_string tz)))
+  with
+    | Scanf.Scan_failure _
+    | End_of_file ->
+        raise (Error (-32600,
+                      "server error. unable to parse dateTime value"))
 
 let rec dump = function
   | `String data -> data
