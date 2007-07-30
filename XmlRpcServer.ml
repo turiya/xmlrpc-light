@@ -143,6 +143,7 @@ object (self)
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)
               input in
+          cgi#set_header ~content_type:"text/xml" ();
           cgi#output#output_string output;
           cgi#output#commit_work ()
       | _ ->
@@ -179,6 +180,7 @@ object (self)
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)
               input in
+          cgi#set_header ~content_type:"text/xml" ();
           env#send_output_header ();
           cgi#output#output_string output;
           cgi#output#commit_work ()
