@@ -171,6 +171,9 @@ let rec value_of_xml_element
       | Xml.Element ("dateTime:iso8601", [], [Xml.PCData data]) ->
           (* The colon above is intentional. (See fix_dotted_tags.) *)
           `DateTime (datetime_decode data)
+      | Xml.PCData data ->
+          (* Untyped data is assumed to be a string. *)
+          `String data
       | _ -> invalid_xmlrpc ()
 
 let xml_element_of_message
