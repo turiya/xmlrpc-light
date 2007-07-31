@@ -1,6 +1,6 @@
 name = "xmlrpc-light"
 version = "0.4.1"
 description = "XML-RPC client based on Xml-Light"
-requires = "xml-light,netclient,nethttpd"
+requires = "xml-light,netclient,nethttpd-for-netcgi2"
 archive(byte) = "xmlrpc-light.cma"
 archive(native) = "xmlrpc-light.cmxa"
