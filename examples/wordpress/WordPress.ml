@@ -132,7 +132,7 @@ module PageListItem = struct
       (function
          | ("page_id", `String v) -> result.page_id <- int_of_string v
          | ("page_title", `String v) -> result.page_title <- v
-         | ("page_parent_id", `String v) -> result.page_id <- int_of_string v
+         | ("page_parent_id", `String v) -> result.page_parent_id <- int_of_string v
          | ("dateCreated", `DateTime v) -> result.date_created <- v
          | (field, _) -> raise (Unknown_field field))
       value;
