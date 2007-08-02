@@ -107,6 +107,13 @@ object
   method call : string -> value list -> value
 end
 
+class multicall : client ->
+object
+  method call : string -> value list -> value Lazy.t
+  method execute : unit -> unit
+  method result : int -> value
+end
+
 (** {6 Utility functions} *)
 
 (** Converts an XmlRpc value to a human-readable string. *)
