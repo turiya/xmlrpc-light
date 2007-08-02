@@ -320,20 +320,20 @@ class multicall (client : client) =
 object (self)
   val client = client
   val mutable queue = []
+  val mutable executed = false
   val mutable results = None
   val counter = ref 0
 
   method call name params =
-    if results <> None
-    then failwith "multicall#call: already executed";
+    if self#executed then failwith "multicall#call: already executed";
     let num = !counter in
     incr counter;
     queue <- (name, params) :: queue;
     lazy (self#result num)
 
   method execute () =
-    if results <> None
-    then failwith "multicall#execute: already executed";
+    if self#completed then failwith "multicall#execute: already completed";
+    executed <- true;
     let calls = List.rev queue in
     let args = [`Array
                   (safe_map
@@ -346,8 +346,7 @@ object (self)
       | _ -> invalid_xmlrpc ()
 
   method result num =
-    if results = None
-    then self#execute ();
+    if not self#completed then self#execute ();
     match results with
       | Some values ->
           (match values.(num) with
@@ -359,6 +358,9 @@ object (self)
                  raise (Error (code, string))
              | _ -> invalid_xmlrpc ())
       | None -> assert false
+
+  method executed = executed
+  method completed = results <> None
 end
 
 let default_error_handler e =

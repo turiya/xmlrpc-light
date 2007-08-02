@@ -112,6 +112,8 @@ object
   method call : string -> value list -> value Lazy.t
   method execute : unit -> unit
   method result : int -> value
+  method executed : bool
+  method completed : bool
 end
 
 (** {6 Utility functions} *)
