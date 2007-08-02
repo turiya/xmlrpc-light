@@ -316,6 +316,51 @@ object (self)
           assert false
 end
 
+class multicall (client : client) =
+object (self)
+  val client = client
+  val mutable queue = []
+  val mutable results = None
+  val counter = ref 0
+
+  method call name params =
+    if results <> None
+    then failwith "multicall#call: already executed";
+    let num = !counter in
+    incr counter;
+    queue <- (name, params) :: queue;
+    lazy (self#result num)
+
+  method execute () =
+    if results <> None
+    then failwith "multicall#execute: already executed";
+    let calls = List.rev queue in
+    let args = [`Array
+                  (safe_map
+                     (fun (name, params) ->
+                        `Struct ["methodName", `String name;
+                                 "params", `Array params])
+                     calls)] in
+    match client#call "system.multicall" args with
+      | `Array values -> results <- Some (Array.of_list values)
+      | _ -> invalid_xmlrpc ()
+
+  method result num =
+    if results = None
+    then self#execute ();
+    match results with
+      | Some values ->
+          (match values.(num) with
+             | `Array [v] -> v
+             | `Struct ["faultCode", `Int code;
+                        "faultString", `String string]
+             | `Struct ["faultString", `String string;
+                        "faultCode", `Int code] ->
+                 raise (Error (code, string))
+             | _ -> invalid_xmlrpc ())
+      | None -> assert false
+end
+
 let default_error_handler e =
   raise (Error (-32500, "application error. " ^ Printexc.to_string e))
 
