@@ -147,6 +147,9 @@ let rec value_of_xml_element
           `Array
             (safe_map
                (function
+                  | Xml.Element ("value", [], []) ->
+                      (* Empty value is assumed to be an empty string. *)
+                      `String ""
                   | Xml.Element ("value", [], [value]) ->
                       value_of_xml_element
                         ~base64_decode
@@ -158,6 +161,11 @@ let rec value_of_xml_element
           `Struct
             (safe_map
                (function
+                  | Xml.Element ("member", [],
+                                 [Xml.Element ("name", [], [Xml.PCData name]);
+                                  Xml.Element ("value", [], [])]) ->
+                      (* Empty value is assumed to be an empty string. *)
+                      (name, `String "")
                   | Xml.Element ("member", [],
                                  [Xml.Element ("name", [], [Xml.PCData name]);
                                   Xml.Element ("value", [], [value])]) ->
@@ -213,6 +221,9 @@ let message_of_xml_element
   let parse_params params =
     safe_map
       (function
+         | Xml.Element ("param", [], [Xml.Element ("value", [], [])]) ->
+             (* Empty value is assumed to be an empty string. *)
+             `String ""
          | Xml.Element ("param", [], 
                         [Xml.Element ("value", [], [element])]) ->
              value_of_xml_element ~base64_decode ~datetime_decode element
