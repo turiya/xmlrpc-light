@@ -180,13 +180,10 @@ object (self)
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)
               input in
-          (* This results in a double-header being sent! Need to find out why... *)
-          (* cgi#set_header ~content_type:"text/xml" (); *)
-          env#send_output_header ();
+          cgi#set_header ~content_type:"text/xml" ();
           cgi#output#output_string output;
           cgi#output#commit_work ()
       | _ ->
-          env#send_output_header ();
           cgi#output#output_string
             "XML-RPC server accepts POST requests only.\n";
           cgi#output#commit_work ()
