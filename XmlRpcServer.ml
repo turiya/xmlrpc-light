@@ -85,6 +85,19 @@ let system_multicall methods = function
            calls)
   | _ -> invalid_params ()
 
+let parse_version version =
+  let rec loop nums rest =
+    try
+      let i = String.index rest '.' in
+      loop
+        ((String.sub rest 0 i) :: nums)
+        (String.sub rest (i + 1) (String.length rest - i - 1))
+    with Not_found ->
+      rest :: nums in
+  List.rev (List.map int_of_string (loop [] version))
+
+let ocamlnet_version = parse_version Netconst.ocamlnet_version
+
 class virtual base =
 object (self)
   val methods =
@@ -180,10 +193,14 @@ object (self)
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)
               input in
-          cgi#set_header ~content_type:"text/xml" ();
+          if ocamlnet_version < [2; 2; 8]
+          then env#send_output_header ()
+          else cgi#set_header ~content_type:"text/xml" ();
           cgi#output#output_string output;
           cgi#output#commit_work ()
       | _ ->
+          if ocamlnet_version < [2; 2; 8]
+          then env#send_output_header ();
           cgi#output#output_string
             "XML-RPC server accepts POST requests only.\n";
           cgi#output#commit_work ()
