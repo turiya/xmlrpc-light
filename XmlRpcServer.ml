@@ -85,16 +85,11 @@ let system_multicall methods = function
            calls)
   | _ -> invalid_params ()
 
-let parse_version version =
-  let rec loop nums rest =
-    try
-      let i = String.index rest '.' in
-      loop
-        ((String.sub rest 0 i) :: nums)
-        (String.sub rest (i + 1) (String.length rest - i - 1))
-    with Not_found ->
-      rest :: nums in
-  List.rev (List.map int_of_string (loop [] version))
+let rec parse_version ver =
+  try let i = String.index ver '.' in
+      int_of_string (String.sub ver 0 i) ::
+        parse_version (String.sub ver (i + 1) (String.length ver - i - 1))
+  with Not_found -> [int_of_string ver]
 
 let ocamlnet_version = parse_version Netconst.ocamlnet_version
 
