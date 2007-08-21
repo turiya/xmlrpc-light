@@ -30,6 +30,10 @@
     [system.getCapabilities]. To prevent their use, use [server#unregister].
 *)
 
+type param_type =
+    [ `Array | `Binary | `Boolean | `DateTime
+    | `Double | `Int | `String | `Struct ]
+
 (** {6 Base classes} *)
 
 (** Abstract base class for XmlRpc servers. *)
@@ -58,7 +62,11 @@ object
   method set_error_handler : (exn -> XmlRpc.message) -> unit
 
   (** Registers a method with the server. *)
-  method register : string -> (XmlRpc.value list -> XmlRpc.value) -> unit
+  method register :
+    string ->
+    ?help:string ->
+    ?signature:param_type list ->
+    (XmlRpc.value list -> XmlRpc.value) -> unit
 
   (** Removes a method from the server. *)
   method unregister : string -> unit

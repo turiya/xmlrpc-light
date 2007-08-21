@@ -27,6 +27,8 @@
     {i (c) 2007 Dave Benjamin}
 *)
 
+val version : string
+
 (** {6 High-level interface} *)
 
 (** Example: {[

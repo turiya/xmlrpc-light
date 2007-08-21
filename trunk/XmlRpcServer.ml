@@ -17,6 +17,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
+type param_type =
+    [ `Array
+    | `Binary
+    | `Boolean
+    | `DateTime
+    | `Double
+    | `Int
+    | `String
+    | `Struct ]
+
 let invalid_method name =
   raise
     (XmlRpc.Error
@@ -27,8 +37,13 @@ let invalid_params () =
     (XmlRpc.Error
        (-32602, "server error. invalid method parameters"))
 
-let system_get_capabilities _ =
-  `Struct
+let wrong_num_params () =
+  raise
+    (XmlRpc.Error
+       (-32602, "server error. wrong number of method parameters"))
+
+let system_get_capabilities introspection _ =
+  let capabilities = 
     [
       "system.multicall",
       `Struct
@@ -50,7 +65,20 @@ let system_get_capabilities _ =
           "specUrl", `String "http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php";
           "specVersion", `Int 20010516;
         ];
-    ]
+    ] in
+  let capabilities =
+    if introspection
+    then capabilities @
+      [
+        "introspection",
+        `Struct
+          [
+            "specUrl", `String "http://xmlrpc.usefulinc.com/doc/reserved.html";
+            "specVersion", `Int 1
+          ]
+      ]
+    else capabilities in
+  `Struct capabilities
 
 let system_list_methods methods _ =
   let names = ref [] in
@@ -58,6 +86,29 @@ let system_list_methods methods _ =
     (fun n _ -> names := `String n :: !names)
     methods;
   `Array (List.sort compare !names)
+
+let system_method_help method_help = function
+  | [`String name] ->
+      (try `String (Hashtbl.find method_help name)
+       with Not_found -> invalid_method name)
+  | _ -> invalid_params ()
+
+let system_method_signature method_signatures = function
+  | [`String name] ->
+      (try `Array (List.map
+                     (function
+                        | `Array -> `Array [`String "array"]
+                        | `Binary -> `Binary "base64"
+                        | `Boolean -> `Boolean true
+                        | `DateTime -> `DateTime (2000,1,2,12,1,2,0)
+                        | `Double -> `Double 3.1415
+                        | `Int -> `Int 42
+                        | `String -> `String "string"
+                        | `Struct -> `Struct ["struct",
+                                              `String "struct"])
+                     (Hashtbl.find method_signatures name))
+       with Not_found -> invalid_method name)
+  | _ -> invalid_params ()
 
 let system_multicall methods = function
   | [`Array calls] ->
@@ -93,10 +144,37 @@ let rec parse_version ver =
 
 let ocamlnet_version = parse_version Netconst.ocamlnet_version
 
+let check_signature signature f params =
+  match signature with
+    | [] -> f params
+    | _ :: param_types ->
+        if List.length param_types <> List.length params
+        then wrong_num_params ();
+        List.iter2
+          (fun expected actual ->
+               match (expected, actual) with
+                 | (`Array, `Array _)
+                 | (`Binary, `Binary _)
+                 | (`Boolean, `Boolean _)
+                 | (`DateTime, `DateTime _)
+                 | (`Double, `Double _)
+                 | (`Int, `Int _)
+                 | (`String, `String _)
+                 | (`Struct, `Struct _)
+                     -> ()
+                 | _ -> invalid_params ())
+          param_types
+          params;
+        f params
+
 class virtual base =
 object (self)
   val methods =
     (Hashtbl.create 0 : (string, XmlRpc.value list -> XmlRpc.value) Hashtbl.t)
+  val method_help =
+    (Hashtbl.create 0 : (string, string) Hashtbl.t)
+  val method_signatures =
+    (Hashtbl.create 0 : (string, param_type list) Hashtbl.t)
 
   val mutable base64_encode = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decode = fun s -> XmlRpcBase64.str_decode s
@@ -114,16 +192,49 @@ object (self)
 
   method set_error_handler f = error_handler <- f
 
-  method register name f =
-    Hashtbl.replace methods name f
+  method register name ?(help="") ?(signature=[]) f =
+    if help <> ""
+    then (Hashtbl.replace method_help name help;
+          self#enable_introspection ());
+    if signature <> []
+    then (Hashtbl.replace method_signatures name signature;
+          self#enable_introspection ());
+    Hashtbl.replace methods name (if signature <> []
+                                  then check_signature signature f
+                                  else f)
 
   method unregister name =
     Hashtbl.remove methods name
 
   method virtual run : unit -> unit
 
+  val mutable introspection = false
+
+  method private enable_introspection () =
+    if not introspection
+    then
+      begin
+        introspection <- true;
+        self#register "system.getCapabilities"
+          ~help:"Returns a struct describing the XML-RPC specifications supported by this server"
+          ~signature:[`Struct]
+          (system_get_capabilities true);
+        self#register "system.listMethods"
+          ~help:"Returns an array of available methods on this server"
+          ~signature:[`Array]
+          (system_list_methods methods);
+        self#register "system.methodHelp"
+          ~help:"Returns a documentation string for the specified method"
+          ~signature:[`String; `String]
+          (system_method_help method_help);
+        self#register "system.methodSignature"
+          ~help:"Returns an array describing the return type and required parameters of a method"
+          ~signature:[`Array; `String]
+          (system_method_signature method_signatures);
+      end
+
   initializer
-    self#register "system.getCapabilities" system_get_capabilities;
+    self#register "system.getCapabilities" (system_get_capabilities false);
     self#register "system.listMethods" (system_list_methods methods);
     self#register "system.multicall" (system_multicall methods);
 end
