@@ -176,19 +176,19 @@ object (self)
   val method_signatures =
     (Hashtbl.create 0 : (string, param_type list) Hashtbl.t)
 
-  val mutable base64_encode = fun s -> XmlRpcBase64.str_encode s
-  val mutable base64_decode = fun s -> XmlRpcBase64.str_decode s
+  val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
+  val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
 
-  val mutable datetime_encode = XmlRpc.iso8601_of_datetime
-  val mutable datetime_decode = XmlRpc.datetime_of_iso8601
+  val mutable datetime_encoder = XmlRpc.iso8601_of_datetime
+  val mutable datetime_decoder = XmlRpc.datetime_of_iso8601
 
   val mutable error_handler = XmlRpc.default_error_handler
 
-  method set_base64_encode f = base64_encode <- f
-  method set_base64_decode f = base64_decode <- f
+  method set_base64_encoder f = base64_encoder <- f
+  method set_base64_decoder f = base64_decoder <- f
 
-  method set_datetime_encode f = datetime_encode <- f
-  method set_datetime_decode f = datetime_decode <- f
+  method set_datetime_encoder f = datetime_encoder <- f
+  method set_datetime_decoder f = datetime_decoder <- f
 
   method set_error_handler f = error_handler <- f
 
@@ -255,8 +255,8 @@ object (self)
           let input = cgi#argument_value "BODY" in
           let output =
             XmlRpc.serve
-              ~base64_encode ~base64_decode
-              ~datetime_encode ~datetime_decode
+              ~base64_encoder ~base64_decoder
+              ~datetime_encoder ~datetime_decoder
               ~error_handler
               (fun name ->
                  try Hashtbl.find methods name
@@ -292,8 +292,8 @@ object (self)
           let input = cgi#argument_value "BODY" in
           let output =
             XmlRpc.serve
-              ~base64_encode ~base64_decode
-              ~datetime_encode ~datetime_decode
+              ~base64_encoder ~base64_decoder
+              ~datetime_encoder ~datetime_decoder
               ~error_handler
               (fun name ->
                  try Hashtbl.find methods name
