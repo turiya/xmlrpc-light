@@ -43,17 +43,17 @@ object
   val methods : (string, XmlRpc.value list -> XmlRpc.value) Hashtbl.t
 
   (** Sets an alternate Base-64 binary encoding function. *)
-  method set_base64_encode : (string -> string) -> unit
+  method set_base64_encoder : (string -> string) -> unit
 
   (** Sets an alternate Base-64 binary decoding function. *)
-  method set_base64_decode : (string -> string) -> unit
+  method set_base64_decoder : (string -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time encoding function. *)
-  method set_datetime_encode :
+  method set_datetime_encoder :
     (int * int * int * int * int * int * int -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time decoding function. *)
-  method set_datetime_decode :
+  method set_datetime_decoder :
     (string -> int * int * int * int * int * int * int) -> unit
 
   (** Sets an alternate handler for unhandled exceptions.

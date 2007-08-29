@@ -93,16 +93,16 @@ object
   method set_debug : bool -> unit
 
   (** Sets an alternate Base-64 binary encoding function. *)
-  method set_base64_encode : (string -> string) -> unit
+  method set_base64_encoder : (string -> string) -> unit
 
   (** Sets an alternate Base-64 binary decoding function. *)
-  method set_base64_decode : (string -> string) -> unit
+  method set_base64_decoder : (string -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time encoding function. *)
-  method set_datetime_encode : (int * int * int * int * int * int * int -> string) -> unit
+  method set_datetime_encoder : (int * int * int * int * int * int * int -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time decoding function. *)
-  method set_datetime_decode : (string -> int * int * int * int * int * int * int) -> unit
+  method set_datetime_decoder : (string -> int * int * int * int * int * int * int) -> unit
 
   (** [call name params] invokes an XmlRpc method and returns the result,
       or raises {!XmlRpc.Error} on error. *)
@@ -139,26 +139,26 @@ type message =
 
 (** Converts an Xml Light element to an XmlRpc message. *)
 val message_of_xml_element :
-  ?base64_decode:(string -> string) ->
-  ?datetime_decode:(string -> int * int * int * int * int * int * int) ->
+  ?base64_decoder:(string -> string) ->
+  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
   Xml.xml -> message
 
 (** Converts an XmlRpc message to an Xml Light element. *)
 val xml_element_of_message :
-  ?base64_encode:(string -> string) ->
-  ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
+  ?base64_encoder:(string -> string) ->
+  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
   message -> Xml.xml
 
 (** Converts an Xml Light element to an XmlRpc value. *)
 val value_of_xml_element :
-  ?base64_decode:(string -> string) ->
-  ?datetime_decode:(string -> int * int * int * int * int * int * int) ->
+  ?base64_decoder:(string -> string) ->
+  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
   Xml.xml -> value
 
 (** Converts an XmlRpc value to an Xml Light element. *)
 val xml_element_of_value :
-  ?base64_encode:(string -> string) ->
-  ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
+  ?base64_encoder:(string -> string) ->
+  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
   value -> Xml.xml
 
 (** {6 Server tools} *)
@@ -183,10 +183,10 @@ val xml_element_of_value :
     For a full-featured, easy-to-use, network-capable server implementation,
     see the {!XmlRpcServer} module. *)
 val serve :
-  ?base64_encode:(string -> string) ->
-  ?base64_decode:(string -> string) ->
-  ?datetime_encode:(int * int * int * int * int * int * int -> string) ->
-  ?datetime_decode:(string -> int * int * int * int * int * int * int) ->
+  ?base64_encoder:(string -> string) ->
+  ?base64_decoder:(string -> string) ->
+  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
+  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
   ?error_handler:(exn -> message) ->
   (string -> value list -> value) -> string -> string
 

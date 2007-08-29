@@ -90,8 +90,8 @@ let rec dump = function
   | `DateTime data -> iso8601_of_datetime data
 
 let rec xml_element_of_value
-    ?(base64_encode=fun s -> XmlRpcBase64.str_encode s)
-    ?(datetime_encode=iso8601_of_datetime)
+    ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
+    ?(datetime_encoder=iso8601_of_datetime)
     value =
   Xml.Element
     (match value with
@@ -100,7 +100,7 @@ let rec xml_element_of_value
        | `Boolean data -> ("boolean", [], [Xml.PCData
                                              (if data then "1" else "0")])
        | `Double data -> ("double", [], [Xml.PCData (string_of_float data)])
-       | `Binary data -> ("base64", [], [Xml.PCData (base64_encode data)])
+       | `Binary data -> ("base64", [], [Xml.PCData (base64_encoder data)])
        | `Array data ->
            ("array", [], [Xml.Element
                             ("data", [],
@@ -108,8 +108,8 @@ let rec xml_element_of_value
                                (fun item ->
                                   Xml.Element ("value", [],
                                                [xml_element_of_value
-                                                  ~base64_encode
-                                                  ~datetime_encode
+                                                  ~base64_encoder
+                                                  ~datetime_encoder
                                                   item]))
                                data)])
        | `Struct data ->
@@ -121,17 +121,17 @@ let rec xml_element_of_value
                     [Xml.Element ("name", [], [Xml.PCData name]);
                      Xml.Element ("value", [],
                                   [xml_element_of_value
-                                     ~base64_encode
-                                     ~datetime_encode
+                                     ~base64_encoder
+                                     ~datetime_encoder
                                      value])]))
               data)
        | `DateTime data ->
            ("dateTime.iso8601", [],
-            [Xml.PCData (datetime_encode data)]))
+            [Xml.PCData (datetime_encoder data)]))
 
 let rec value_of_xml_element
-    ?(base64_decode=fun s -> XmlRpcBase64.str_decode s)
-    ?(datetime_decode=datetime_of_iso8601)
+    ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
+    ?(datetime_decoder=datetime_of_iso8601)
     = function
       | Xml.Element ("string", [], []) -> `String ""
       | Xml.Element ("string", [], [Xml.PCData data]) -> `String data
@@ -144,7 +144,7 @@ let rec value_of_xml_element
           `Double (float_of_string data)
       | Xml.Element ("base64", [], []) -> `Binary ""
       | Xml.Element ("base64", [], [Xml.PCData data]) ->
-          `Binary (base64_decode data)
+          `Binary (base64_decoder data)
       | Xml.Element ("array", [], [Xml.Element ("data", [], data)]) ->
           `Array
             (safe_map
@@ -154,8 +154,8 @@ let rec value_of_xml_element
                       `String ""
                   | Xml.Element ("value", [], [value]) ->
                       value_of_xml_element
-                        ~base64_decode
-                        ~datetime_decode
+                        ~base64_decoder
+                        ~datetime_decoder
                         value
                   | _ -> invalid_xmlrpc ())
                data)
@@ -173,33 +173,33 @@ let rec value_of_xml_element
                                   Xml.Element ("value", [], [value])]) ->
                       (name,
                        value_of_xml_element
-                         ~base64_decode
-                         ~datetime_decode
+                         ~base64_decoder
+                         ~datetime_decoder
                          value)
                   | _ -> invalid_xmlrpc ())
                members)
       | Xml.Element ("dateTime:iso8601", [], [Xml.PCData data]) ->
           (* The colon above is intentional. (See fix_dotted_tags.) *)
-          `DateTime (datetime_decode data)
+          `DateTime (datetime_decoder data)
       | Xml.PCData data ->
           (* Untyped data is assumed to be a string. *)
           `String data
       | _ -> invalid_xmlrpc ()
 
 let xml_element_of_message
-    ?(base64_encode=fun s -> XmlRpcBase64.str_encode s)
-    ?(datetime_encode=iso8601_of_datetime)
+    ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
+    ?(datetime_encoder=iso8601_of_datetime)
     message =
   let make_param param =
     Xml.Element ("param", [],
                  [Xml.Element ("value", [],
                                [xml_element_of_value
-                                  ~base64_encode
-                                  ~datetime_encode
+                                  ~base64_encoder
+                                  ~datetime_encoder
                                   param])]) in
   let make_fault code string =
     Xml.Element ("value", [],
-                 [xml_element_of_value ~base64_encode ~datetime_encode
+                 [xml_element_of_value ~base64_encoder ~datetime_encoder
                     (`Struct ["faultCode", `Int code;
                               "faultString", `String string])]) in
   match message with
@@ -217,8 +217,8 @@ let xml_element_of_message
                      [Xml.Element ("fault", [], [make_fault code string])])
 
 let message_of_xml_element
-    ?(base64_decode=fun s -> XmlRpcBase64.str_decode s)
-    ?(datetime_decode=datetime_of_iso8601)
+    ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
+    ?(datetime_decoder=datetime_of_iso8601)
     xml_element =
   let parse_params params =
     safe_map
@@ -228,12 +228,12 @@ let message_of_xml_element
              `String ""
          | Xml.Element ("param", [], 
                         [Xml.Element ("value", [], [element])]) ->
-             value_of_xml_element ~base64_decode ~datetime_decode element
+             value_of_xml_element ~base64_decoder ~datetime_decoder element
          | _ -> invalid_xmlrpc ())
       params in
   let parse_fault = function
     | [Xml.Element ("value", [], [element])] ->
-        (match value_of_xml_element ~base64_decode ~datetime_decode element
+        (match value_of_xml_element ~base64_decoder ~datetime_decoder element
          with
            | `Struct ["faultCode", `Int code;
                       "faultString", `String string]
@@ -272,11 +272,11 @@ object (self)
   val mutable useragent = "OCaml " ^ Sys.ocaml_version
   val mutable debug = false
 
-  val mutable base64_encode = fun s -> XmlRpcBase64.str_encode s
-  val mutable base64_decode = fun s -> XmlRpcBase64.str_decode s
+  val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
+  val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
 
-  val mutable datetime_encode = iso8601_of_datetime
-  val mutable datetime_decode = datetime_of_iso8601
+  val mutable datetime_encoder = iso8601_of_datetime
+  val mutable datetime_decoder = datetime_of_iso8601
 
   method url = url
   method useragent = useragent
@@ -284,17 +284,17 @@ object (self)
   method debug = debug
   method set_debug debug' = debug <- debug'
 
-  method set_base64_encode f = base64_encode <- f
-  method set_base64_decode f = base64_decode <- f
+  method set_base64_encoder f = base64_encoder <- f
+  method set_base64_decoder f = base64_decoder <- f
 
-  method set_datetime_encode f = datetime_encode <- f
-  method set_datetime_decode f = datetime_decode <- f
+  method set_datetime_encoder f = datetime_encoder <- f
+  method set_datetime_decoder f = datetime_decoder <- f
 
   method call name params =
     let xml_element =
       xml_element_of_message
-        ~base64_encode
-        ~datetime_encode
+        ~base64_encoder
+        ~datetime_encoder
         (MethodCall (name, params)) in
     let xml = Xml.to_string_fmt xml_element in
     if debug then print_endline xml;
@@ -310,8 +310,8 @@ object (self)
           if debug then print_endline contents;
           fix_dotted_tags contents;
           (match (message_of_xml_element
-                    ~base64_decode
-                    ~datetime_decode
+                    ~base64_decoder
+                    ~datetime_decoder
                     (Xml.parse_string contents))
            with
              | MethodResponse value -> value
@@ -383,10 +383,10 @@ let quiet_error_handler e =
   raise e
 
 let serve
-    ?(base64_encode=fun s -> XmlRpcBase64.str_encode s)
-    ?(base64_decode=fun s -> XmlRpcBase64.str_decode s)
-    ?(datetime_encode=iso8601_of_datetime)
-    ?(datetime_decode=datetime_of_iso8601)
+    ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
+    ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
+    ?(datetime_encoder=iso8601_of_datetime)
+    ?(datetime_decoder=datetime_of_iso8601)
     ?(error_handler=default_error_handler)
     f s =
   try
@@ -395,15 +395,15 @@ let serve
         begin
           fix_dotted_tags s;
           match (message_of_xml_element
-                   ~base64_decode
-                   ~datetime_decode
+                   ~base64_decoder
+                   ~datetime_decoder
                    (Xml.parse_string s))
           with
             | MethodCall (name, params) ->
                 Xml.to_string_fmt
                   (xml_element_of_message
-                     ~base64_encode
-                     ~datetime_encode
+                     ~base64_encoder
+                     ~datetime_encoder
                      (try MethodResponse (f name params) with
                         | Error _ as e -> raise e
                         | e -> error_handler e))
