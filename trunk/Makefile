@@ -9,5 +9,6 @@ DOC_FILES = XmlRpc.mli XmlRpcServer.mli XmlRpcBase64.mli
 
 all: native-code-library byte-code-library
 install: libinstall
+uninstall: libuninstall
 
 include $(OCAMLMAKEFILE)
