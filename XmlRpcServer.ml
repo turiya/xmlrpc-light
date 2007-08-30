@@ -263,6 +263,7 @@ object (self)
                  with Not_found -> invalid_method name)
               input in
           cgi#set_header ~content_type:"text/xml" ();
+          cgi#output#output_string "<?xml version=\"1.0\"?>\n";
           cgi#output#output_string output;
           cgi#output#commit_work ()
       | _ ->
@@ -301,7 +302,8 @@ object (self)
               input in
           if ocamlnet_version < [2; 2; 8]
           then env#send_output_header ()
-          else cgi#set_header ~content_type:"text/xml" ();
+          else (cgi#set_header ~content_type:"text/xml" ();
+                cgi#output#output_string "<?xml version=\"1.0\"?>\n");
           cgi#output#output_string output;
           cgi#output#commit_work ()
       | _ ->
