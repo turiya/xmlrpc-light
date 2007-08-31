@@ -66,6 +66,7 @@ type value =
 
 (** Class for XmlRpc clients. Takes a single argument, the Url. *)
 class client :
+  ?debug:bool ->
   string ->
 object
   (** Url of the remote XmlRpc server. *)

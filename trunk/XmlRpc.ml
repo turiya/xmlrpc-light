@@ -266,11 +266,11 @@ let fix_dotted_tags s =
       | _ -> ()
   done
 
-class client url =
+class client ?(debug=false) url =
 object (self)
   val url = url
-  val mutable useragent = "OCaml " ^ Sys.ocaml_version
-  val mutable debug = false
+  val mutable useragent = "XmlRpc-Light/" ^ version
+  val mutable debug = debug
 
   val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
@@ -296,18 +296,58 @@ object (self)
         ~base64_encoder
         ~datetime_encoder
         (MethodCall (name, params)) in
-    let xml = Xml.to_string_fmt xml_element in
-    if debug then print_endline xml;
+
+    let xml =
+      "<?xml version=\"1.0\"?>\n"
+      ^ Xml.to_string_fmt xml_element in
+
+    let parsed_url = Neturl.parse_url url in
+    let basic_auth =
+      try
+        Some (Neturl.url_user parsed_url,
+              Neturl.url_password parsed_url)
+      with Not_found ->
+        None in
+    let url =
+      Neturl.string_of_url
+        (Neturl.remove_from_url ~user:true ~password:true parsed_url) in
+
     let call = new Http_client.post_raw url xml in
     call#set_req_header "User-Agent" useragent;
     call#set_req_header "Content-Type" "text/xml";
+
+    begin
+      match basic_auth with
+        | Some (user, password) ->
+            call#set_req_header "Authorization"
+              ("Basic " ^
+                 Netencoding.Base64.encode (user ^ ":" ^ password))
+        | None -> ()
+    end;
+
     let pipeline = new Http_client.pipeline in
+    pipeline#set_proxy_from_environment ();
+
+    if debug then
+      begin
+        let opt = pipeline#get_options in
+        pipeline#set_options
+          {opt with Http_client.
+             verbose_status = true;
+             verbose_request_header = true;
+             verbose_response_header = true;
+             verbose_request_contents = true;
+             verbose_response_contents = true;
+             verbose_connection = true;
+          }
+      end;
+
     pipeline#add call;
     pipeline#run ();
+
     match call#status with
       | `Successful ->
           let contents = call#get_resp_body () in
-          if debug then print_endline contents;
           fix_dotted_tags contents;
           (match (message_of_xml_element
                     ~base64_decoder
