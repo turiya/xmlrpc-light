@@ -67,6 +67,8 @@ type value =
 (** Class for XmlRpc clients. Takes a single argument, the Url. *)
 class client :
   ?debug:bool ->
+  ?timeout:float ->
+  ?useragent:string ->
   string ->
 object
   (** Url of the remote XmlRpc server. *)
@@ -81,17 +83,23 @@ object
   (** Gets [url]. *)
   method url : string
 
-  (** Gets [useragent]. *)
-  method useragent : string
-
-  (** Sets [useragent]. *)
-  method set_useragent : string -> unit
-
   (** Gets [debug]. *)
   method debug : bool
 
   (** Sets [debug]. *)
   method set_debug : bool -> unit
+
+  (** Gets [timeout]. *)
+  method timeout : float
+
+  (** Sets [timeout]. *)
+  method set_timeout : float -> unit
+
+  (** Gets [useragent]. *)
+  method useragent : string
+
+  (** Sets [useragent]. *)
+  method set_useragent : string -> unit
 
   (** Sets an alternate Base-64 binary encoding function. *)
   method set_base64_encoder : (string -> string) -> unit

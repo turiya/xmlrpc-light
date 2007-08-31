@@ -266,11 +266,17 @@ let fix_dotted_tags s =
       | _ -> ()
   done
 
-class client ?(debug=false) url =
+class client
+  ?(debug=false)
+  ?(timeout=300.0)
+  ?(useragent="XmlRpc-Light/" ^ version)
+  url =
 object (self)
   val url = url
-  val mutable useragent = "XmlRpc-Light/" ^ version
+
   val mutable debug = debug
+  val mutable timeout = timeout
+  val mutable useragent = useragent
 
   val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
@@ -279,10 +285,13 @@ object (self)
   val mutable datetime_decoder = datetime_of_iso8601
 
   method url = url
-  method useragent = useragent
-  method set_useragent useragent' = useragent <- useragent'
+
   method debug = debug
   method set_debug debug' = debug <- debug'
+  method timeout = timeout
+  method set_timeout timeout' = timeout <- timeout'
+  method useragent = useragent
+  method set_useragent useragent' = useragent <- useragent'
 
   method set_base64_encoder f = base64_encoder <- f
   method set_base64_decoder f = base64_decoder <- f
@@ -327,6 +336,12 @@ object (self)
 
     let pipeline = new Http_client.pipeline in
     pipeline#set_proxy_from_environment ();
+
+    let opt = pipeline#get_options in
+    pipeline#set_options
+      {opt with Http_client.
+         connection_timeout = timeout;
+      };
 
     if debug then
       begin
