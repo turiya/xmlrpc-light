@@ -64,21 +64,28 @@ type value =
     | `String of string
     | `Struct of (string * value) list ]
 
-(** Class for XmlRpc clients. Takes a single argument, the Url. *)
+(** Class for XmlRpc clients. Takes a single mandatory argument, the Url. *)
 class client :
   ?debug:bool ->
   ?timeout:float ->
   ?useragent:string ->
+  ?insecure_ssl:bool ->
   string ->
 object
   (** Url of the remote XmlRpc server. *)
   val url : string
 
+  (** If true, Xml messages will be printed to standard output. *)
+  val mutable debug : bool
+
+  (** Maximum time to wait for a request to complete, in seconds. *)
+  val mutable timeout : float
+
   (** User-agent to send in request headers. *)
   val mutable useragent : string
 
-  (** If true, Xml messages will be printed to standard output. *)
-  val mutable debug : bool
+  (** If true, SSL will be allowed even if the certificate is self-signed. *)
+  val mutable insecure_ssl : bool
 
   (** Gets [url]. *)
   method url : string
@@ -100,6 +107,12 @@ object
 
   (** Sets [useragent]. *)
   method set_useragent : string -> unit
+
+  (** Gets [insecure_ssl]. *)
+  method insecure_ssl : bool
+
+  (** Sets [insecure_ssl]. *)
+  method set_insecure_ssl : bool -> unit
 
   (** Sets an alternate Base-64 binary encoding function. *)
   method set_base64_encoder : (string -> string) -> unit

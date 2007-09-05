@@ -285,6 +285,7 @@ class client
   ?(debug=false)
   ?(timeout=300.0)
   ?(useragent="XmlRpc-Light/" ^ version)
+  ?(insecure_ssl=false)
   url =
 object (self)
   val url = url
@@ -292,6 +293,7 @@ object (self)
   val mutable debug = debug
   val mutable timeout = timeout
   val mutable useragent = useragent
+  val mutable insecure_ssl = insecure_ssl
 
   val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
@@ -307,6 +309,8 @@ object (self)
   method set_timeout timeout' = timeout <- timeout'
   method useragent = useragent
   method set_useragent useragent' = useragent <- useragent'
+  method insecure_ssl = insecure_ssl
+  method set_insecure_ssl insecure_ssl' = insecure_ssl <- insecure_ssl'
 
   method set_base64_encoder f = base64_encoder <- f
   method set_base64_decoder f = base64_decoder <- f
@@ -332,12 +336,12 @@ object (self)
           String.concat " "
             ["curl";
              "--user-agent"; "\"" ^ useragent ^ "\"";
+             "--header"; "\"Content-Type: text/xml\"";
              "--connect-timeout"; string_of_float timeout;
              "--fail";
-             "--insecure";              (* todo: make me optional *)
              if debug then "--verbose" else "--silent";
+             if insecure_ssl then "--insecure" else "";
              "--data-binary"; "@-";
-             "--header"; "\"Content-Type: text/xml\"";
              url] in
 
         if debug then (print_endline command; print_endline xml);
