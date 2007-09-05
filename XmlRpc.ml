@@ -266,6 +266,21 @@ let fix_dotted_tags s =
       | _ -> ()
   done
 
+let pipe_process command data =
+  let (in_channel, out_channel) = Unix.open_process command in
+  output_string out_channel data;
+  close_out out_channel;
+  let buffer_size = 2048 in
+  let buffer = Buffer.create buffer_size in
+  let string = String.create buffer_size in
+  let chars_read = ref 1 in
+  while !chars_read <> 0 do
+    chars_read := input in_channel string 0 buffer_size;
+    Buffer.add_substring buffer string 0 !chars_read
+  done;
+  let status = Unix.close_process (in_channel, out_channel) in
+  (status, Buffer.contents buffer)
+
 class client
   ?(debug=false)
   ?(timeout=300.0)
@@ -310,78 +325,120 @@ object (self)
       "<?xml version=\"1.0\"?>\n"
       ^ Xml.to_string_fmt xml_element in
 
-    let parsed_url = Neturl.parse_url url in
-    let basic_auth =
-      try
-        Some (Neturl.url_user parsed_url,
-              Neturl.url_password parsed_url)
-      with Not_found ->
-        None in
-    let url =
-      Neturl.string_of_url
-        (Neturl.remove_from_url ~user:true ~password:true parsed_url) in
-
-    let call = new Http_client.post_raw url xml in
-    call#set_req_header "User-Agent" useragent;
-    call#set_req_header "Content-Type" "text/xml";
-
-    begin
-      match basic_auth with
-        | Some (user, password) ->
-            call#set_req_header "Authorization"
-              ("Basic " ^
-                 Netencoding.Base64.encode (user ^ ":" ^ password))
-        | None -> ()
-    end;
-
-    let pipeline = new Http_client.pipeline in
-    pipeline#set_proxy_from_environment ();
-
-    let opt = pipeline#get_options in
-    pipeline#set_options
-      {opt with Http_client.
-         connection_timeout = timeout;
-      };
-
-    if debug then
+    if String.length url >= 5 && String.sub url 0 5 = "https"
+    then
       begin
+        let command =
+          String.concat " "
+            ["curl";
+             "--user-agent"; "\"" ^ useragent ^ "\"";
+             "--connect-timeout"; string_of_float timeout;
+             "--fail";
+             "--insecure";              (* todo: make me optional *)
+             if debug then "--verbose" else "--silent";
+             "--data-binary"; "@-";
+             "--header"; "\"Content-Type: text/xml\"";
+             url] in
+
+        if debug then (print_endline command; print_endline xml);
+        let (status, contents) = pipe_process command xml in
+
+        match status with
+          | Unix.WEXITED 0 ->
+              if debug then print_endline contents;
+              fix_dotted_tags contents;
+              (match (message_of_xml_element
+                        ~base64_decoder
+                        ~datetime_decoder
+                        (Xml.parse_string contents))
+               with
+                 | MethodResponse value -> value
+                 | Fault (code, string) -> raise (Error (code, string))
+                 | _ -> invalid_xmlrpc ())
+          | Unix.WEXITED 22 ->
+              raise (Error (-32300, "transport error. client error"))
+          | Unix.WEXITED code ->
+              (if debug then Printf.printf "Received exit code %d\n" code);
+              raise (Error (-32300, "transport error. protocol error"))
+          | Unix.WSIGNALED _
+          | Unix.WSTOPPED _ ->
+              raise (Error (-32300, "transport error. client error"))
+      end
+    else
+      begin
+        let parsed_url = Neturl.parse_url url in
+        let basic_auth =
+          try
+            Some (Neturl.url_user parsed_url,
+                  Neturl.url_password parsed_url)
+          with Not_found ->
+            None in
+        let url =
+          Neturl.string_of_url
+            (Neturl.remove_from_url ~user:true ~password:true parsed_url) in
+
+        let call = new Http_client.post_raw url xml in
+        call#set_req_header "User-Agent" useragent;
+        call#set_req_header "Content-Type" "text/xml";
+
+        begin
+          match basic_auth with
+            | Some (user, password) ->
+                call#set_req_header "Authorization"
+                  ("Basic " ^
+                     Netencoding.Base64.encode (user ^ ":" ^ password))
+            | None -> ()
+        end;
+
+        let pipeline = new Http_client.pipeline in
+        pipeline#set_proxy_from_environment ();
+
         let opt = pipeline#get_options in
         pipeline#set_options
           {opt with Http_client.
-             verbose_status = true;
-             verbose_request_header = true;
-             verbose_response_header = true;
-             verbose_request_contents = true;
-             verbose_response_contents = true;
-             verbose_connection = true;
-          }
-      end;
+             connection_timeout = timeout;
+          };
 
-    pipeline#add call;
-    pipeline#run ();
+        if debug then
+          begin
+            let opt = pipeline#get_options in
+            pipeline#set_options
+              {opt with Http_client.
+                 verbose_status = true;
+                 verbose_request_header = true;
+                 verbose_response_header = true;
+                 verbose_request_contents = true;
+                 verbose_response_contents = true;
+                 verbose_connection = true;
+              }
+          end;
 
-    match call#status with
-      | `Successful ->
-          let contents = call#get_resp_body () in
-          fix_dotted_tags contents;
-          (match (message_of_xml_element
-                    ~base64_decoder
-                    ~datetime_decoder
-                    (Xml.parse_string contents))
-           with
-             | MethodResponse value -> value
-             | Fault (code, string) -> raise (Error (code, string))
-             | _ -> invalid_xmlrpc ())
-      | `Client_error ->
-          raise (Error (-32300, "transport error. client error"))
-      | `Http_protocol_error e ->
-          raise (Error (-32300, "transport error. protocol error"))
-      | `Redirection ->
-          raise (Error (-32300, "transport error. redirected"))
-      | `Server_error ->
-          raise (Error (-32300, "transport error. server error"))
-      | `Unserved ->
-          assert false
+        pipeline#add call;
+        pipeline#run ();
+
+        match call#status with
+          | `Successful ->
+              let contents = call#get_resp_body () in
+              fix_dotted_tags contents;
+              (match (message_of_xml_element
+                        ~base64_decoder
+                        ~datetime_decoder
+                        (Xml.parse_string contents))
+               with
+                 | MethodResponse value -> value
+                 | Fault (code, string) -> raise (Error (code, string))
+                 | _ -> invalid_xmlrpc ())
+          | `Client_error ->
+              raise (Error (-32300, "transport error. client error"))
+          | `Http_protocol_error e ->
+              raise (Error (-32300, "transport error. protocol error"))
+          | `Redirection ->
+              raise (Error (-32300, "transport error. redirected"))
+          | `Server_error ->
+              raise (Error (-32300, "transport error. server error"))
+          | `Unserved ->
+              assert false
+      end
 end
 
 class multicall (client : client) =
