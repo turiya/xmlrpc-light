@@ -301,7 +301,16 @@ object (self)
   val mutable datetime_encoder = iso8601_of_datetime
   val mutable datetime_decoder = datetime_of_iso8601
 
-  method url = url
+  method url =
+    let parsed_url = Neturl.parse_url url in
+    try
+      let password = Neturl.url_password parsed_url in
+      Neturl.string_of_url
+        (Neturl.modify_url
+           ~password:(String.make (String.length password) '.')
+           parsed_url)
+    with Not_found ->
+      url
 
   method debug = debug
   method set_debug debug' = debug <- debug'
