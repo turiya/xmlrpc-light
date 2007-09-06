@@ -204,7 +204,9 @@ object (self)
                                   else f)
 
   method unregister name =
-    Hashtbl.remove methods name
+    Hashtbl.remove methods name;
+    Hashtbl.remove method_help name;
+    Hashtbl.remove method_signatures name
 
   method virtual run : unit -> unit
 
