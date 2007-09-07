@@ -268,18 +268,22 @@ let fix_dotted_tags s =
 
 let pipe_process command data =
   let (in_channel, out_channel) = Unix.open_process command in
-  output_string out_channel data;
-  close_out out_channel;
-  let buffer_size = 2048 in
-  let buffer = Buffer.create buffer_size in
-  let string = String.create buffer_size in
-  let chars_read = ref 1 in
-  while !chars_read <> 0 do
-    chars_read := input in_channel string 0 buffer_size;
-    Buffer.add_substring buffer string 0 !chars_read
-  done;
-  let status = Unix.close_process (in_channel, out_channel) in
-  (status, Buffer.contents buffer)
+  try
+    output_string out_channel data;
+    close_out out_channel;
+    let buffer_size = 2048 in
+    let buffer = Buffer.create buffer_size in
+    let string = String.create buffer_size in
+    let chars_read = ref 1 in
+    while !chars_read <> 0 do
+      chars_read := input in_channel string 0 buffer_size;
+      Buffer.add_substring buffer string 0 !chars_read
+    done;
+    let status = Unix.close_process (in_channel, out_channel) in
+    (status, Buffer.contents buffer)
+  with e ->
+    ignore (Unix.close_process (in_channel, out_channel));
+    raise e
 
 class client
   ?(debug=false)
