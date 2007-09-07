@@ -285,19 +285,34 @@ let pipe_process command data =
     ignore (Unix.close_process (in_channel, out_channel));
     raise e
 
+let shell_escape =
+  let unsafe = String.contains "\"$\\`" in
+  fun arg ->
+    let buf = Buffer.create 32 in
+    Buffer.add_char buf '"';
+    String.iter
+      (fun c ->
+         if unsafe c then Buffer.add_char buf '\\';
+         Buffer.add_char buf c)
+      arg;
+    Buffer.add_char buf '"';
+    Buffer.contents buf
+
 class client
   ?(debug=false)
+  ?(headers=[])
+  ?(insecure_ssl=false)
   ?(timeout=300.0)
   ?(useragent="XmlRpc-Light/" ^ version)
-  ?(insecure_ssl=false)
   url =
 object (self)
   val url = url
 
   val mutable debug = debug
+  val mutable headers = headers
+  val mutable insecure_ssl = insecure_ssl
   val mutable timeout = timeout
   val mutable useragent = useragent
-  val mutable insecure_ssl = insecure_ssl
 
   val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
@@ -317,13 +332,16 @@ object (self)
       url
 
   method debug = debug
-  method set_debug debug' = debug <- debug'
-  method timeout = timeout
-  method set_timeout timeout' = timeout <- timeout'
-  method useragent = useragent
-  method set_useragent useragent' = useragent <- useragent'
+  method headers = headers
   method insecure_ssl = insecure_ssl
+  method timeout = timeout
+  method useragent = useragent
+
+  method set_debug debug' = debug <- debug'
+  method set_headers headers' = headers <- headers'
   method set_insecure_ssl insecure_ssl' = insecure_ssl <- insecure_ssl'
+  method set_timeout timeout' = timeout <- timeout'
+  method set_useragent useragent' = useragent <- useragent'
 
   method set_base64_encoder f = base64_encoder <- f
   method set_base64_decoder f = base64_decoder <- f
@@ -347,15 +365,20 @@ object (self)
       begin
         let command =
           String.concat " "
-            ["curl";
-             "--user-agent"; "\"" ^ useragent ^ "\"";
-             "--header"; "\"Content-Type: text/xml\"";
-             "--connect-timeout"; string_of_float timeout;
-             "--fail";
-             if debug then "--verbose" else "--silent";
-             if insecure_ssl then "--insecure" else "";
-             "--data-binary"; "@-";
-             url] in
+            (["curl";
+              "--user-agent"; shell_escape useragent;
+              "--header"; "\"Content-Type: text/xml\""]
+             @ (List.flatten
+                  (List.map
+                     (fun (n, v) ->
+                        ["--header"; shell_escape (n ^ ": " ^ v)])
+                     headers))
+             @ ["--connect-timeout"; string_of_float timeout;
+                "--fail";
+                if debug then "--verbose" else "--silent";
+                if insecure_ssl then "--insecure" else "";
+                "--data-binary"; "@-";
+                url]) in
 
         if debug then (print_endline command; print_endline xml);
         let (status, contents) = pipe_process command xml in
@@ -397,6 +420,7 @@ object (self)
         let call = new Http_client.post_raw url xml in
         call#set_req_header "User-Agent" useragent;
         call#set_req_header "Content-Type" "text/xml";
+        List.iter (fun (n, v) -> call#set_req_header n v) headers;
 
         begin
           match basic_auth with
