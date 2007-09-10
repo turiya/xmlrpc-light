@@ -3,14 +3,16 @@ open Printf
 module StringMap = Map.Make(String)
 
 let variant_name = function
-  | `Array _ -> "`Array"
-  | `Binary _ -> "`Binary"
-  | `Boolean _ -> "`Boolean"
-  | `DateTime _ -> "`DateTime"
-  | `Double _ -> "`Double"
-  | `Int _ -> "`Int"
-  | `String _ -> "`String"
-  | `Struct _ -> "`Struct"
+  | `String "array" -> Some "`Array"
+  | `String "base64" -> Some "`Binary"
+  | `String "boolean" -> Some "`Boolean"
+  | `String "dateTime.iso8601" -> Some "`DateTime"
+  | `String "double" -> Some "`Double"
+  | `String "int" -> Some "`Int"
+  | `String "string" -> Some "`String"
+  | `String "struct" -> Some "`Struct"
+  | `String "undefined" -> None
+  | _ as it -> failwith (XmlRpc.dump it)
 
 let dot_to_underscore s =
   let s = String.copy s in
@@ -54,10 +56,10 @@ let module_map =
          else StringMap.add module_name [] acc in
        try
          match Lazy.force signature with
-           | `Array params ->
+           | `Array param_lists ->
                StringMap.add
                  module_name
-                 ((meth_name, Some params) :: StringMap.find module_name acc)
+                 ((meth_name, Some param_lists) :: StringMap.find module_name acc)
                  acc
            | _ ->
                StringMap.add
@@ -81,63 +83,96 @@ let values map =
   StringMap.iter (fun _ v -> result := v :: !result) map;
   List.rev !result
 
-let () =
-  printf "class client url =
-object (self)
-  val rpc = new XmlRpc.client url
-
-%s
-end
-"
-    (String.concat "\n"
-       (values
-          (StringMap.mapi
-             (fun module_name meths ->
-                let impls =
-                  String.concat "\n\n"
-                    (List.map
-                       (function
-                          | (name, Some params) ->
-                              let result = List.hd params in
-                              let params = Array.of_list (List.tl params) in
-                              let param_names =
-                                String.concat " "
-                                  (Array.to_list
-                                     (Array.mapi
-                                        (fun i _ ->
-                                           sprintf "p%d" i)
-                                        params)) in
-                              let param_values =
-                                String.concat "; "
-                                  (Array.to_list
-                                     (Array.mapi
-                                        (fun i param ->
-                                           sprintf "%s p%d"
-                                             (variant_name param)
-                                             i)
-                                        params)) in
-                              let result_type = variant_name result in
-                              sprintf "    method %s %s =
+let impl_with_signature module_name name =
+  function
+    | `Array params ->
+        let result = List.hd params in
+        let params = Array.of_list (List.tl params) in
+        let param_names =
+          String.concat " "
+            (Array.to_list
+               (Array.mapi
+                  (fun i _ ->
+                     sprintf "_%d" i)
+                  params)) in
+        let param_values =
+          String.concat "; "
+            (Array.to_list
+               (Array.mapi
+                  (fun i param ->
+                     match variant_name param with
+                       | Some n ->
+                           sprintf "%s _%d" n i
+                       | None ->
+                           sprintf "_%d" i)
+                  params)) in
+        (match variant_name result with
+           | Some result_type ->
+               sprintf "    method %s %s =
       match rpc#call \"%s.%s\" [%s] with
         | %s r -> r
-        | _ -> failwith \"unexpected result type\""
-                                (dot_to_underscore name)
-                                (if param_names = "" then "()" else param_names)
-                                module_name
-                                name
-                                param_values
-                                result_type
-                          | (name, None) ->
-                              sprintf "    method %s params =
+        | other -> raise (Type_error (XmlRpc.dump other))"
+                 (dot_to_underscore name)
+                 (if param_names = "" then "()" else param_names)
+                 module_name
+                 name
+                 param_values
+                 result_type
+           | None ->
+               sprintf "    method %s %s =
+      rpc#call \"%s.%s\" [%s]"
+                 (dot_to_underscore name)
+                 (if param_names = "" then "()" else param_names)
+                 module_name
+                 name
+                 param_values)
+    | _ -> failwith "method signature was not an array"
+
+let impl_without_signature module_name name =
+  sprintf "    method %s params =
       rpc#call \"%s.%s\" params"
-                                (dot_to_underscore name)
-                                module_name
-                                name)
-                       meths) in
-                sprintf "  method %s = object
+    (dot_to_underscore name)
+    module_name
+    name
+
+let impls module_name meths =
+  String.concat "\n\n"
+    (List.flatten
+       (List.map
+          (function
+             | (name, Some param_lists) ->
+                 List.map (impl_with_signature module_name name) param_lists
+             | (name, None) ->
+                 [impl_without_signature module_name name])
+          meths))
+
+let objects =
+  String.concat "\n"
+    (values
+       (StringMap.mapi
+          (fun module_name meths ->
+             sprintf "  method %s = object
 %s
   end
 "
-                  module_name
-                  impls)
-             module_map)))
+               module_name
+               (impls module_name meths))
+          module_map))
+
+let () =
+  printf "(* Automatically generated by running genclient with an
+   XML-RPC server located at the following URL:
+
+   %s
+*)
+
+exception Type_error of string
+
+class client url =
+object (self)
+  val rpc = new XmlRpc.client url
+  method rpc = rpc
+
+%s
+end
+" url objects
