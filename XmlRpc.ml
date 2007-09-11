@@ -380,12 +380,12 @@ object (self)
                 "--data-binary"; "@-";
                 url]) in
 
-        if debug then (print_endline command; print_endline xml);
+        if debug then (prerr_endline command; print_endline xml);
         let (status, contents) = pipe_process command xml in
 
         match status with
           | Unix.WEXITED 0 ->
-              if debug then print_endline contents;
+              if debug then prerr_endline contents;
               fix_dotted_tags contents;
               (match (message_of_xml_element
                         ~base64_decoder
@@ -398,7 +398,7 @@ object (self)
           | Unix.WEXITED 22 ->
               raise (Error (-32300, "transport error. client error"))
           | Unix.WEXITED code ->
-              (if debug then Printf.printf "Received exit code %d\n" code);
+              (if debug then Printf.eprintf "Received exit code %d\n" code);
               raise (Error (-32300, "transport error. protocol error"))
           | Unix.WSIGNALED _
           | Unix.WSTOPPED _ ->
