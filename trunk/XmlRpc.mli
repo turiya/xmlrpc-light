@@ -61,6 +61,7 @@ type value =
     | `DateTime of int * int * int * int * int * int * int
     | `Double of float
     | `Int of int
+    | `Int32 of int32
     | `String of string
     | `Struct of (string * value) list ]
 
