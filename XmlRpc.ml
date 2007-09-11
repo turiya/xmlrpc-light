@@ -28,6 +28,7 @@ type value =
     | `DateTime of int * int * int * int * int * int * int
     | `Double of float
     | `Int of int
+    | `Int32 of int32
     | `String of string
     | `Struct of (string * value) list ]
 
@@ -77,6 +78,7 @@ let datetime_of_iso8601 string =
 let rec dump = function
   | `String data -> data
   | `Int data -> string_of_int data
+  | `Int32 data -> Int32.to_string data
   | `Boolean data -> if data then "true" else "false"
   | `Double data -> string_of_float data
   | `Binary data -> data
@@ -97,6 +99,7 @@ let rec xml_element_of_value
     (match value with
        | `String data -> ("string", [], [Xml.PCData data])
        | `Int data -> ("int", [], [Xml.PCData (string_of_int data)])
+       | `Int32 data -> ("int", [], [Xml.PCData (Int32.to_string data)])
        | `Boolean data -> ("boolean", [], [Xml.PCData
                                              (if data then "1" else "0")])
        | `Double data -> ("double", [], [Xml.PCData (string_of_float data)])
@@ -137,7 +140,8 @@ let rec value_of_xml_element
       | Xml.Element ("string", [], [Xml.PCData data]) -> `String data
       | Xml.Element ("int", [], [Xml.PCData data])
       | Xml.Element ("i4", [], [Xml.PCData data]) ->
-          `Int (int_of_string data)
+          (try `Int (int_of_string data)
+           with Failure "int_of_string" -> `Int32 (Int32.of_string data))
       | Xml.Element ("boolean", [], [Xml.PCData data]) ->
           `Boolean (data <> "0")
       | Xml.Element ("double", [], [Xml.PCData data]) ->
