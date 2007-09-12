@@ -95,18 +95,17 @@ let system_method_help method_help = function
 
 let system_method_signature method_signatures = function
   | [`String name] ->
-      (try `Array (List.map
-                     (function
-                        | `Array -> `Array [`String "array"]
-                        | `Binary -> `Binary "base64"
-                        | `Boolean -> `Boolean true
-                        | `DateTime -> `DateTime (2000,1,2,12,1,2,0)
-                        | `Double -> `Double 3.1415
-                        | `Int -> `Int 42
-                        | `String -> `String "string"
-                        | `Struct -> `Struct ["struct",
-                                              `String "struct"])
-                     (Hashtbl.find method_signatures name))
+      (try `Array [`Array (List.map
+                             (function
+                                | `Array -> `String "array"
+                                | `Binary -> `String "base64"
+                                | `Boolean -> `String "boolean"
+                                | `DateTime -> `String "dateTime.iso8601"
+                                | `Double -> `String "double"
+                                | `Int -> `String "int"
+                                | `String -> `String "string"
+                                | `Struct -> `String "struct")
+                             (Hashtbl.find method_signatures name))]
        with Not_found -> invalid_method name)
   | _ -> invalid_params ()
 
