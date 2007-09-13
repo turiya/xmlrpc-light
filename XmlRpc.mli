@@ -49,6 +49,7 @@ exception Error of (int * string)
       (year, month, day, hour, minute, second, timezone offset in minutes)
     - [`Double]: A floating-point value
     - [`Int]: An integer
+    - [`Int32]: A 32-bit integer
     - [`String]: A string
     - [`Struct]: An association list of (name, value) pairs
 
