@@ -158,6 +158,7 @@ let check_signature signature f params =
                  | (`DateTime, `DateTime _)
                  | (`Double, `Double _)
                  | (`Int, `Int _)
+                 | (`Int, `Int32 _)
                  | (`String, `String _)
                  | (`Struct, `Struct _)
                      -> ()
