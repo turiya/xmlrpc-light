@@ -24,6 +24,11 @@ let dot_to_underscore s =
   done;
   s
 
+let () =
+  if Array.length Sys.argv < 2
+  then (printf "Usage: %s url\n" Sys.argv.(0); exit 1)
+  else ()
+
 let url = Sys.argv.(1)
 let rpc = new XmlRpc.client url
 
