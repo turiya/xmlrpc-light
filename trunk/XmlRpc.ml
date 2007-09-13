@@ -382,7 +382,7 @@ object (self)
                 if debug then "--verbose" else "--silent";
                 if insecure_ssl then "--insecure" else "";
                 "--data-binary"; "@-";
-                url]) in
+                shell_escape url]) in
 
         if debug then (prerr_endline command; print_endline xml);
         let (status, contents) = pipe_process command xml in
