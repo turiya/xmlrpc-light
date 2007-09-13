@@ -28,6 +28,10 @@
     By inheriting from {!XmlRpcServer.base}, all servers provide
     the following introspection functions by default: [system.listMethods],
     [system.getCapabilities]. To prevent their use, use [server#unregister].
+
+    Additionally, the methods [system.methodHelp] and [system.methodSignature]
+    will be made available if at least one method help or method signature is
+    provided.
 *)
 
 (** Type of parameters used in method signatures. *)
@@ -62,7 +66,17 @@ object
       {!XmlRpc.quiet_error_handler} for examples. *)
   method set_error_handler : (exn -> XmlRpc.message) -> unit
 
-  (** Registers a method with the server. *)
+  (** Registers a method with the server.
+
+      If a [help] string is specified, its contents will be returned for
+      calls to [system.methodHelp] for this method.
+
+      If [signature] is specified, this method's signature will be published
+      by [system.methodSignature] and (shallow) type-checking will be enabled
+      for calls to this method.
+
+      Signatures are of the form [return-type; param1-type; param2-type; ...]
+      where each type is an instance of the {!param_type} variant. *)
   method register :
     string ->
     ?help:string ->
