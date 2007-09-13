@@ -165,7 +165,7 @@ object
   method call : string -> value list -> value
 end
 
-(** Convenience class for system.multicall calls.
+(** Convenience class for [system.multicall] calls.
 
     Instances take an {!XmlRpc.client} as an argument: {[
         # let mc = new XmlRpc.multicall client;;
