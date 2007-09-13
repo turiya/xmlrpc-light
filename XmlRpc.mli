@@ -67,8 +67,8 @@ type value =
 
 (** Class for XmlRpc clients. Takes a single mandatory argument, [url].
 
-    If [url] is of the form "http://username:password@server.com/xmlrpc",
-    basic authentication will be used.
+    If [url] is of the form "http://username:password@...", basic
+    authentication will be used.
 
     If [url] starts with "https", Curl will be used instead of Ocamlnet.
     The "curl" command-line program must be in your path for this to work.
@@ -164,12 +164,85 @@ object
   method call : string -> value list -> value
 end
 
+(** Convenience class for system.multicall calls.
+
+    Instances take an {!XmlRpc.client} as an argument: {[
+        # let mc = new XmlRpc.multicall client;;
+        val mc : XmlRpc.multicall = <obj>
+    ]}
+    The "call" method works like [client#call], but it returns a lazy
+    value: {[
+        # let a = mc#call "demo.addTwoNumbers" [`Int 3; `Int 4];;
+        val a : XmlRpc.value Lazy.t = <lazy>
+        # let b = mc#call "demo.addTwoNumbers" [`Int 42; `String "oh noes!"];;
+        val b : XmlRpc.value Lazy.t = <lazy>
+        # let c = mc#call "demo.addTwoNumbers" [`Double 3.0; `Double 4.0];;
+        val c : XmlRpc.value Lazy.t = <lazy>
+    ]}
+    At this point, the call has not been executed yet: {[
+        # mc#executed;;
+        -- : bool = false
+    ]}
+    As soon as one of the return values is forced, the call is executed: {[
+        # Lazy.force a;;
+        -- : XmlRpc.value = `Int 7
+        # mc#executed;;
+        -- : bool = true
+    ]}
+    Once a call has been executed, this instance cannot be used to make any
+    further calls; instead, a new [multicall] instance must be created: {[
+        # mc#call "demo.addTwoNumbers" [`Int 2; `Int 2];;
+        Exception: Failure "multicall#call: already executed".
+    ]}
+    If an XmlRpc fault occurred, the exception will be thrown when the lazy
+    value is forced:
+        # Lazy.force b;;
+        Exception: XmlRpc.Error (-32602, "server error. invalid method parameters").
+    ]}
+    This will not prevent further methods from executing successfully: {[
+        # Lazy.force c;;
+        -- : XmlRpc.value = `Double 7.
+    ]}
+    It is possible for a [multicall] to be executed but not completed, for
+    example if a transport occurs. Aside from catching the exception, the
+    [completed] property indicates if the call actually went through or not: {[
+        # mc#completed;;
+        -- : bool = true
+    ]}
+    It is not necessary to use lazy values. Instead, the call can be
+    executed explicitly, and the results can be retrieved by number: {[
+        # let mc = new XmlRpc.multicall client;;
+        val mc : XmlRpc.multicall = <obj>
+        # ignore (mc#call "demo.addTwoNumbers" [`Int 2; `Int 2]);;
+        -- : unit = ()
+        # ignore (mc#call "demo.addTwoNumbers" [`Int 3; `Int 3]);;
+        -- : unit = ()
+        # mc#result 1;;
+        -- : XmlRpc.value = `Int 6
+    ]}
+*)
 class multicall : client ->
 object
+  (** Adds a call to this [multicall] instance.
+      If the call has already executed, the following exception will
+      be raised:
+      Failure "multicall#call: already executed". *)
   method call : string -> value list -> value Lazy.t
+
+  (** Forces the call to execute immediately.
+      If the call has already executed and completed successfully, the
+      following exception will be raised:
+      Failure "multicall#call: already executed". *)
   method execute : unit -> unit
+
+  (** Returns a [multicall] result, executing the call if necessary.
+      The results are numbered starting with zero. *)
   method result : int -> value
+
+  (** True if the call has executed, whether or not it succeeded. *)
   method executed : bool
+
+  (** True of the call has executed and completed successfully. *)
   method completed : bool
 end
 
