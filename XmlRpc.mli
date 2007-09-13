@@ -234,7 +234,7 @@ object
   (** Forces the call to execute immediately.
       If the call has already executed and completed successfully, the
       following exception will be raised:
-      Failure "multicall#call: already executed". *)
+      Failure "multicall#execute: already completed". *)
   method execute : unit -> unit
 
   (** Returns a [multicall] result, executing the call if necessary.
