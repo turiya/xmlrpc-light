@@ -27,6 +27,7 @@
     {i (c) 2007 Dave Benjamin}
 *)
 
+(** Version of XmlRpc-Light as a string. *)
 val version : string
 
 (** {6 High-level interface} *)
