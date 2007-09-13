@@ -182,6 +182,7 @@ let rec value_of_xml_element
                          value)
                   | _ -> invalid_xmlrpc ())
                members)
+      | Xml.Element ("dateTime.iso8601", [], [Xml.PCData data])
       | Xml.Element ("dateTime:iso8601", [], [Xml.PCData data]) ->
           (* The colon above is intentional. (See fix_dotted_tags.) *)
           `DateTime (datetime_decoder data)
