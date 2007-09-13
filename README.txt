@@ -27,7 +27,7 @@ Installation:
 
 For Debian users:
 
-    sudo apt-get install libxml-light-ocaml-dev libocamlnet-ocaml-dev
+    sudo apt-get install libxml-light-ocaml-dev libnethttpd-ocaml-dev
 
     make
     sudo make install
@@ -42,6 +42,11 @@ And then run, as usual:
 
     make
     sudo make install
+
+To uninstall XmlRpc-Light, which you will also need to do if you have
+already installed a previous version, type:
+
+    sudo make uninstall
 
 Usage:
 ------
