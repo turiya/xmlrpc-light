@@ -53,7 +53,7 @@ exception Error of (int * string)
 
     Note that base64-encoding of [`Binary] values is done automatically.
     You do not need to do the encoding yourself.
- *)
+*)
 type value =
     [ `Array of value list
     | `Binary of string
@@ -65,7 +65,29 @@ type value =
     | `String of string
     | `Struct of (string * value) list ]
 
-(** Class for XmlRpc clients. Takes a single mandatory argument, the Url. *)
+(** Class for XmlRpc clients. Takes a single mandatory argument, [url].
+
+    If [url] is of the form "http://username:password@server.com/xmlrpc",
+    basic authentication will be used.
+
+    If [url] starts with "https", Curl will be used instead of Ocamlnet.
+    The "curl" command-line program must be in your path for this to work.
+    You can use the [insecure_ssl] setting to allow connections to servers
+    with self-signed certificates; by default this is false and certificates
+    must be valid.
+
+    [timeout] can be used to specify the maximum amount of time
+    elapsed before a connection is cancelled. It defaults to 300.0 seconds.
+
+    [headers] may contain an array of (name, value) pairs of additional
+    headers to send with each request.
+
+    The [useragent] setting provides a convenient way to change the
+    User-Agent header, which defaults to "XmlRpc-Light/<version>".
+
+    The [debug] setting, if true, will enable verbose debugging output to
+    the standard error strem.
+*)
 class client :
   ?debug:bool ->
   ?headers:(string * string) list ->
@@ -77,7 +99,7 @@ object
   (** Url of the remote XmlRpc server. *)
   val url : string
 
-  (** If true, Xml messages will be printed to standard output. *)
+  (** If true, Xml messages will be printed to standard error. *)
   val mutable debug : bool
 
   (** List of custom HTTP headers to send with each request. *)
