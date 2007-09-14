@@ -475,7 +475,10 @@ object (self)
                  | Fault (code, string) -> raise (Error (code, string))
                  | _ -> invalid_xmlrpc ())
           | `Client_error ->
-              raise (Error (-32300, "transport error. client error"))
+              raise (Error (-32300, ("transport error. client error. "
+                                     ^ (string_of_int
+                                          (call#response_status_code))
+                                     ^ " " ^ call#response_status_text)))
           | `Http_protocol_error e ->
               raise (Error (-32300, "transport error. protocol error"))
           | `Redirection ->
