@@ -385,7 +385,7 @@ object (self)
                 "--data-binary"; "@-";
                 shell_escape url]) in
 
-        if debug then (prerr_endline command; print_endline xml);
+        if debug then (prerr_endline command; prerr_endline xml);
         let (status, contents) = pipe_process command xml in
 
         match status with
