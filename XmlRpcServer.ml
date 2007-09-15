@@ -43,7 +43,7 @@ let wrong_num_params () =
        (-32602, "server error. wrong number of method parameters"))
 
 let system_get_capabilities introspection _ =
-  let capabilities = 
+  let capabilities =
     [
       "system.multicall",
       `Struct
@@ -95,7 +95,10 @@ let system_method_help method_help = function
 
 let system_method_signature method_signatures = function
   | [`String name] ->
-      (try `Array [`Array (List.map
+      (try `Array (List.map
+                     (fun signature ->
+                        `Array
+                          (List.map
                              (function
                                 | `Array -> `String "array"
                                 | `Binary -> `String "base64"
@@ -105,7 +108,8 @@ let system_method_signature method_signatures = function
                                 | `Int -> `String "int"
                                 | `String -> `String "string"
                                 | `Struct -> `String "struct")
-                             (Hashtbl.find method_signatures name))]
+                             signature))
+                     (Hashtbl.find method_signatures name))
        with Not_found -> invalid_method name)
   | _ -> invalid_params ()
 
@@ -135,6 +139,46 @@ let system_multicall methods = function
            calls)
   | _ -> invalid_params ()
 
+let check_signatures signatures f params =
+  let num_params = List.length params in
+
+  let valid_num_params signature =
+    List.length signature - 1 = num_params in
+
+  let valid_params signature =
+    let passed = ref true in
+    begin
+      match signature with
+        | [] -> ()
+        | _ :: param_types ->
+            List.iter2
+              (fun expected actual ->
+                 match (expected, actual) with
+                   | (`Array, `Array _)
+                   | (`Binary, `Binary _)
+                   | (`Boolean, `Boolean _)
+                   | (`DateTime, `DateTime _)
+                   | (`Double, `Double _)
+                   | (`Int, `Int _)
+                   | (`Int, `Int32 _)
+                   | (`String, `String _)
+                   | (`Struct, `Struct _)
+                     -> ()
+                   | _ -> passed := false)
+              param_types
+              params
+    end;
+    !passed in
+
+  if signatures = []
+  then ()
+  else if not (List.exists valid_num_params signatures)
+  then wrong_num_params ()
+  else if not (List.exists valid_params signatures)
+  then invalid_params ();
+
+  f params
+
 let rec parse_version ver =
   try let i = String.index ver '.' in
       int_of_string (String.sub ver 0 i) ::
@@ -143,30 +187,6 @@ let rec parse_version ver =
 
 let ocamlnet_version = parse_version Netconst.ocamlnet_version
 
-let check_signature signature f params =
-  match signature with
-    | [] -> f params
-    | _ :: param_types ->
-        if List.length param_types <> List.length params
-        then wrong_num_params ();
-        List.iter2
-          (fun expected actual ->
-               match (expected, actual) with
-                 | (`Array, `Array _)
-                 | (`Binary, `Binary _)
-                 | (`Boolean, `Boolean _)
-                 | (`DateTime, `DateTime _)
-                 | (`Double, `Double _)
-                 | (`Int, `Int _)
-                 | (`Int, `Int32 _)
-                 | (`String, `String _)
-                 | (`Struct, `Struct _)
-                     -> ()
-                 | _ -> invalid_params ())
-          param_types
-          params;
-        f params
-
 class virtual base =
 object (self)
   val methods =
@@ -174,7 +194,7 @@ object (self)
   val method_help =
     (Hashtbl.create 0 : (string, string) Hashtbl.t)
   val method_signatures =
-    (Hashtbl.create 0 : (string, param_type list) Hashtbl.t)
+    (Hashtbl.create 0 : (string, param_type list list) Hashtbl.t)
 
   val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
@@ -192,15 +212,19 @@ object (self)
 
   method set_error_handler f = error_handler <- f
 
-  method register name ?(help="") ?(signature=[]) f =
+  method register name ?(help="") ?(signature=[]) ?(signatures=[]) f =
     if help <> ""
     then (Hashtbl.replace method_help name help;
           self#enable_introspection ());
-    if signature <> []
-    then (Hashtbl.replace method_signatures name signature;
+    let signatures =
+      if signature <> []
+      then signature :: signatures
+      else signatures in
+    if signatures <> []
+    then (Hashtbl.replace method_signatures name signatures;
           self#enable_introspection ());
-    Hashtbl.replace methods name (if signature <> []
-                                  then check_signature signature f
+    Hashtbl.replace methods name (if signatures <> []
+                                  then check_signatures signatures f
                                   else f)
 
   method unregister name =
