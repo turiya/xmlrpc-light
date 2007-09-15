@@ -197,7 +197,7 @@ end
         Exception: Failure "multicall#call: already executed".
     ]}
     If an XmlRpc fault occurred, the exception will be thrown when the lazy
-    value is forced:
+    value is forced: {[
         # Lazy.force b;;
         Exception: XmlRpc.Error (-32602, "server error. invalid method parameters").
     ]}
@@ -206,8 +206,9 @@ end
         -- : XmlRpc.value = `Double 7.
     ]}
     It is possible for a [multicall] to be executed but not completed, for
-    example if a transport occurs. Aside from catching the exception, the
-    [completed] property indicates if the call actually went through or not: {[
+    example if a transport error occurs. Aside from catching the exception,
+    the [completed] property indicates if the call actually went through
+    or not: {[
         # mc#completed;;
         -- : bool = true
     ]}
