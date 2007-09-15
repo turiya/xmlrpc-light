@@ -73,7 +73,10 @@ object
 
       If [signature] is specified, this method's signature will be published
       by [system.methodSignature] and (shallow) type-checking will be enabled
-      for calls to this method.
+      for parameters passed into this method.
+
+      Multiple signatures can be supplied via [signatures] if desired to
+      provide for overloaded methods.
 
       Signatures are of the form [return-type; param1-type; param2-type; ...]
       where each type is an instance of the {!param_type} variant. *)
