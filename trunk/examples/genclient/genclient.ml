@@ -88,7 +88,7 @@ let values map =
   StringMap.iter (fun _ v -> result := v :: !result) map;
   List.rev !result
 
-let impl_with_signature module_name name =
+let impl_with_signature module_name func_name name =
   function
     | `Array params ->
         let result = List.hd params in
@@ -117,7 +117,7 @@ let impl_with_signature module_name name =
       match rpc#call \"%s.%s\" [%s] with
         | %s r -> r
         | other -> raise (Type_error (XmlRpc.dump other))"
-                 (dot_to_underscore name)
+                 func_name
                  (if param_names = "" then "()" else param_names)
                  module_name
                  name
@@ -126,29 +126,50 @@ let impl_with_signature module_name name =
            | None ->
                sprintf "    method %s %s =
       rpc#call \"%s.%s\" [%s]"
-                 (dot_to_underscore name)
+                 func_name
                  (if param_names = "" then "()" else param_names)
                  module_name
                  name
                  param_values)
     | _ -> failwith "method signature was not an array"
 
-let impl_without_signature module_name name =
+let impl_without_signature module_name func_name name =
   sprintf "    method %s params =
       rpc#call \"%s.%s\" params"
-    (dot_to_underscore name)
+    func_name
     module_name
     name
 
 let impls module_name meths =
+  let seen_names = Hashtbl.create 0 in
+  let make_func_name name =
+    let base_name = dot_to_underscore name in
+    let func_name = ref base_name in
+    let counter = ref 1 in
+    while Hashtbl.mem seen_names !func_name do
+      incr counter;
+      func_name := base_name ^ (string_of_int !counter)
+    done;
+    Hashtbl.replace seen_names !func_name 0;
+    !func_name in
   String.concat "\n\n"
     (List.flatten
        (List.map
           (function
              | (name, Some param_lists) ->
-                 List.map (impl_with_signature module_name name) param_lists
+                 List.map
+                   (fun signature ->
+                      impl_with_signature
+                        module_name
+                        (make_func_name name)
+                        name
+                        signature)
+                   param_lists
              | (name, None) ->
-                 [impl_without_signature module_name name])
+                 [impl_without_signature
+                    module_name
+                    (make_func_name name)
+                    name])
           meths))
 
 let objects =
