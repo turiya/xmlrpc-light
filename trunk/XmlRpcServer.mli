@@ -81,6 +81,7 @@ object
     string ->
     ?help:string ->
     ?signature:param_type list ->
+    ?signatures:param_type list list ->
     (XmlRpc.value list -> XmlRpc.value) -> unit
 
   (** Removes a method from the server. *)
