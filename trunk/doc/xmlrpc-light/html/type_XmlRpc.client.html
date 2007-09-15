@@ -15,21 +15,35 @@
 <link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><title>XmlRpc.client</title>
 </head>
 <body>
-<code class="code">string&nbsp;<span class="keywordsign">-&gt;</span><br>
+<code class="code">?debug:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+?headers:(string&nbsp;*&nbsp;string)&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+?insecure_ssl:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+?timeout:float&nbsp;<span class="keywordsign">-&gt;</span><br>
+?useragent:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+string&nbsp;<span class="keywordsign">-&gt;</span><br>
 <span class="keyword">object</span><br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;<span class="keyword">mutable</span>&nbsp;debug&nbsp;:&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;<span class="keyword">mutable</span>&nbsp;headers&nbsp;:&nbsp;(string&nbsp;*&nbsp;string)&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;<span class="keyword">mutable</span>&nbsp;insecure_ssl&nbsp;:&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;<span class="keyword">mutable</span>&nbsp;timeout&nbsp;:&nbsp;float<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;url&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;<span class="keyword">mutable</span>&nbsp;useragent&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;call&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">XmlRpc</span>.value&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">XmlRpc</span>.value<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;debug&nbsp;:&nbsp;bool<br>
-&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_base64_decode&nbsp;:&nbsp;(string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
-&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_base64_encode&nbsp;:&nbsp;(string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
-&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_datetime_decode&nbsp;:<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;headers&nbsp;:&nbsp;(string&nbsp;*&nbsp;string)&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;insecure_ssl&nbsp;:&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_base64_decoder&nbsp;:&nbsp;(string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_base64_encoder&nbsp;:&nbsp;(string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_datetime_decoder&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
-&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_datetime_encode&nbsp;:<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_datetime_encoder&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;*&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_debug&nbsp;:&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_headers&nbsp;:&nbsp;(string&nbsp;*&nbsp;string)&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_insecure_ssl&nbsp;:&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_timeout&nbsp;:&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;set_useragent&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">method</span>&nbsp;timeout&nbsp;:&nbsp;float<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;url&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">method</span>&nbsp;useragent&nbsp;:&nbsp;string<br>
 <span class="keyword">end</span></code></body></html>

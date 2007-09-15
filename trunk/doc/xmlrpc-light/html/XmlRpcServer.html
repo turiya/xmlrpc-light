@@ -40,7 +40,17 @@ Example: <pre><code class="code">    let server = new XmlRpcServer.cgi () in
 
     By inheriting from <a href="XmlRpcServer.base.html"><code class="code">XmlRpcServer.base</code></a>, all servers provide
     the following introspection functions by default: <code class="code">system.listMethods</code>,
-    <code class="code">system.getCapabilities</code>. To prevent their use, use <code class="code">server#unregister</code>.<br>
+    <code class="code">system.getCapabilities</code>. To prevent their use, use <code class="code">server#unregister</code>.
+<p>
+
+    Additionally, the methods <code class="code">system.methodHelp</code> and <code class="code">system.methodSignature</code>
+    will be made available if at least one method help or method signature is
+    provided.<br>
+<pre><span class="keyword">type</span> <a name="TYPEparam_type"></a><code class="type"></code>param_type = <code class="type">[ `Array<br>       | `Binary<br>       | `Boolean<br>       | `DateTime<br>       | `Double<br>       | `Int<br>       | `String<br>       | `Struct ]</code> </pre>
+<div class="info">
+Type of parameters used in method signatures.<br>
+</div>
+
 <br>
 <a name="6_Baseclasses"></a>
 <h6>Base classes</h6><br>
