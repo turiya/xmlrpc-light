@@ -47,6 +47,23 @@ object
   (** Hashtable mapping method names to implementation functions. *)
   val methods : (string, XmlRpc.value list -> XmlRpc.value) Hashtbl.t
 
+  (** Base-64 binary encoding function. *)
+  val mutable base64_encoder : string -> string
+
+  (** Base-64 binary decoding function. *)
+  val mutable base64_decoder : string -> string
+
+  (** ISO-8601 date/time encoding function. *)
+  val mutable datetime_encoder :
+      int * int * int * int * int * int * int -> string
+
+  (** ISO-8601 date/time decoding function. *)
+  val mutable datetime_decoder :
+      string -> int * int * int * int * int * int * int
+
+  (** Handler for unhandled exceptions. *)
+  val mutable error_handler : exn -> XmlRpc.message
+
   (** Sets an alternate Base-64 binary encoding function. *)
   method set_base64_encoder : (string -> string) -> unit
 
