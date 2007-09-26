@@ -56,7 +56,7 @@ let string_of_tz_offset offset =
 let tz_offset_of_string = function
   | "" | "Z" -> 0
   | string ->
-      Scanf.sscanf string "%c%02d:%02d"
+      Scanf.sscanf string "%c%02d%_[:]%02d"
         (fun sign hour min ->
            min + hour * (if sign = '-' then -60 else 60))
 
@@ -66,7 +66,7 @@ let iso8601_of_datetime (y, m, d, h, m', s, tz_offset) =
 
 let datetime_of_iso8601 string =
   try
-    Scanf.sscanf string "%04d%02d%02dT%02d:%02d:%02d%s"
+    Scanf.sscanf string "%04d%_[-]%02d%_[-]%02d%_[T ]%02d:%02d:%02d%s"
       (fun y m d h m' s tz ->
          (y, m, d, h, m', s, (tz_offset_of_string tz)))
   with
