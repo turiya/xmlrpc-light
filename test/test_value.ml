@@ -19,14 +19,14 @@
 
 let test = "test_value" >:::
   [
-    "of_int" >: TestCase
+    "of_int" >::
       (fun () ->
          assert_equal
            ~printer:Xml.to_string
            (Xml.Element ("int", [], [Xml.PCData "42"]))
            (XmlRpc.xml_element_of_value (`Int 42)));
 
-    "to_int" >: TestCase
+    "to_int" >::
       (fun () ->
          assert_equal
            ~printer:XmlRpc.dump
@@ -34,7 +34,7 @@ let test = "test_value" >:::
            (XmlRpc.value_of_xml_element
               (Xml.Element ("int", [], [Xml.PCData "42"]))));
 
-    "to_int_i4" >: TestCase
+    "to_int_i4" >::
       (fun () ->
          assert_equal
            ~printer:XmlRpc.dump
@@ -42,14 +42,14 @@ let test = "test_value" >:::
            (XmlRpc.value_of_xml_element
               (Xml.Element ("i4", [], [Xml.PCData "42"]))));
 
-    "of_int32" >: TestCase
+    "of_int32" >::
       (fun () ->
          assert_equal
            ~printer:Xml.to_string
            (Xml.Element ("int", [], [Xml.PCData "2000000000"]))
            (XmlRpc.xml_element_of_value (`Int32 2000000000l)));
 
-    "to_int32" >: TestCase
+    "to_int32" >::
       (fun () ->
          assert_equal
            ~printer:XmlRpc.dump
@@ -57,14 +57,14 @@ let test = "test_value" >:::
            (XmlRpc.value_of_xml_element
               (Xml.Element ("int", [], [Xml.PCData "2000000000"]))));
 
-    "of_double" >: TestCase
+    "of_double" >::
       (fun () ->
          assert_equal
            ~printer:Xml.to_string
            (Xml.Element ("double", [], [Xml.PCData "42.000000001"]))
            (XmlRpc.xml_element_of_value (`Double 42.000000001)));
 
-    "to_double" >: TestCase
+    "to_double" >::
       (fun () ->
          assert_equal
            ~printer:XmlRpc.dump
@@ -72,14 +72,14 @@ let test = "test_value" >:::
            (XmlRpc.value_of_xml_element
               (Xml.Element ("double", [], [Xml.PCData "42.000000001"]))));
 
-    "of_boolean" >: TestCase
+    "of_boolean" >::
       (fun () ->
          assert_equal
            ~printer:Xml.to_string
            (Xml.Element ("boolean", [], [Xml.PCData "1"]))
            (XmlRpc.xml_element_of_value (`Boolean true)));
 
-    "to_boolean" >: TestCase
+    "to_boolean" >::
       (fun () ->
          assert_equal
            ~printer:XmlRpc.dump
@@ -87,7 +87,7 @@ let test = "test_value" >:::
            (XmlRpc.value_of_xml_element
               (Xml.Element ("boolean", [], [Xml.PCData "0"]))));
 
-    "of_string" >: TestCase
+    "of_string" >::
       (fun () ->
          assert_equal
            ~printer:Xml.to_string
@@ -96,7 +96,7 @@ let test = "test_value" >:::
            (XmlRpc.xml_element_of_value
               (`String " <&>ABCDEFG012345 \r~!@#$%^&*()\t\r\n ")));
 
-    "to_string" >: TestCase
+    "to_string" >::
       (fun () ->
          assert_equal
            ~printer:XmlRpc.dump
@@ -105,7 +105,7 @@ let test = "test_value" >:::
               (Xml.Element ("string", [],
                             [Xml.PCData " <&>ABCDEFG012345 \r~!@#$%^&*()\t\r\n "]))));
 
-    "of_binary" >: TestCase
+    "of_binary" >::
       (fun () ->
          assert_equal
            ~printer:Xml.to_string
@@ -114,7 +114,7 @@ let test = "test_value" >:::
            (XmlRpc.xml_element_of_value
               (`Binary " <&>ABCDEFG012345 \r~!@#$%^&*()\t\r\n ")));
 
-    "to_binary" >: TestCase
+    "to_binary" >::
       (fun () ->
          assert_equal
            ~printer:XmlRpc.dump
