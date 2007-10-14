@@ -40,13 +40,13 @@ let test = "test_datetime" >:::
            epoch
            (XmlRpcDateTime.to_epoch (XmlRpcDateTime.of_epoch epoch)));
 
-    "epoch_gmt" >::
+    "epoch_utc" >::
       (fun () ->
          let epoch = Unix.time () in
          assert_equal
            ~printer:string_of_float
            epoch
-           (XmlRpcDateTime.to_epoch_gmt (XmlRpcDateTime.of_epoch_gmt epoch)));
+           (XmlRpcDateTime.to_epoch_utc (XmlRpcDateTime.of_epoch_utc epoch)));
 
     "unix" >::
       (fun () ->
@@ -56,31 +56,31 @@ let test = "test_datetime" >:::
            time
            (XmlRpcDateTime.to_unix (XmlRpcDateTime.of_unix time)));
 
-    "unix_gmt" >::
+    "unix_utc" >::
       (fun () ->
          let time = Unix.gmtime (Unix.time ()) in
          assert_equal
            ~printer:string_of_unix_tm
            time
-           (XmlRpcDateTime.to_unix_gmt (XmlRpcDateTime.of_unix_gmt time)));
+           (XmlRpcDateTime.to_unix_utc (XmlRpcDateTime.of_unix_utc time)));
 
     "to_epoch" >::
       (fun () ->
          let dt_local = (2007, 10, 14, 7, 16, 18, -420) in
-         let dt_gmt = (2007, 10, 14, 14, 16, 18, 0) in
+         let dt_utc = (2007, 10, 14, 14, 16, 18, 0) in
          assert_equal
            ~printer:string_of_float
            (XmlRpcDateTime.to_epoch dt_local)
-           (XmlRpcDateTime.to_epoch dt_gmt));
+           (XmlRpcDateTime.to_epoch dt_utc));
 
-    "to_epoch_gmt" >::
+    "to_epoch_utc" >::
       (fun () ->
          let dt_local = (2007, 10, 14, 7, 16, 18, -420) in
-         let dt_gmt = (2007, 10, 14, 14, 16, 18, 0) in
+         let dt_utc = (2007, 10, 14, 14, 16, 18, 0) in
          assert_equal
            ~printer:string_of_float
-           (XmlRpcDateTime.to_epoch_gmt dt_local)
-           (XmlRpcDateTime.to_epoch_gmt dt_gmt));
+           (XmlRpcDateTime.to_epoch_utc dt_local)
+           (XmlRpcDateTime.to_epoch_utc dt_utc));
 
     "to_unix" >::
       (fun () ->
@@ -99,7 +99,7 @@ let test = "test_datetime" >:::
                     tm_isdst=false}))
            (XmlRpcDateTime.to_unix dt));
 
-    "to_unix_gmt" >::
+    "to_unix_utc" >::
       (fun () ->
          let dt = (2007, 1, 1, 14, 34, 9, -420) in
          assert_equal
@@ -114,7 +114,7 @@ let test = "test_datetime" >:::
                     tm_yday=0;
                     tm_wday=0;
                     tm_isdst=false}))
-           (XmlRpcDateTime.to_unix_gmt dt));
+           (XmlRpcDateTime.to_unix_utc dt));
 
     "to_string" >::
       (fun () ->
