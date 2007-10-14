@@ -31,10 +31,9 @@ open Printf;;
 
 let tests = [];;
 
-#directory "test";;
-#use "test_base64.ml";;
-#use "test_datetime.ml";;
-#use "test_value.ml";;
-#use "test_message.ml";;
+#use "test/test_base64.ml";;
+#use "test/test_datetime.ml";;
+#use "test/test_value.ml";;
+#use "test/test_message.ml";;
 
 OUnit.run_test_tt_main (TestList tests);;
