@@ -26,15 +26,15 @@ val hash : t -> int
 val now : unit -> t
 val now_utc : unit -> t
 
-val of_epoch : float -> t
-val of_epoch_utc : float -> t
-val to_epoch : t -> float
-val to_epoch_utc : t -> float
+val from_unixfloat : float -> t
+val from_unixfloat_utc : float -> t
+val to_unixfloat : t -> float
+val to_unixfloat_utc : t -> float
 
-val of_unix : Unix.tm -> t
-val of_unix_utc : Unix.tm -> t
-val to_unix : t -> Unix.tm
-val to_unix_utc : t -> Unix.tm
+val from_unixtm : Unix.tm -> t
+val from_unixtm_utc : Unix.tm -> t
+val to_unixtm : t -> Unix.tm
+val to_unixtm_utc : t -> Unix.tm
 
 val of_string : string -> t
 val to_string : t -> string
