@@ -15,32 +15,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Local time zone offset calculation algorithm based on 822-date, a
- * public-domain Perl script by Ian Jackson (1995) and Klee Dienes (1997).
  *)
 
 type t = (int * int * int * int * int * int * int)
 
 let local_tz_offset () =
-  let curtime = Unix.time () in
-  let localtm = Unix.localtime curtime in
-  let gmttm   = Unix.gmtime curtime in
-
-  if localtm.Unix.tm_sec <> gmttm.Unix.tm_sec
-  then failwith "local timezone differs from GMT by a non-minute interval";
-
-  let localmin = ref (localtm.Unix.tm_min + localtm.Unix.tm_hour * 60) in
-  let gmtmin   = ref (gmttm.Unix.tm_min + gmttm.Unix.tm_hour * 60) in
-
-  if (gmttm.Unix.tm_wday + 7 + 1) mod 7 = localtm.Unix.tm_wday
-  then localmin := !localmin + 1440
-  else if (gmttm.Unix.tm_wday + 7 - 1) mod 7 = localtm.Unix.tm_wday
-  then localmin := !localmin - 1440
-  else if gmttm.Unix.tm_wday <> localtm.Unix.tm_wday
-  then failwith "local time offset greater than or equal to 24 hours";
-
-  !localmin - !gmtmin
+  let time = Unix.time () in
+  let gmt = fst (Unix.mktime (Unix.gmtime time)) in
+  int_of_float (time -. gmt) / 60
 
 let of_unix tm =
   (tm.Unix.tm_year + 1900,
