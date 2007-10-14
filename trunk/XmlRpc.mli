@@ -60,7 +60,7 @@ type value =
     [ `Array of value list
     | `Binary of string
     | `Boolean of bool
-    | `DateTime of int * int * int * int * int * int * int
+    | `DateTime of XmlRpcDateTime.t
     | `Double of float
     | `Int of int
     | `Int32 of int32
@@ -156,10 +156,10 @@ object
   method set_base64_decoder : (string -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time encoding function. *)
-  method set_datetime_encoder : (int * int * int * int * int * int * int -> string) -> unit
+  method set_datetime_encoder : (XmlRpcDateTime.t -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time decoding function. *)
-  method set_datetime_decoder : (string -> int * int * int * int * int * int * int) -> unit
+  method set_datetime_decoder : (string -> XmlRpcDateTime.t) -> unit
 
   (** [call name params] invokes an XmlRpc method and returns the result,
       or raises {!XmlRpc.Error} on error. *)
@@ -255,10 +255,10 @@ end
 val dump : value -> string
 
 (** Converts a date/time tuple to an ISO-8601 string. *)
-val iso8601_of_datetime : int * int * int * int * int * int * int -> string
+val iso8601_of_datetime : XmlRpcDateTime.t -> string
 
 (** Converts an ISO-8601 string to a date/time tuple. *)
-val datetime_of_iso8601 : string -> int * int * int * int * int * int * int
+val datetime_of_iso8601 : string -> XmlRpcDateTime.t
 
 (** {6 Low-level interface} *)
 
@@ -271,25 +271,25 @@ type message =
 (** Converts an Xml Light element to an XmlRpc message. *)
 val message_of_xml_element :
   ?base64_decoder:(string -> string) ->
-  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
+  ?datetime_decoder:(string -> XmlRpcDateTime.t) ->
   Xml.xml -> message
 
 (** Converts an XmlRpc message to an Xml Light element. *)
 val xml_element_of_message :
   ?base64_encoder:(string -> string) ->
-  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
+  ?datetime_encoder:(XmlRpcDateTime.t -> string) ->
   message -> Xml.xml
 
 (** Converts an Xml Light element to an XmlRpc value. *)
 val value_of_xml_element :
   ?base64_decoder:(string -> string) ->
-  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
+  ?datetime_decoder:(string -> XmlRpcDateTime.t) ->
   Xml.xml -> value
 
 (** Converts an XmlRpc value to an Xml Light element. *)
 val xml_element_of_value :
   ?base64_encoder:(string -> string) ->
-  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
+  ?datetime_encoder:(XmlRpcDateTime.t -> string) ->
   value -> Xml.xml
 
 (** {6 Server tools} *)
@@ -316,8 +316,8 @@ val xml_element_of_value :
 val serve :
   ?base64_encoder:(string -> string) ->
   ?base64_decoder:(string -> string) ->
-  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
-  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
+  ?datetime_encoder:(XmlRpcDateTime.t -> string) ->
+  ?datetime_decoder:(string -> XmlRpcDateTime.t) ->
   ?error_handler:(exn -> message) ->
   (string -> value list -> value) -> string -> string
 

@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
-let version = "0.5"
+let version = "0.6"
 
 exception Error of (int * string)
 
@@ -25,7 +25,7 @@ type value =
     [ `Array of value list
     | `Binary of string
     | `Boolean of bool
-    | `DateTime of int * int * int * int * int * int * int
+    | `DateTime of XmlRpcDateTime.t
     | `Double of float
     | `Int of int
     | `Int32 of int32
@@ -37,6 +37,9 @@ type message =
     | MethodResponse of value
     | Fault of (int * string)
 
+let iso8601_of_datetime = XmlRpcDateTime.to_string
+let datetime_of_iso8601 = XmlRpcDateTime.of_string
+
 let safe_map f xs =
   List.rev (List.rev_map f xs)
 
@@ -46,34 +49,6 @@ let invalid_xml () =
 let invalid_xmlrpc () =
   raise (Error (-32600,
                 "server error. invalid xml-rpc. not conforming to spec"))
-
-let string_of_tz_offset offset =
-  Printf.sprintf "%c%02d:%02d"
-    (if offset >= 0 then '+' else '-')
-    (abs (offset / 60))
-    (abs (offset mod 60))
-
-let tz_offset_of_string = function
-  | "" | "Z" -> 0
-  | string ->
-      Scanf.sscanf string "%c%02d%_[:]%02d"
-        (fun sign hour min ->
-           min + hour * (if sign = '-' then -60 else 60))
-
-let iso8601_of_datetime (y, m, d, h, m', s, tz_offset) =
-  Printf.sprintf "%04d%02d%02dT%02d:%02d:%02d%s"
-    y m d h m' s (string_of_tz_offset tz_offset)
-
-let datetime_of_iso8601 string =
-  try
-    Scanf.sscanf string "%04d%_[-]%02d%_[-]%02d%_[T ]%02d:%02d:%02d%s"
-      (fun y m d h m' s tz ->
-         (y, m, d, h, m', s, (tz_offset_of_string tz)))
-  with
-    | Scanf.Scan_failure _
-    | End_of_file ->
-        raise (Error (-32600,
-                      "server error. unable to parse dateTime value"))
 
 let rec dump = function
   | `String data -> data
