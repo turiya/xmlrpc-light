@@ -17,24 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
-#use "topfind";;
+let test = "test_base64" >:::
+  [
+  ]
 
-#require "oUnit";;
-#require "netclient";;
-#require "nethttpd-for-netcgi2";;
-#require "xml-light";;
-
-#load "xmlrpc-light.cma";;
-
-open OUnit;;
-open Printf;;
-
-let tests = [];;
-
-#directory "test";;
-#use "test_base64.ml";;
-#use "test_datetime.ml";;
-#use "test_value.ml";;
-#use "test_message.ml";;
-
-OUnit.run_test_tt_main (TestList tests);;
+let tests = test :: tests
