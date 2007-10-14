@@ -21,8 +21,8 @@ type t = (int * int * int * int * int * int * int)
 
 let local_tz_offset () =
   let time = Unix.time () in
-  let gmt = fst (Unix.mktime (Unix.gmtime time)) in
-  int_of_float (time -. gmt) / 60
+  let utc = fst (Unix.mktime (Unix.gmtime time)) in
+  int_of_float (time -. utc) / 60
 
 let of_unix tm =
   (tm.Unix.tm_year + 1900,
@@ -33,7 +33,7 @@ let of_unix tm =
    tm.Unix.tm_sec,
    local_tz_offset ())
 
-let of_unix_gmt tm =
+let of_unix_utc tm =
   (tm.Unix.tm_year + 1900,
    tm.Unix.tm_mon + 1,
    tm.Unix.tm_mday,
@@ -43,9 +43,9 @@ let of_unix_gmt tm =
    0)
 
 let of_epoch time = of_unix (Unix.localtime time)
-let of_epoch_gmt time = of_unix_gmt (Unix.localtime time)
+let of_epoch_utc time = of_unix_utc (Unix.localtime time)
 
-let to_epoch_gmt (y, m, d, h, m', s, tz) =
+let to_epoch_utc (y, m, d, h, m', s, tz) =
   fst (Unix.mktime {Unix.tm_year=y - 1900;
                     tm_mon=m - 1;
                     tm_mday=d;
@@ -56,18 +56,18 @@ let to_epoch_gmt (y, m, d, h, m', s, tz) =
                     tm_yday=0;
                     tm_isdst=false}) -. (float tz *. 60.0)
 
-let to_epoch dt = to_epoch_gmt dt +. (float (local_tz_offset ()) *. 60.0)
+let to_epoch dt = to_epoch_utc dt +. (float (local_tz_offset ()) *. 60.0)
 
 let to_unix dt = Unix.localtime (to_epoch dt)
-let to_unix_gmt dt = Unix.localtime (to_epoch_gmt dt)
+let to_unix_utc dt = Unix.localtime (to_epoch_utc dt)
 
 let now () = of_epoch (Unix.time ())
-let now_gmt () =
-  of_epoch_gmt (Unix.time () -. (float (local_tz_offset ()) *. 60.0))
+let now_utc () =
+  of_epoch_utc (Unix.time () -. (float (local_tz_offset ()) *. 60.0))
 
-let compare a b = compare (to_epoch_gmt a) (to_epoch_gmt b)
-let equal a b = (to_epoch_gmt a) = (to_epoch_gmt b)
-let hash a = Hashtbl.hash (to_epoch_gmt a)
+let compare a b = compare (to_epoch_utc a) (to_epoch_utc b)
+let equal a b = (to_epoch_utc a) = (to_epoch_utc b)
+let hash a = Hashtbl.hash (to_epoch_utc a)
 
 let string_of_tz_offset offset =
   if offset = 0 then "Z" else

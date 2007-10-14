@@ -24,17 +24,17 @@ val equal : t -> t -> bool
 val hash : t -> int
 
 val now : unit -> t
-val now_gmt : unit -> t
+val now_utc : unit -> t
 
 val of_epoch : float -> t
-val of_epoch_gmt : float -> t
+val of_epoch_utc : float -> t
 val to_epoch : t -> float
-val to_epoch_gmt : t -> float
+val to_epoch_utc : t -> float
 
 val of_unix : Unix.tm -> t
-val of_unix_gmt : Unix.tm -> t
+val of_unix_utc : Unix.tm -> t
 val to_unix : t -> Unix.tm
-val to_unix_gmt : t -> Unix.tm
+val to_unix_utc : t -> Unix.tm
 
 val of_string : string -> t
 val to_string : t -> string
