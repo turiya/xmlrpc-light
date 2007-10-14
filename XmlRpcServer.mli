@@ -54,12 +54,10 @@ object
   val mutable base64_decoder : string -> string
 
   (** ISO-8601 date/time encoding function. *)
-  val mutable datetime_encoder :
-      int * int * int * int * int * int * int -> string
+  val mutable datetime_encoder : XmlRpcDateTime.t -> string
 
   (** ISO-8601 date/time decoding function. *)
-  val mutable datetime_decoder :
-      string -> int * int * int * int * int * int * int
+  val mutable datetime_decoder : string -> XmlRpcDateTime.t
 
   (** Handler for unhandled exceptions. *)
   val mutable error_handler : exn -> XmlRpc.message
@@ -71,12 +69,10 @@ object
   method set_base64_decoder : (string -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time encoding function. *)
-  method set_datetime_encoder :
-    (int * int * int * int * int * int * int -> string) -> unit
+  method set_datetime_encoder : (XmlRpcDateTime.t -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time decoding function. *)
-  method set_datetime_decoder :
-    (string -> int * int * int * int * int * int * int) -> unit
+  method set_datetime_decoder : (string -> XmlRpcDateTime.t) -> unit
 
   (** Sets an alternate handler for unhandled exceptions.
       See {!XmlRpc.default_error_handler} and
