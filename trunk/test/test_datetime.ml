@@ -32,7 +32,7 @@ let string_of_datetime (y, m, d, h, m', s, tz) =
 
 let test = "test_datetime" >:::
   [
-    "epoch" >: TestCase
+    "epoch" >::
       (fun () ->
          let epoch = Unix.time () in
          assert_equal
@@ -40,7 +40,7 @@ let test = "test_datetime" >:::
            epoch
            (XmlRpcDateTime.to_epoch (XmlRpcDateTime.of_epoch epoch)));
 
-    "epoch_gmt" >: TestCase
+    "epoch_gmt" >::
       (fun () ->
          let epoch = Unix.time () in
          assert_equal
@@ -48,7 +48,7 @@ let test = "test_datetime" >:::
            epoch
            (XmlRpcDateTime.to_epoch_gmt (XmlRpcDateTime.of_epoch_gmt epoch)));
 
-    "unix" >: TestCase
+    "unix" >::
       (fun () ->
          let time = Unix.localtime (Unix.time ()) in
          assert_equal
@@ -56,7 +56,7 @@ let test = "test_datetime" >:::
            time
            (XmlRpcDateTime.to_unix (XmlRpcDateTime.of_unix time)));
 
-    "unix_gmt" >: TestCase
+    "unix_gmt" >::
       (fun () ->
          let time = Unix.gmtime (Unix.time ()) in
          assert_equal
@@ -64,7 +64,7 @@ let test = "test_datetime" >:::
            time
            (XmlRpcDateTime.to_unix_gmt (XmlRpcDateTime.of_unix_gmt time)));
 
-    "to_epoch" >: TestCase
+    "to_epoch" >::
       (fun () ->
          let dt_local = (2007, 10, 14, 7, 16, 18, -420) in
          let dt_gmt = (2007, 10, 14, 14, 16, 18, 0) in
@@ -73,7 +73,7 @@ let test = "test_datetime" >:::
            (XmlRpcDateTime.to_epoch dt_local)
            (XmlRpcDateTime.to_epoch dt_gmt));
 
-    "to_epoch_gmt" >: TestCase
+    "to_epoch_gmt" >::
       (fun () ->
          let dt_local = (2007, 10, 14, 7, 16, 18, -420) in
          let dt_gmt = (2007, 10, 14, 14, 16, 18, 0) in
@@ -82,7 +82,7 @@ let test = "test_datetime" >:::
            (XmlRpcDateTime.to_epoch_gmt dt_local)
            (XmlRpcDateTime.to_epoch_gmt dt_gmt));
 
-    "to_unix" >: TestCase
+    "to_unix" >::
       (fun () ->
          let dt = (2007, 1, 1, 18, 34, 9, -420) in
          assert_equal
@@ -99,7 +99,7 @@ let test = "test_datetime" >:::
                     tm_isdst=false}))
            (XmlRpcDateTime.to_unix dt));
 
-    "to_unix_gmt" >: TestCase
+    "to_unix_gmt" >::
       (fun () ->
          let dt = (2007, 1, 1, 14, 34, 9, -420) in
          assert_equal
@@ -116,7 +116,7 @@ let test = "test_datetime" >:::
                     tm_isdst=false}))
            (XmlRpcDateTime.to_unix_gmt dt));
 
-    "to_string" >: TestCase
+    "to_string" >::
       (fun () ->
          let dt = (2007, 1, 1, 14, 34, 9, 0) in
          assert_equal
@@ -124,7 +124,7 @@ let test = "test_datetime" >:::
            "20070101T14:34:09Z"
            (XmlRpcDateTime.to_string dt));
 
-    "to_string_tz" >: TestCase
+    "to_string_tz" >::
       (fun () ->
          let dt = (2007, 1, 1, 14, 34, 9, -420) in
          assert_equal
@@ -132,7 +132,7 @@ let test = "test_datetime" >:::
            "20070101T14:34:09-07:00"
            (XmlRpcDateTime.to_string dt));
 
-    "of_string" >: TestCase
+    "of_string" >::
       (fun () ->
          let s = "20070101T14:34:09" in
          assert_equal
@@ -140,7 +140,7 @@ let test = "test_datetime" >:::
            (2007, 1, 1, 14, 34, 9, 0)
            (XmlRpcDateTime.of_string s));
 
-    "of_string_z" >: TestCase
+    "of_string_z" >::
       (fun () ->
          let s = "20070101T14:34:09Z" in
          assert_equal
@@ -148,7 +148,7 @@ let test = "test_datetime" >:::
            (2007, 1, 1, 14, 34, 9, 0)
            (XmlRpcDateTime.of_string s));
 
-    "to_string_tz" >: TestCase
+    "to_string_tz" >::
       (fun () ->
          let s = "20070101T14:34:09-07:00" in
          assert_equal
@@ -156,7 +156,7 @@ let test = "test_datetime" >:::
            (2007, 1, 1, 14, 34, 9, -420)
            (XmlRpcDateTime.of_string s));
 
-    "optional_delimiters" >: TestCase
+    "optional_delimiters" >::
       (fun () ->
          let s1 = "20071013T22:03:09-0700" in
          let s2 = "2007-10-13 22:03:09-07:00" in
