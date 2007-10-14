@@ -28,7 +28,7 @@ let local_tz_offset () =
   let gmttm   = Unix.gmtime curtime in
 
   if localtm.Unix.tm_sec <> gmttm.Unix.tm_sec
-  then failwith "local timezone differs by GMT by a non-minute interval";
+  then failwith "local timezone differs from GMT by a non-minute interval";
 
   let localmin = ref (localtm.Unix.tm_min + localtm.Unix.tm_hour * 60) in
   let gmtmin   = ref (gmttm.Unix.tm_min + gmttm.Unix.tm_hour * 60) in
@@ -61,7 +61,7 @@ let of_unix_gmt tm =
    0)
 
 let of_epoch time = of_unix (Unix.localtime time)
-let of_epoch_gmt time = of_unix_gmt (Unix.gmtime time)
+let of_epoch_gmt time = of_unix_gmt (Unix.localtime time)
 
 let to_epoch_gmt (y, m, d, h, m', s, tz) =
   fst (Unix.mktime {Unix.tm_year=y - 1900;
@@ -74,13 +74,18 @@ let to_epoch_gmt (y, m, d, h, m', s, tz) =
                     tm_yday=0;
                     tm_isdst=false}) -. (float tz *. 60.0)
 
-let to_epoch dt = to_epoch_gmt dt +. (float (local_tz_offset()) *. 60.0)
+let to_epoch dt = to_epoch_gmt dt +. (float (local_tz_offset ()) *. 60.0)
 
 let to_unix dt = Unix.localtime (to_epoch dt)
 let to_unix_gmt dt = Unix.localtime (to_epoch_gmt dt)
 
 let now () = of_epoch (Unix.time ())
-let now_gmt () = of_epoch_gmt (Unix.time ())
+let now_gmt () =
+  of_epoch_gmt (Unix.time () -. (float (local_tz_offset ()) *. 60.0))
+
+let compare a b = compare (to_epoch_gmt a) (to_epoch_gmt b)
+let equal a b = (to_epoch_gmt a) = (to_epoch_gmt b)
+let hash a = Hashtbl.hash (to_epoch_gmt a)
 
 let string_of_tz_offset offset =
   if offset = 0 then "Z" else

@@ -59,17 +59,7 @@ let test_datetime = "test_datetime" >:::
          assert_equal
            ~printer:string_of_float
            epoch
-           (XmlRpcDateTime.to_epoch (XmlRpcDateTime.of_epoch_gmt epoch)));
-
-    "epoch_to_gmt" >: TestCase
-      (fun () ->
-         let epoch = Unix.time () in
-         let dt_local = XmlRpcDateTime.of_epoch epoch in
-         let dt_gmt = XmlRpcDateTime.of_epoch_gmt epoch in
-         assert_equal
-           ~printer:string_of_float
-           (XmlRpcDateTime.to_epoch_gmt dt_local)
-           (XmlRpcDateTime.to_epoch_gmt dt_gmt));
+           (XmlRpcDateTime.to_epoch_gmt (XmlRpcDateTime.of_epoch_gmt epoch)));
 
     "unix" >: TestCase
       (fun () ->
@@ -86,6 +76,24 @@ let test_datetime = "test_datetime" >:::
            ~printer:string_of_unix_tm
            time
            (XmlRpcDateTime.to_unix_gmt (XmlRpcDateTime.of_unix_gmt time)));
+
+    "to_epoch" >: TestCase
+      (fun () ->
+         let dt_local = (2007, 10, 14, 7, 16, 18, -420) in
+         let dt_gmt = (2007, 10, 14, 14, 16, 18, 0) in
+         assert_equal
+           ~printer:string_of_float
+           (XmlRpcDateTime.to_epoch dt_local)
+           (XmlRpcDateTime.to_epoch dt_gmt));
+
+    "to_epoch_gmt" >: TestCase
+      (fun () ->
+         let dt_local = (2007, 10, 14, 7, 16, 18, -420) in
+         let dt_gmt = (2007, 10, 14, 14, 16, 18, 0) in
+         assert_equal
+           ~printer:string_of_float
+           (XmlRpcDateTime.to_epoch_gmt dt_local)
+           (XmlRpcDateTime.to_epoch_gmt dt_gmt));
 
     "to_unix" >: TestCase
       (fun () ->
