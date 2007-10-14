@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
-let string_of_unix_tm
+let string_of_unixtm
     {Unix.tm_sec=tm_sec; tm_min=tm_min; tm_hour=tm_hour;
      tm_mday=tm_mday; tm_mon=tm_mon; tm_year=tm_year;
      tm_wday=tm_wday; tm_yday=tm_yday; tm_isdst=tm_isdst} =
@@ -32,61 +32,61 @@ let string_of_datetime (y, m, d, h, m', s, tz) =
 
 let test = "test_datetime" >:::
   [
-    "epoch" >::
+    "unixfloat" >::
       (fun () ->
-         let epoch = Unix.time () in
+         let unixfloat = Unix.time () in
          assert_equal
            ~printer:string_of_float
-           epoch
-           (XmlRpcDateTime.to_epoch (XmlRpcDateTime.of_epoch epoch)));
+           unixfloat
+           (XmlRpcDateTime.to_unixfloat (XmlRpcDateTime.from_unixfloat unixfloat)));
 
-    "epoch_utc" >::
+    "unixfloat_utc" >::
       (fun () ->
-         let epoch = Unix.time () in
+         let unixfloat = Unix.time () in
          assert_equal
            ~printer:string_of_float
-           epoch
-           (XmlRpcDateTime.to_epoch_utc (XmlRpcDateTime.of_epoch_utc epoch)));
+           unixfloat
+           (XmlRpcDateTime.to_unixfloat_utc (XmlRpcDateTime.from_unixfloat_utc unixfloat)));
 
     "unix" >::
       (fun () ->
          let time = Unix.localtime (Unix.time ()) in
          assert_equal
-           ~printer:string_of_unix_tm
+           ~printer:string_of_unixtm
            time
-           (XmlRpcDateTime.to_unix (XmlRpcDateTime.of_unix time)));
+           (XmlRpcDateTime.to_unixtm (XmlRpcDateTime.from_unixtm time)));
 
     "unix_utc" >::
       (fun () ->
          let time = Unix.gmtime (Unix.time ()) in
          assert_equal
-           ~printer:string_of_unix_tm
+           ~printer:string_of_unixtm
            time
-           (XmlRpcDateTime.to_unix_utc (XmlRpcDateTime.of_unix_utc time)));
+           (XmlRpcDateTime.to_unixtm_utc (XmlRpcDateTime.from_unixtm_utc time)));
 
-    "to_epoch" >::
+    "to_unixfloat" >::
       (fun () ->
          let dt_local = (2007, 10, 14, 7, 16, 18, -420) in
          let dt_utc = (2007, 10, 14, 14, 16, 18, 0) in
          assert_equal
            ~printer:string_of_float
-           (XmlRpcDateTime.to_epoch dt_local)
-           (XmlRpcDateTime.to_epoch dt_utc));
+           (XmlRpcDateTime.to_unixfloat dt_local)
+           (XmlRpcDateTime.to_unixfloat dt_utc));
 
-    "to_epoch_utc" >::
+    "to_unixfloat_utc" >::
       (fun () ->
          let dt_local = (2007, 10, 14, 7, 16, 18, -420) in
          let dt_utc = (2007, 10, 14, 14, 16, 18, 0) in
          assert_equal
            ~printer:string_of_float
-           (XmlRpcDateTime.to_epoch_utc dt_local)
-           (XmlRpcDateTime.to_epoch_utc dt_utc));
+           (XmlRpcDateTime.to_unixfloat_utc dt_local)
+           (XmlRpcDateTime.to_unixfloat_utc dt_utc));
 
-    "to_unix" >::
+    "to_unixtm" >::
       (fun () ->
          let dt = (2007, 1, 1, 18, 34, 9, -420) in
          assert_equal
-           ~printer:string_of_unix_tm
+           ~printer:string_of_unixtm
            (snd (Unix.mktime
                    {Unix.tm_year=107;
                     tm_mon=0;
@@ -97,13 +97,13 @@ let test = "test_datetime" >:::
                     tm_yday=0;
                     tm_wday=0;
                     tm_isdst=false}))
-           (XmlRpcDateTime.to_unix dt));
+           (XmlRpcDateTime.to_unixtm dt));
 
-    "to_unix_utc" >::
+    "to_unixtm_utc" >::
       (fun () ->
          let dt = (2007, 1, 1, 14, 34, 9, -420) in
          assert_equal
-           ~printer:string_of_unix_tm
+           ~printer:string_of_unixtm
            (snd (Unix.mktime
                    {Unix.tm_year=107;
                     tm_mon=0;
@@ -114,7 +114,7 @@ let test = "test_datetime" >:::
                     tm_yday=0;
                     tm_wday=0;
                     tm_isdst=false}))
-           (XmlRpcDateTime.to_unix_utc dt));
+           (XmlRpcDateTime.to_unixtm_utc dt));
 
     "to_string" >::
       (fun () ->
