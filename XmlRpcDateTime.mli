@@ -19,6 +19,10 @@
 
 type t = (int * int * int * int * int * int * int)
 
+val compare : t -> t -> int
+val equal : t -> t -> bool
+val hash : t -> int
+
 val now : unit -> t
 val now_gmt : unit -> t
 
