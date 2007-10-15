@@ -122,6 +122,72 @@ let test = "test_value" >:::
            (XmlRpc.value_of_xml_element
               (Xml.Element ("base64", [],
                             [Xml.PCData "IDwmPkFCQ0\r\nRFRkcwMTIzN\nDUgDX4hQCMkJV4mKigpCQ0KIA=="]))));
+
+    "of_array" >::
+      (fun () ->
+         assert_equal
+           ~printer:Xml.to_string
+           (Xml.Element
+              ("array", [],
+               [Xml.Element
+                  ("data", [],
+                   [Xml.Element ("value", [],
+                                 [Xml.Element ("int", [], [Xml.PCData "5"])]);
+                    Xml.Element
+                      ("value", [],
+                       [Xml.Element ("string", [], [Xml.PCData "six"])]);
+                    Xml.Element
+                      ("value", [],
+                       [Xml.Element
+                          ("array", [],
+                           [Xml.Element
+                              ("data", [],
+                               [Xml.Element
+                                  ("value", [],
+                                   [Xml.Element
+                                      ("boolean", [], [Xml.PCData "0"])]);
+                                Xml.Element
+                                  ("value", [],
+                                   [Xml.Element
+                                      ("double", [],
+                                       [Xml.PCData "-1."])])])])])])]))
+           (XmlRpc.xml_element_of_value
+              (`Array
+                 [`Int 5; `String "six";
+                  `Array [`Boolean false; `Double (-1.0)]])));
+
+    "to_array" >::
+      (fun () ->
+         assert_equal
+           ~printer:XmlRpc.dump
+           (`Array
+              [`Int 5; `String "six";
+               `Array [`Boolean false; `Double (-1.0)]])
+           (XmlRpc.value_of_xml_element
+              (Xml.Element
+                 ("array", [],
+                  [Xml.Element
+                     ("data", [],
+                      [Xml.Element ("value", [],
+                                    [Xml.Element ("int", [],
+                                                  [Xml.PCData "5"])]);
+                       (* test untyped value - should be treated as string *)
+                       Xml.Element ("value", [], [Xml.PCData "six"]);
+                       Xml.Element
+                         ("value", [],
+                          [Xml.Element
+                             ("array", [],
+                              [Xml.Element
+                                 ("data", [],
+                                  [Xml.Element
+                                     ("value", [],
+                                      [Xml.Element
+                                         ("boolean", [], [Xml.PCData "0"])]);
+                                   Xml.Element
+                                     ("value", [],
+                                      [Xml.Element
+                                         ("double", [],
+                                          [Xml.PCData "-1."])])])])])])]))));
   ]
 
 let tests = test :: tests
