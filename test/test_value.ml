@@ -188,6 +188,69 @@ let test = "test_value" >:::
                                       [Xml.Element
                                          ("double", [],
                                           [Xml.PCData "-1."])])])])])])]))));
+
+    "of_struct" >::
+      (fun () ->
+         assert_equal
+           ~printer:Xml.to_string
+           (Xml.Element
+              ("struct", [],
+               [Xml.Element
+                  ("member", [],
+                   [Xml.Element ("name", [], [Xml.PCData "foo"]);
+                    Xml.Element ("value", [],
+                                 [Xml.Element ("int", [],
+                                               [Xml.PCData "42"])])]);
+                Xml.Element
+                  ("member", [],
+                   [Xml.Element ("name", [], [Xml.PCData "bar"]);
+                    Xml.Element
+                      ("value", [],
+                       [Xml.Element
+                          ("struct", [],
+                           [Xml.Element
+                              ("member", [],
+                               [Xml.Element ("name", [], [Xml.PCData "baz"]);
+                                Xml.Element
+                                  ("value", [],
+                                   [Xml.Element ("string", [],
+                                                 [Xml.PCData
+                                                    "rutabega"])])])])])])]))
+           (XmlRpc.xml_element_of_value
+              (`Struct
+                 ["foo", `Int 42;
+                  "bar", `Struct ["baz", `String "rutabega"]])));
+
+    "to_struct" >::
+      (fun () ->
+         assert_equal
+           ~printer:XmlRpc.dump
+           (`Struct
+              ["foo", `Int 42;
+               "bar", `Struct ["baz", `String "rutabega"]])
+           (XmlRpc.value_of_xml_element
+              (Xml.Element
+                 ("struct", [],
+                  [Xml.Element
+                     ("member", [],
+                      [Xml.Element ("name", [], [Xml.PCData "foo"]);
+                       Xml.Element ("value", [],
+                                    [Xml.Element ("int", [],
+                                                  [Xml.PCData "42"])])]);
+                   Xml.Element
+                     ("member", [],
+                      [Xml.Element ("name", [], [Xml.PCData "bar"]);
+                       Xml.Element
+                         ("value", [],
+                          [Xml.Element
+                             ("struct", [],
+                              [Xml.Element
+                                 ("member", [],
+                                  [Xml.Element ("name", [], [Xml.PCData "baz"]);
+                                   (* test untyped value *)
+                                   Xml.Element
+                                     ("value", [],
+                                      [Xml.PCData "rutabega"])])])])])]))));
   ]
 
 let tests = test :: tests
