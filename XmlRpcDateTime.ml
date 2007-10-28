@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
+exception ParseError of string
+
 type t = (int * int * int * int * int * int * int)
 
 let local_tz_offset () =
@@ -66,6 +68,11 @@ let now () = from_unixfloat (Unix.time ())
 let now_utc () =
   from_unixfloat_utc (Unix.time () -. (float (local_tz_offset ()) *. 60.0))
 
+let set_tz_offset offset dt =
+  let time = to_unixfloat_utc dt +. (float offset *. 60.0) in
+  match from_unixfloat_utc time
+  with (y, m, d, h, m', s, _) -> (y, m, d, h, m', s, offset)
+
 let compare a b = compare (to_unixfloat_utc a) (to_unixfloat_utc b)
 let equal a b = (to_unixfloat_utc a) = (to_unixfloat_utc b)
 let hash a = Hashtbl.hash (to_unixfloat_utc a)
@@ -96,4 +103,4 @@ let of_string string =
   with
     | Scanf.Scan_failure _
     | End_of_file ->
-        failwith "XmlRpcDateTime.of_string"
+        raise (ParseError string)
