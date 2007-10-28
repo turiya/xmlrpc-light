@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
+exception ParseError of string
+
 type t = (int * int * int * int * int * int * int)
 
 val compare : t -> t -> int
@@ -25,6 +27,8 @@ val hash : t -> int
 
 val now : unit -> t
 val now_utc : unit -> t
+
+val set_tz_offset : int -> t -> t
 
 val from_unixfloat : float -> t
 val from_unixfloat_utc : float -> t

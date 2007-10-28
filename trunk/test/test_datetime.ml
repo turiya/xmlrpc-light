@@ -164,6 +164,20 @@ let test = "test_datetime" >:::
            ~printer:string_of_datetime
            (XmlRpcDateTime.of_string s1)
            (XmlRpcDateTime.of_string s2));
+
+    "set_tz_offset" >::
+      (fun () ->
+         let offset = 360 in
+         let dt1 = XmlRpcDateTime.now () in
+         let dt2 = XmlRpcDateTime.set_tz_offset offset dt1 in
+         assert_equal
+           ~printer:string_of_int
+           offset
+           (match dt2 with (_, _, _, _, _, _, tz) -> tz);
+         assert_equal
+           ~printer:string_of_datetime
+           ~cmp:XmlRpcDateTime.equal
+           dt1 dt2);
   ]
 
 let tests = test :: tests
