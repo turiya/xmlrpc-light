@@ -29,6 +29,7 @@ val now : unit -> t
 val now_utc : unit -> t
 
 val set_tz_offset : int -> t -> t
+val fix_tz_offset : int -> t -> t
 
 val from_unixfloat : float -> t
 val from_unixfloat_utc : float -> t

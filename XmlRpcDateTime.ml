@@ -73,6 +73,9 @@ let set_tz_offset offset dt =
   match from_unixfloat_utc time
   with (y, m, d, h, m', s, _) -> (y, m, d, h, m', s, offset)
 
+let fix_tz_offset offset dt =
+  match dt with (y, m, d, h, m', s, _) -> (y, m, d, h, m', s, offset)
+
 let compare a b = compare (to_unixfloat_utc a) (to_unixfloat_utc b)
 let equal a b = (to_unixfloat_utc a) = (to_unixfloat_utc b)
 let hash a = Hashtbl.hash (to_unixfloat_utc a)

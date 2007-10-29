@@ -178,6 +178,21 @@ let test = "test_datetime" >:::
            ~printer:string_of_datetime
            ~cmp:XmlRpcDateTime.equal
            dt1 dt2);
+
+    "fix_tz_offset" >::
+      (fun () ->
+         let offset = -420 in
+         let dt1 = XmlRpcDateTime.now_utc () in
+         let dt2 = XmlRpcDateTime.fix_tz_offset offset dt1 in
+         assert_equal
+           ~printer:string_of_int
+           offset
+           (match dt2 with (_, _, _, _, _, _, tz) -> tz);
+         assert_equal
+           ~printer:string_of_int
+           (int_of_float (XmlRpcDateTime.to_unixfloat dt1))
+           (int_of_float (XmlRpcDateTime.to_unixfloat dt2)
+            + offset * 60));
   ]
 
 let tests = test :: tests
