@@ -35,5 +35,6 @@ let tests = [];;
 #use "test/test_datetime.ml";;
 #use "test/test_value.ml";;
 #use "test/test_message.ml";;
+#use "test/test_serve.ml";;
 
 OUnit.run_test_tt_main (TestList tests);;
