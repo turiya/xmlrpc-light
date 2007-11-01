@@ -257,6 +257,10 @@ object (self)
           ~help:"Returns an array describing the return type and required parameters of a method"
           ~signature:[`Array; `String]
           (system_method_signature method_signatures);
+        self#register "system.multicall"
+          ~help:"Boxcar multiple RPC calls in one request"
+          ~signature:[`Array; `Array]
+          (system_multicall methods);
       end
 
   initializer
