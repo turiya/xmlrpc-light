@@ -65,6 +65,13 @@ let system_get_capabilities introspection _ =
           "specUrl", `String "http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php";
           "specVersion", `Int 20010516;
         ];
+
+      "nil",
+      `Struct
+        [
+          "specUrl", `String "http://www.ontosys.com/xml-rpc/extensions.php";
+          "specVersion", `Int 20010518;
+        ];
     ] in
   let capabilities =
     if introspection
