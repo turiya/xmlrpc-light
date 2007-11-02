@@ -72,6 +72,21 @@ let test = "test_value" >:::
            (XmlRpc.value_of_xml_element
               (Xml.Element ("double", [], [Xml.PCData "42.000000001"]))));
 
+    "of_nil" >::
+      (fun () ->
+         assert_equal
+           ~printer:Xml.to_string
+           (Xml.Element ("nil", [], []))
+           (XmlRpc.xml_element_of_value `Nil));
+
+    "to_nil" >::
+      (fun () ->
+         assert_equal
+           ~printer:XmlRpc.dump
+           `Nil
+           (XmlRpc.value_of_xml_element
+              (Xml.Element ("nil", [], []))));
+
     "of_boolean" >::
       (fun () ->
          assert_equal

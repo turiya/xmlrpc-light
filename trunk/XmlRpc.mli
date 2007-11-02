@@ -50,6 +50,7 @@ exception Error of (int * string)
     - [`Double]: A floating-point value
     - [`Int]: An integer
     - [`Int32]: A 32-bit integer
+    - [`Nil]: A null value
     - [`String]: A string
     - [`Struct]: An association list of (name, value) pairs
 
@@ -64,6 +65,7 @@ type value =
     | `Double of float
     | `Int of int
     | `Int32 of int32
+    | `Nil
     | `String of string
     | `Struct of (string * value) list ]
 
