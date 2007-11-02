@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
-exception ParseError of string
+exception Parse_error of string
 
 type t = (int * int * int * int * int * int * int)
 
@@ -106,4 +106,4 @@ let of_string string =
   with
     | Scanf.Scan_failure _
     | End_of_file ->
-        raise (ParseError string)
+        raise (Parse_error string)
