@@ -163,6 +163,7 @@ let check_signatures signatures f params =
                    | (`Int, `Int32 _)
                    | (`String, `String _)
                    | (`Struct, `Struct _)
+                   | (_, `Nil)
                      -> ()
                    | _ -> passed := false)
               param_types

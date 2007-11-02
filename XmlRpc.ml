@@ -29,6 +29,7 @@ type value =
     | `Double of float
     | `Int of int
     | `Int32 of int32
+    | `Nil
     | `String of string
     | `Struct of (string * value) list ]
 
@@ -54,6 +55,7 @@ let rec dump = function
   | `String data -> data
   | `Int data -> string_of_int data
   | `Int32 data -> Int32.to_string data
+  | `Nil -> "(nil)"
   | `Boolean data -> if data then "true" else "false"
   | `Double data -> string_of_float data
   | `Binary data -> data
@@ -75,6 +77,7 @@ let rec xml_element_of_value
        | `String data -> ("string", [], [Xml.PCData data])
        | `Int data -> ("int", [], [Xml.PCData (string_of_int data)])
        | `Int32 data -> ("int", [], [Xml.PCData (Int32.to_string data)])
+       | `Nil -> ("nil", [], [])
        | `Boolean data -> ("boolean", [], [Xml.PCData
                                              (if data then "1" else "0")])
        | `Double data -> ("double", [], [Xml.PCData (string_of_float data)])
@@ -117,6 +120,7 @@ let rec value_of_xml_element
       | Xml.Element ("i4", [], [Xml.PCData data]) ->
           (try `Int (int_of_string data)
            with Failure "int_of_string" -> `Int32 (Int32.of_string data))
+      | Xml.Element ("nil", [], []) -> `Nil
       | Xml.Element ("boolean", [], [Xml.PCData data]) ->
           `Boolean (data <> "0")
       | Xml.Element ("double", [], [Xml.PCData data]) ->
