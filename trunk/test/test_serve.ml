@@ -39,6 +39,47 @@ let test = "test_serve" >:::
                        (XmlRpc.xml_element_of_message
                           (XmlRpc.MethodCall
                              ("reverse", [`Array data]))))))));
+
+    "error_normal" >::
+      (fun () ->
+         let fault = (12345, "My fault") in
+         assert_equal
+           ~printer:string_of_message
+           (XmlRpc.Fault fault)
+           (XmlRpc.message_of_xml_element
+              (Xml.parse_string
+                 (XmlRpc.serve
+                    (fun _ _ -> raise (XmlRpc.Error fault))
+                    (Xml.to_string
+                       (XmlRpc.xml_element_of_message
+                          (XmlRpc.MethodCall ("dummy", []))))))));
+
+    "error_exception" >::
+      (fun () ->
+         assert_equal
+           ~printer:string_of_message
+           (XmlRpc.Fault
+              (-32500, "application error. Failure(\"WHAT HAPPEN ?\")"))
+           (XmlRpc.message_of_xml_element
+              (Xml.parse_string
+                 (XmlRpc.serve
+                    (fun _ _ -> failwith "WHAT HAPPEN ?")
+                    (Xml.to_string
+                       (XmlRpc.xml_element_of_message
+                          (XmlRpc.MethodCall ("dummy", []))))))));
+
+    "error_quiet" >::
+      (fun () ->
+         assert_raises
+           (Failure "SOMEONE SET UP US THE BOMB")
+           (fun () ->
+              (ignore
+                 (XmlRpc.serve
+                    ~error_handler:XmlRpc.quiet_error_handler
+                    (fun _ _ -> failwith "SOMEONE SET UP US THE BOMB")
+                    (Xml.to_string
+                       (XmlRpc.xml_element_of_message
+                          (XmlRpc.MethodCall ("dummy", []))))))));
   ]
 
 let tests = test :: tests
