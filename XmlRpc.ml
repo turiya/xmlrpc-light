@@ -38,9 +38,6 @@ type message =
     | MethodResponse of value
     | Fault of (int * string)
 
-let iso8601_of_datetime = XmlRpcDateTime.to_string
-let datetime_of_iso8601 = XmlRpcDateTime.of_string
-
 let safe_map f xs =
   List.rev (List.rev_map f xs)
 
@@ -66,11 +63,11 @@ let rec dump = function
                                 (fun (n, v) ->
                                    n ^ ": " ^ (dump v))
                                 data)) ^ "}"
-  | `DateTime data -> iso8601_of_datetime data
+  | `DateTime data -> XmlRpcDateTime.to_string data
 
 let rec xml_element_of_value
     ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
-    ?(datetime_encoder=iso8601_of_datetime)
+    ?(datetime_encoder=XmlRpcDateTime.to_string)
     value =
   Xml.Element
     (match value with
@@ -112,7 +109,7 @@ let rec xml_element_of_value
 
 let rec value_of_xml_element
     ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
-    ?(datetime_decoder=datetime_of_iso8601)
+    ?(datetime_decoder=XmlRpcDateTime.of_string)
     = function
       | Xml.Element ("string", [], []) -> `String ""
       | Xml.Element ("string", [], [Xml.PCData data]) -> `String data
@@ -172,7 +169,7 @@ let rec value_of_xml_element
 
 let xml_element_of_message
     ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
-    ?(datetime_encoder=iso8601_of_datetime)
+    ?(datetime_encoder=XmlRpcDateTime.to_string)
     message =
   let make_param param =
     Xml.Element ("param", [],
@@ -202,7 +199,7 @@ let xml_element_of_message
 
 let message_of_xml_element
     ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
-    ?(datetime_decoder=datetime_of_iso8601)
+    ?(datetime_decoder=XmlRpcDateTime.of_string)
     xml_element =
   let parse_params params =
     safe_map
@@ -301,8 +298,8 @@ object (self)
   val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
 
-  val mutable datetime_encoder = iso8601_of_datetime
-  val mutable datetime_decoder = datetime_of_iso8601
+  val mutable datetime_encoder = XmlRpcDateTime.to_string
+  val mutable datetime_decoder = XmlRpcDateTime.of_string
 
   method url =
     let parsed_url = Neturl.parse_url url in
@@ -525,8 +522,8 @@ let quiet_error_handler e =
 let serve
     ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
     ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
-    ?(datetime_encoder=iso8601_of_datetime)
-    ?(datetime_decoder=datetime_of_iso8601)
+    ?(datetime_encoder=XmlRpcDateTime.to_string)
+    ?(datetime_decoder=XmlRpcDateTime.of_string)
     ?(error_handler=default_error_handler)
     f s =
   try

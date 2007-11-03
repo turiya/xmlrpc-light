@@ -255,12 +255,6 @@ end
 (** Converts an XmlRpc value to a human-readable string. *)
 val dump : value -> string
 
-(** Converts a date/time tuple to an ISO-8601 string. *)
-val iso8601_of_datetime : XmlRpcDateTime.t -> string
-
-(** Converts an ISO-8601 string to a date/time tuple. *)
-val datetime_of_iso8601 : string -> XmlRpcDateTime.t
-
 (** {6 Low-level interface} *)
 
 (** Type for XmlRpc messages. *)

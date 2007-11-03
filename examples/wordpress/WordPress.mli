@@ -20,8 +20,6 @@
 exception Type_error of string
 exception Unknown_field of string
 
-type datetime = int * int * int * int * int * int * int
-
 module Category :
 sig
   type t = {
@@ -62,7 +60,7 @@ sig
              mutable page_id : int;
              mutable page_title : string;
              mutable page_parent_id : int;
-             mutable date_created : datetime;
+             mutable date_created : XmlRpcDateTime.t;
            }
   val make : unit -> t
   val of_xmlrpc : XmlRpc.value -> t
@@ -71,7 +69,7 @@ end
 module Page :
 sig
   type t = {
-             mutable date_created : datetime;
+             mutable date_created : XmlRpcDateTime.t;
              mutable user_id : int;
              mutable page_id : int;
              mutable page_status : string;
@@ -103,7 +101,7 @@ sig
   type t = {
              mutable user_id : int;
              mutable post_id : int;
-             mutable date_created : datetime;
+             mutable date_created : XmlRpcDateTime.t;
              mutable description : string;
              mutable title : string;
              mutable link : string;
