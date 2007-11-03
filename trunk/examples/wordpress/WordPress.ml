@@ -20,8 +20,6 @@
 exception Type_error of string
 exception Unknown_field of string
 
-type datetime = int * int * int * int * int * int * int
-
 let map_array f = function
   | `Array items -> List.map f items
   | other -> raise (Type_error (XmlRpc.dump other))
@@ -117,7 +115,7 @@ module PageListItem = struct
   type t = { mutable page_id : int;
              mutable page_title : string;
              mutable page_parent_id : int;
-             mutable date_created : datetime;
+             mutable date_created : XmlRpcDateTime.t;
            }
 
   let make () =
@@ -140,7 +138,7 @@ module PageListItem = struct
 end
 
 module Page = struct
-  type t = { mutable date_created : datetime;
+  type t = { mutable date_created : XmlRpcDateTime.t;
              mutable user_id : int;
              mutable page_id : int;
              mutable page_status : string;
@@ -243,7 +241,7 @@ end
 module Post = struct
   type t = { mutable user_id : int;
              mutable post_id : int;
-             mutable date_created : datetime;
+             mutable date_created : XmlRpcDateTime.t;
              mutable description : string;
              mutable title : string;
              mutable link : string;

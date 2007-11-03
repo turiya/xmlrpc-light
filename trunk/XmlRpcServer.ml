@@ -207,8 +207,8 @@ object (self)
   val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
 
-  val mutable datetime_encoder = XmlRpc.iso8601_of_datetime
-  val mutable datetime_decoder = XmlRpc.datetime_of_iso8601
+  val mutable datetime_encoder = XmlRpcDateTime.to_string
+  val mutable datetime_decoder = XmlRpcDateTime.of_string
 
   val mutable error_handler = XmlRpc.default_error_handler
 
