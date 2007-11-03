@@ -121,7 +121,7 @@ let test = "test_datetime" >:::
          let dt = (2007, 1, 1, 14, 34, 9, 0) in
          assert_equal
            ~printer:(fun s -> s)
-           "20070101T14:34:09Z"
+           "20070101T14:34:09"
            (XmlRpcDateTime.to_string dt));
 
     "to_string_tz" >::

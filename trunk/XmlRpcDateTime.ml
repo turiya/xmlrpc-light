@@ -81,7 +81,7 @@ let equal a b = (to_unixfloat_utc a) = (to_unixfloat_utc b)
 let hash a = Hashtbl.hash (to_unixfloat_utc a)
 
 let string_of_tz_offset offset =
-  if offset = 0 then "Z" else
+  if offset = 0 then "" else
     Printf.sprintf "%c%02d:%02d"
       (if offset >= 0 then '+' else '-')
       (abs (offset / 60))
