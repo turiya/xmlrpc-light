@@ -45,8 +45,7 @@ exception Error of (int * string)
     - [`Array]: An ordered list of values
     - [`Binary]: A string containing binary data
     - [`Boolean]: A boolean
-    - [`DateTime]: A date-time value
-      (year, month, day, hour, minute, second, timezone offset in minutes)
+    - [`DateTime]: A date/time value
     - [`Double]: A floating-point value
     - [`Int]: An integer
     - [`Int32]: A 32-bit integer
