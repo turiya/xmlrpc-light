@@ -76,6 +76,17 @@ let test = "test_message" >:::
                           [Xml.Element
                              ("value", [], [Xml.PCData "5"])])])]))));
 
+    "to_method_call_no_params" >::
+      (fun () ->
+         assert_equal
+           ~printer:string_of_message
+           (XmlRpc.MethodCall ("demo.helloWorld", []))
+           (XmlRpc.message_of_xml_element
+              (Xml.Element
+                 ("methodCall", [],
+                  [Xml.Element ("methodName", [],
+                                [Xml.PCData "demo.helloWorld"])]))));
+
     "of_method_response" >::
       (fun () ->
          assert_equal
