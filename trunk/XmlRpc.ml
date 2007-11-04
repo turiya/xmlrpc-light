@@ -228,6 +228,9 @@ let message_of_xml_element
                    [Xml.Element ("methodName", [], [Xml.PCData name]);
                     Xml.Element ("params", [], params)]) ->
         MethodCall (name, parse_params params)
+    | Xml.Element ("methodCall", [],
+                   [Xml.Element ("methodName", [], [Xml.PCData name])]) ->
+        MethodCall (name, [])
     | Xml.Element ("methodResponse", [],
                    [Xml.Element ("params", [], params)]) ->
         MethodResponse (List.hd (parse_params params))
