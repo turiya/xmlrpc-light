@@ -39,7 +39,7 @@ type param_type =
     [ `Array | `Binary | `Boolean | `DateTime
     | `Double | `Int | `String | `Struct ]
 
-(** {6 Base classes} *)
+(** {2 Base classes} *)
 
 (** Abstract base class for XmlRpc servers. *)
 class virtual base :
@@ -121,7 +121,7 @@ object
   method run : unit -> unit
 end
 
-(** {6 Server implementations} *)
+(** {2 Server implementations} *)
 
 (** CGI XmlRpc server based on Netcgi2. *)
 class cgi : unit -> server
@@ -132,7 +132,7 @@ class netplex :
   ?handler:string ->
   unit -> server
 
-(** {6 Utility functions} *)
+(** {2 Utility functions} *)
 
 (** Raise an {!XmlRpc.Error} indicating a method name not found. *)
 val invalid_method : string -> 'a

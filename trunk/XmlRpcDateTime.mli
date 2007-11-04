@@ -19,7 +19,7 @@
 
 (** Date/time type. *)
 
-(** {6 Types} *)
+(** {2 Types} *)
 
 (** Raised by {!of_string} if a string could not be parsed. The exception
     contains the input string. *)
@@ -29,7 +29,7 @@ exception Parse_error of string
     (year, month, day, hour, minute, second, time zone offset in minutes) *)
 type t = (int * int * int * int * int * int * int)
 
-(** {6 Comparison} *)
+(** {2 Comparison} *)
 
 (** Standard comparator for date/time values. Converts all values to UTC
     before comparing to ensure correct behavior with values of differing
@@ -44,7 +44,7 @@ val equal : t -> t -> bool
     before hashing. *)
 val hash : t -> int
 
-(** {6 Current date and time} *)
+(** {2 Current date and time} *)
 
 (** Returns the current date and time in the local time zone. *)
 val now : unit -> t
@@ -52,7 +52,7 @@ val now : unit -> t
 (** Returns the current date and time in UTC. *)
 val now_utc : unit -> t
 
-(** {6 Time zone adjustments} *)
+(** {2 Time zone adjustments} *)
 
 (** Adjusts the time zone offset, preserving equality. *) 
 val set_tz_offset : int -> t -> t
@@ -62,7 +62,7 @@ val set_tz_offset : int -> t -> t
     was received without a time zone offset and is known not to be UTC. *)
 val fix_tz_offset : int -> t -> t
 
-(** {6 Conversion} *)
+(** {2 Conversion} *)
 
 (** Builds a date/time value from epoch seconds in the local time zone. *)
 val from_unixfloat : float -> t
@@ -88,7 +88,7 @@ val to_unixtm : t -> Unix.tm
 (** Converts a date/time value to a Unix.tm value in UTC. *)
 val to_unixtm_utc : t -> Unix.tm
 
-(** {6 ISO-8601 parsing and generation} *)
+(** {2 ISO-8601 parsing and generation} *)
 
 (** Parses an (XmlRpc-flavor) ISO-8601 date/time value from a string. *)
 val of_string : string -> t

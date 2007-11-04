@@ -30,7 +30,7 @@
 (** Version of XmlRpc-Light as a string. *)
 val version : string
 
-(** {6 High-level interface} *)
+(** {2 High-level interface} *)
 
 (** Example: {[
     let rpc = new XmlRpc.client "http://localhost:8000" in
@@ -250,12 +250,12 @@ object
   method completed : bool
 end
 
-(** {6 Utility functions} *)
+(** {2 Utility functions} *)
 
 (** Converts an XmlRpc value to a human-readable string. *)
 val dump : value -> string
 
-(** {6 Low-level interface} *)
+(** {2 Low-level interface} *)
 
 (** Type for XmlRpc messages. *)
 type message =
@@ -287,7 +287,7 @@ val xml_element_of_value :
   ?datetime_encoder:(XmlRpcDateTime.t -> string) ->
   value -> Xml.xml
 
-(** {6 Server tools} *)
+(** {2 Server tools} *)
 
 (** Creates a function from string (Xml representing a [MethodCall]) to
     string (Xml representing a [MethodResult] or [Fault]) given a function
