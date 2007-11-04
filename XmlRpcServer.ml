@@ -220,6 +220,13 @@ object (self)
 
   method set_error_handler f = error_handler <- f
 
+  method serve f input =
+    XmlRpc.serve
+      ~base64_encoder ~base64_decoder
+      ~datetime_encoder ~datetime_decoder
+      ~error_handler
+      f input
+
   method register name ?(help="") ?(signature=[]) ?(signatures=[]) f =
     if help <> ""
     then (Hashtbl.replace method_help name help;
@@ -292,10 +299,7 @@ object (self)
       | `POST ->
           let input = cgi#argument_value "BODY" in
           let output =
-            XmlRpc.serve
-              ~base64_encoder ~base64_decoder
-              ~datetime_encoder ~datetime_decoder
-              ~error_handler
+            self#serve
               (fun name ->
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)
@@ -330,10 +334,7 @@ object (self)
       | `POST ->
           let input = cgi#argument_value "BODY" in
           let output =
-            XmlRpc.serve
-              ~base64_encoder ~base64_decoder
-              ~datetime_encoder ~datetime_decoder
-              ~error_handler
+            self#serve
               (fun name ->
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)

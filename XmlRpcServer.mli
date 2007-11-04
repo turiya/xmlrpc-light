@@ -79,6 +79,11 @@ object
       {!XmlRpc.quiet_error_handler} for examples. *)
   method set_error_handler : (exn -> XmlRpc.message) -> unit
 
+  (** For use in subclasses; calls {!XmlRpc.serve} with the current
+      encoders, decoders, and error handler. *)
+  method serve :
+    (string -> XmlRpc.value list -> XmlRpc.value) -> string -> string
+
   (** Registers a method with the server.
 
       If a [help] string is specified, its contents will be returned for
