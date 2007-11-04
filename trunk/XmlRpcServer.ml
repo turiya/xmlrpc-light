@@ -25,7 +25,8 @@ type param_type =
     | `Double
     | `Int
     | `String
-    | `Struct ]
+    | `Struct
+    | `Undefined ]
 
 let invalid_method name =
   raise
@@ -114,7 +115,8 @@ let system_method_signature method_signatures = function
                                 | `Double -> `String "double"
                                 | `Int -> `String "int"
                                 | `String -> `String "string"
-                                | `Struct -> `String "struct")
+                                | `Struct -> `String "struct"
+                                | `Undefined -> `String "undefined")
                              signature))
                      (Hashtbl.find method_signatures name))
        with Not_found -> invalid_method name)
@@ -170,6 +172,7 @@ let check_signatures signatures f params =
                    | (`Int, `Int32 _)
                    | (`String, `String _)
                    | (`Struct, `Struct _)
+                   | (`Undefined, _)
                    | (_, `Nil)
                      -> ()
                    | _ -> passed := false)

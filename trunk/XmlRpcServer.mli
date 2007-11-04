@@ -36,8 +36,8 @@
 
 (** Type of parameters used in method signatures. *)
 type param_type =
-    [ `Array | `Binary | `Boolean | `DateTime
-    | `Double | `Int | `String | `Struct ]
+    [ `Array | `Binary | `Boolean | `DateTime | `Double
+    | `Int | `String | `Struct | `Undefined ]
 
 (** {2 Base classes} *)
 
