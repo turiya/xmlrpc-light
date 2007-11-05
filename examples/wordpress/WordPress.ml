@@ -64,25 +64,6 @@ module Category = struct
     result
 end
 
-module CategorySearchResult = struct
-  type t = { mutable category_id : int;
-             mutable category_name : string; }
-
-  let make () =
-    {category_id=0; category_name=""}
-
-  let of_xmlrpc value =
-    let result = make () in
-    iter_struct
-      (function
-         | ("category_id", `String v) ->
-             result.category_id <- int_of_string v
-         | ("category_name", `String v) -> result.category_name <- v
-         | (field, _) -> raise (Unknown_field field))
-      value;
-    result
-end
-
 module User = struct
   type t = { mutable user_id : int;
              mutable user_login : string;
@@ -132,6 +113,7 @@ module PageListItem = struct
          | ("page_title", `String v) -> result.page_title <- v
          | ("page_parent_id", `String v) -> result.page_parent_id <- int_of_string v
          | ("dateCreated", `DateTime v) -> result.date_created <- v
+         | ("date_created_gmt", `DateTime v) -> result.date_created <- v
          | (field, _) -> raise (Unknown_field field))
       value;
     result
@@ -188,6 +170,7 @@ module Page = struct
     iter_struct
       (function
          | ("dateCreated", `DateTime v) -> result.date_created <- v
+         | ("date_created_gmt", `DateTime v) -> result.date_created <- v
          | ("userid", `String v) -> result.user_id <- int_of_string v
          | ("page_id", `String v) -> result.page_id <- int_of_string v
          | ("page_status", `String v) -> result.page_status <- v
@@ -210,8 +193,8 @@ module Page = struct
              result.wp_page_parent_id <- int_of_string v
          | ("wp_page_parent_title", `String v) ->
              result.wp_page_parent_title <- v
-         | ("wp_page_order", `String v) ->
-             result.wp_page_order <-  int_of_string v
+         | ("wp_page_order", `Int v) ->
+             result.wp_page_order <- v
          | ("wp_author_id", `String v) ->
              result.wp_author_id <- int_of_string v
          | ("wp_author_display_name", `String v) ->
@@ -251,6 +234,7 @@ module Post = struct
              mutable text_more : string;
              mutable mt_allow_comments : bool;
              mutable mt_allow_pings : bool;
+             mutable mt_keywords : string;
              mutable wp_slug : string;
              mutable wp_password : string;
              mutable wp_author_id : int;
@@ -269,6 +253,7 @@ module Post = struct
      text_more="";
      mt_allow_comments=false;
      mt_allow_pings=false;
+     mt_keywords="";
      wp_slug="";
      wp_password="";
      wp_author_id=0;
@@ -279,6 +264,7 @@ module Post = struct
     iter_struct
       (function
          | ("dateCreated", `DateTime v) -> result.date_created <- v
+         | ("date_created_gmt", `DateTime v) -> result.date_created <- v
          | ("userid", `String v) -> result.user_id <- int_of_string v
          | ("postid", `String v) -> result.post_id <- int_of_string v
          | ("description", `String v) -> result.description <- v
@@ -291,6 +277,7 @@ module Post = struct
          | ("mt_text_more", `String v) -> result.text_more <- v
          | ("mt_allow_comments", `Int v) -> result.mt_allow_comments <- v<>0
          | ("mt_allow_pings", `Int v) -> result.mt_allow_pings <- v<>0
+         | ("mt_keywords", `String v) -> result.mt_keywords <- v
          | ("wp_slug", `String v) -> result.wp_slug <- v
          | ("wp_password", `String v) -> result.wp_password <- v
          | ("wp_author_id", `String v) -> result.wp_author_id <- int_of_string v
@@ -402,9 +389,8 @@ object (self)
                                "description", `String description]]))
 
   method suggest_categories category max_results =
-    map_array CategorySearchResult.of_xmlrpc
-      (rpc#call "wp.suggestCategories"
-         (std_args @ [`String category; `Int max_results]))
+    rpc#call "wp.suggestCategories"
+      (std_args @ [`String category; `Int max_results])
 
   method upload_file ~name ~typ ~bits ~overwrite =
     let value =
