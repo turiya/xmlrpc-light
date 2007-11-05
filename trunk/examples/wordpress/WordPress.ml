@@ -297,6 +297,7 @@ module Post = struct
              "mt_text_more", `String post.text_more;
              "mt_allow_comments", `Boolean post.mt_allow_comments;
              "mt_allow_pings", `Boolean post.mt_allow_pings;
+             "mt_keywords", `String post.mt_keywords;
              "wp_slug", `String post.wp_slug;
              "wp_password", `String post.wp_password;
              "wp_author_id", `Int post.wp_author_id]
