@@ -144,10 +144,23 @@ let rec value_of_xml_element
             (safe_map
                (function
                   | Xml.Element ("member", [],
+                                 [Xml.Element ("name", [], []);
+                                  Xml.Element ("value", [], [])]) ->
+                      (* Empty value is assumed to be an empty string. *)
+                      ("", `String "")
+                  | Xml.Element ("member", [],
                                  [Xml.Element ("name", [], [Xml.PCData name]);
                                   Xml.Element ("value", [], [])]) ->
                       (* Empty value is assumed to be an empty string. *)
                       (name, `String "")
+                  | Xml.Element ("member", [],
+                                 [Xml.Element ("name", [], []);
+                                  Xml.Element ("value", [], [value])]) ->
+                      ("",
+                       value_of_xml_element
+                         ~base64_decoder
+                         ~datetime_decoder
+                         value)
                   | Xml.Element ("member", [],
                                  [Xml.Element ("name", [], [Xml.PCData name]);
                                   Xml.Element ("value", [], [value])]) ->
