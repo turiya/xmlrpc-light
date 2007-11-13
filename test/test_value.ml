@@ -266,6 +266,17 @@ let test = "test_value" >:::
                                    Xml.Element
                                      ("value", [],
                                       [Xml.PCData "rutabega"])])])])])]))));
+   "to_struct_empty_name" >::
+     (fun () ->
+        assert_equal
+          ~printer:XmlRpc.dump
+          (`Struct ["", `String ""; "", `Int 42])
+          (XmlRpc.value_of_xml_element
+             (Xml.parse_string
+                "<struct>
+                   <member><name></name><value></value></member>
+                   <member><name/><value><int>42</int></value></member>
+                 </struct>")));
   ]
 
 let tests = test :: tests
