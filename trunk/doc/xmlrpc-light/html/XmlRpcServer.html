@@ -5,7 +5,7 @@
 <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
 <link rel="Start" href="index.html">
 <link rel="previous" href="XmlRpc.html">
-<link rel="next" href="XmlRpcBase64.html">
+<link rel="next" href="XmlRpcDateTime.html">
 <link rel="Up" href="index.html">
 <link title="Index of types" rel=Appendix href="index_types.html">
 <link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
@@ -17,15 +17,16 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
 <link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
-<link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><link title="Base classes" rel="Section" href="#6_Baseclasses">
-<link title="Server implementations" rel="Section" href="#6_Serverimplementations">
-<link title="Utility functions" rel="Section" href="#6_Utilityfunctions">
+<link title="XmlRpcDateTime" rel="Chapter" href="XmlRpcDateTime.html">
+<link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><link title="Base classes" rel="Section" href="#2_Baseclasses">
+<link title="Server implementations" rel="Section" href="#2_Serverimplementations">
+<link title="Utility functions" rel="Section" href="#2_Utilityfunctions">
 <title>XmlRpcServer</title>
 </head>
 <body>
 <div class="navbar"><a href="XmlRpc.html">Previous</a>
 &nbsp;<a href="index.html">Up</a>
-&nbsp;<a href="XmlRpcBase64.html">Next</a>
+&nbsp;<a href="XmlRpcDateTime.html">Next</a>
 </div>
 <center><h1>Module <a href="type_XmlRpcServer.html">XmlRpcServer</a></h1></center>
 <br>
@@ -46,14 +47,14 @@ Example: <pre><code class="code">    let server = new XmlRpcServer.cgi () in
     Additionally, the methods <code class="code">system.methodHelp</code> and <code class="code">system.methodSignature</code>
     will be made available if at least one method help or method signature is
     provided.<br>
-<pre><span class="keyword">type</span> <a name="TYPEparam_type"></a><code class="type"></code>param_type = <code class="type">[ `Array<br>       | `Binary<br>       | `Boolean<br>       | `DateTime<br>       | `Double<br>       | `Int<br>       | `String<br>       | `Struct ]</code> </pre>
+<pre><span class="keyword">type</span> <a name="TYPEparam_type"></a><code class="type"></code>param_type = <code class="type">[ `Array<br>       | `Binary<br>       | `Boolean<br>       | `DateTime<br>       | `Double<br>       | `Int<br>       | `String<br>       | `Struct<br>       | `Undefined ]</code> </pre>
 <div class="info">
 Type of parameters used in method signatures.<br>
 </div>
 
 <br>
-<a name="6_Baseclasses"></a>
-<h6>Base classes</h6><br>
+<a name="2_Baseclasses"></a>
+<h2>Base classes</h2><br>
 <pre><span class="keyword">class</span> <a name="TYPEbase"></a><span class="keyword">virtual</span> <a href="XmlRpcServer.base.html">base</a> : <code class="type"></code><code class="code">object</code> <a href="XmlRpcServer.base.html">..</a> <code class="code">end</code></pre><div class="info">
 Abstract base class for XmlRpc servers.
 </div>
@@ -61,8 +62,8 @@ Abstract base class for XmlRpc servers.
 Type of concrete XmlRpc server classes.
 </div>
 <br>
-<a name="6_Serverimplementations"></a>
-<h6>Server implementations</h6><br>
+<a name="2_Serverimplementations"></a>
+<h2>Server implementations</h2><br>
 <pre><span class="keyword">class</span> <a name="TYPEcgi"></a><a href="XmlRpcServer.cgi.html">cgi</a> : <code class="type">unit -> </code><code class="type"><a href="XmlRpcServer.server.html">server</a></code></pre><div class="info">
 CGI XmlRpc server based on Netcgi2.
 </div>
@@ -70,8 +71,8 @@ CGI XmlRpc server based on Netcgi2.
 Stand-alone XmlRpc server based on Netplex.
 </div>
 <br>
-<a name="6_Utilityfunctions"></a>
-<h6>Utility functions</h6><br>
+<a name="2_Utilityfunctions"></a>
+<h2>Utility functions</h2><br>
 <pre><span class="keyword">val</span> <a name="VALinvalid_method"></a>invalid_method : <code class="type">string -> 'a</code></pre><div class="info">
 Raise an <a href="XmlRpc.html#EXCEPTIONError"><code class="code">XmlRpc.Error</code></a> indicating a method name not found.<br>
 </div>

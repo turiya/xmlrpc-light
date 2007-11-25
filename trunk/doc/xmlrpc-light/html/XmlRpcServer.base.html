@@ -16,6 +16,7 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
 <link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
+<link title="XmlRpcDateTime" rel="Chapter" href="XmlRpcDateTime.html">
 <link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><title>XmlRpcServer.base</title>
 </head>
 <body>
@@ -29,22 +30,41 @@
 <pre><span class="keyword">val</span> <a name="ATTmethods"></a>methods : <code class="type">(string, <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a> list -> <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a>) Hashtbl.t</code></pre><div class="info">
 Hashtable mapping method names to implementation functions.<br>
 </div>
+<pre><span class="keyword">val</span> <a name="ATTbase64_encoder"></a><span class="keyword">mutable</span> base64_encoder : <code class="type">string -> string</code></pre><div class="info">
+Base-64 binary encoding function.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="ATTbase64_decoder"></a><span class="keyword">mutable</span> base64_decoder : <code class="type">string -> string</code></pre><div class="info">
+Base-64 binary decoding function.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="ATTdatetime_encoder"></a><span class="keyword">mutable</span> datetime_encoder : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a> -> string</code></pre><div class="info">
+ISO-8601 date/time encoding function.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="ATTdatetime_decoder"></a><span class="keyword">mutable</span> datetime_decoder : <code class="type">string -> <a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a></code></pre><div class="info">
+ISO-8601 date/time decoding function.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="ATTerror_handler"></a><span class="keyword">mutable</span> error_handler : <code class="type">exn -> <a href="XmlRpc.html#TYPEmessage">XmlRpc.message</a></code></pre><div class="info">
+Handler for unhandled exceptions.<br>
+</div>
 <pre><span class="keyword">method</span> <a name="METHODset_base64_encoder"></a>set_base64_encoder : <code class="type">(string -> string) -> unit</code></pre><div class="info">
 Sets an alternate Base-64 binary encoding function.<br>
 </div>
 <pre><span class="keyword">method</span> <a name="METHODset_base64_decoder"></a>set_base64_decoder : <code class="type">(string -> string) -> unit</code></pre><div class="info">
 Sets an alternate Base-64 binary decoding function.<br>
 </div>
-<pre><span class="keyword">method</span> <a name="METHODset_datetime_encoder"></a>set_datetime_encoder : <code class="type">(int * int * int * int * int * int * int -> string) -> unit</code></pre><div class="info">
+<pre><span class="keyword">method</span> <a name="METHODset_datetime_encoder"></a>set_datetime_encoder : <code class="type">(<a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a> -> string) -> unit</code></pre><div class="info">
 Sets an alternate ISO-8601 date/time encoding function.<br>
 </div>
-<pre><span class="keyword">method</span> <a name="METHODset_datetime_decoder"></a>set_datetime_decoder : <code class="type">(string -> int * int * int * int * int * int * int) -> unit</code></pre><div class="info">
+<pre><span class="keyword">method</span> <a name="METHODset_datetime_decoder"></a>set_datetime_decoder : <code class="type">(string -> <a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a>) -> unit</code></pre><div class="info">
 Sets an alternate ISO-8601 date/time decoding function.<br>
 </div>
 <pre><span class="keyword">method</span> <a name="METHODset_error_handler"></a>set_error_handler : <code class="type">(exn -> <a href="XmlRpc.html#TYPEmessage">XmlRpc.message</a>) -> unit</code></pre><div class="info">
 Sets an alternate handler for unhandled exceptions.
       See <a href="XmlRpc.html#VALdefault_error_handler"><code class="code">XmlRpc.default_error_handler</code></a> and
       <a href="XmlRpc.html#VALquiet_error_handler"><code class="code">XmlRpc.quiet_error_handler</code></a> for examples.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODserve"></a>serve : <code class="type">(string -> <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a> list -> <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a>) -> string -> string</code></pre><div class="info">
+For use in subclasses; calls <a href="XmlRpc.html#VALserve"><code class="code">XmlRpc.serve</code></a> with the current
+      encoders, decoders, and error handler.<br>
 </div>
 <pre><span class="keyword">method</span> <a name="METHODregister"></a>register : <code class="type">string -><br>       ?help:string -><br>       ?signature:<a href="XmlRpcServer.html#TYPEparam_type">param_type</a> list -><br>       ?signatures:<a href="XmlRpcServer.html#TYPEparam_type">param_type</a> list list -><br>       (<a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a> list -> <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a>) -> unit</code></pre><div class="info">
 Registers a method with the server.
