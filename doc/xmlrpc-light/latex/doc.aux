@@ -2,75 +2,113 @@
 \@writefile{toc}{\contentsline {section}{\numberline {1}Module {\tt  {XmlRpc}} : XmlRpc Light.}{1}}
 \newlabel{module:XmlRpc}{{1}{1}}
 \newlabel{val:XmlRpc.version}{{1}{1}}
-\newlabel{exception:XmlRpc.Error}{{1}{1}}
-\newlabel{type:XmlRpc.value}{{1}{1}}
-\newlabel{class:XmlRpc.client}{{1}{2}}
-\newlabel{val:XmlRpc.client.url}{{1}{2}}
-\newlabel{val:XmlRpc.client.debug}{{1}{2}}
-\newlabel{val:XmlRpc.client.headers}{{1}{2}}
-\newlabel{val:XmlRpc.client.insecure-underscoressl}{{1}{2}}
-\newlabel{val:XmlRpc.client.timeout}{{1}{2}}
-\newlabel{val:XmlRpc.client.useragent}{{1}{2}}
-\newlabel{method:XmlRpc.client.url}{{1}{2}}
-\newlabel{method:XmlRpc.client.debug}{{1}{2}}
-\newlabel{method:XmlRpc.client.set-underscoredebug}{{1}{2}}
-\newlabel{method:XmlRpc.client.headers}{{1}{2}}
-\newlabel{method:XmlRpc.client.set-underscoreheaders}{{1}{2}}
-\newlabel{method:XmlRpc.client.insecure-underscoressl}{{1}{3}}
-\newlabel{method:XmlRpc.client.set-underscoreinsecure-underscoressl}{{1}{3}}
-\newlabel{method:XmlRpc.client.timeout}{{1}{3}}
-\newlabel{method:XmlRpc.client.set-underscoretimeout}{{1}{3}}
-\newlabel{method:XmlRpc.client.useragent}{{1}{3}}
-\newlabel{method:XmlRpc.client.set-underscoreuseragent}{{1}{3}}
-\newlabel{method:XmlRpc.client.set-underscorebase64-underscoreencoder}{{1}{3}}
-\newlabel{method:XmlRpc.client.set-underscorebase64-underscoredecoder}{{1}{3}}
-\newlabel{method:XmlRpc.client.set-underscoredatetime-underscoreencoder}{{1}{3}}
-\newlabel{method:XmlRpc.client.set-underscoredatetime-underscoredecoder}{{1}{3}}
-\newlabel{method:XmlRpc.client.call}{{1}{3}}
-\newlabel{class:XmlRpc.multicall}{{1}{4}}
-\newlabel{method:XmlRpc.multicall.call}{{1}{4}}
-\newlabel{method:XmlRpc.multicall.execute}{{1}{4}}
-\newlabel{method:XmlRpc.multicall.result}{{1}{4}}
-\newlabel{method:XmlRpc.multicall.executed}{{1}{4}}
-\newlabel{method:XmlRpc.multicall.completed}{{1}{4}}
-\newlabel{val:XmlRpc.dump}{{1}{6}}
-\newlabel{val:XmlRpc.iso8601-underscoreof-underscoredatetime}{{1}{6}}
-\newlabel{val:XmlRpc.datetime-underscoreof-underscoreiso8601}{{1}{6}}
-\newlabel{type:XmlRpc.message}{{1}{6}}
-\newlabel{val:XmlRpc.message-underscoreof-underscorexml-underscoreelement}{{1}{6}}
-\newlabel{val:XmlRpc.xml-underscoreelement-underscoreof-underscoremessage}{{1}{6}}
-\newlabel{val:XmlRpc.value-underscoreof-underscorexml-underscoreelement}{{1}{6}}
-\newlabel{val:XmlRpc.xml-underscoreelement-underscoreof-underscorevalue}{{1}{7}}
-\newlabel{val:XmlRpc.serve}{{1}{7}}
-\newlabel{val:XmlRpc.default-underscoreerror-underscorehandler}{{1}{7}}
-\newlabel{val:XmlRpc.quiet-underscoreerror-underscorehandler}{{1}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}High-level interface}{1}}
+\newlabel{exception:XmlRpc.Error}{{1.1}{1}}
+\newlabel{type:XmlRpc.value}{{1.1}{2}}
+\newlabel{class:XmlRpc.client}{{1.1}{2}}
+\newlabel{val:XmlRpc.client.url}{{1.1}{2}}
+\newlabel{val:XmlRpc.client.debug}{{1.1}{2}}
+\newlabel{val:XmlRpc.client.headers}{{1.1}{2}}
+\newlabel{val:XmlRpc.client.insecure-underscoressl}{{1.1}{2}}
+\newlabel{val:XmlRpc.client.timeout}{{1.1}{2}}
+\newlabel{val:XmlRpc.client.useragent}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.url}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.debug}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.set-underscoredebug}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.headers}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.set-underscoreheaders}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.insecure-underscoressl}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.set-underscoreinsecure-underscoressl}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.timeout}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.set-underscoretimeout}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.useragent}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.set-underscoreuseragent}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.set-underscorebase64-underscoreencoder}{{1.1}{3}}
+\newlabel{method:XmlRpc.client.set-underscorebase64-underscoredecoder}{{1.1}{4}}
+\newlabel{method:XmlRpc.client.set-underscoredatetime-underscoreencoder}{{1.1}{4}}
+\newlabel{method:XmlRpc.client.set-underscoredatetime-underscoredecoder}{{1.1}{4}}
+\newlabel{method:XmlRpc.client.call}{{1.1}{4}}
+\newlabel{class:XmlRpc.multicall}{{1.1}{4}}
+\newlabel{method:XmlRpc.multicall.call}{{1.1}{4}}
+\newlabel{method:XmlRpc.multicall.execute}{{1.1}{4}}
+\newlabel{method:XmlRpc.multicall.result}{{1.1}{4}}
+\newlabel{method:XmlRpc.multicall.executed}{{1.1}{5}}
+\newlabel{method:XmlRpc.multicall.completed}{{1.1}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}Utility functions}{6}}
+\newlabel{val:XmlRpc.dump}{{1.2}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}Low-level interface}{6}}
+\newlabel{type:XmlRpc.message}{{1.3}{6}}
+\newlabel{val:XmlRpc.message-underscoreof-underscorexml-underscoreelement}{{1.3}{7}}
+\newlabel{val:XmlRpc.xml-underscoreelement-underscoreof-underscoremessage}{{1.3}{7}}
+\newlabel{val:XmlRpc.value-underscoreof-underscorexml-underscoreelement}{{1.3}{7}}
+\newlabel{val:XmlRpc.xml-underscoreelement-underscoreof-underscorevalue}{{1.3}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.4}Server tools}{7}}
+\newlabel{val:XmlRpc.serve}{{1.4}{7}}
+\newlabel{val:XmlRpc.default-underscoreerror-underscorehandler}{{1.4}{8}}
+\newlabel{val:XmlRpc.quiet-underscoreerror-underscorehandler}{{1.4}{8}}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Module {\tt  {XmlRpcServer}} : XmlRpc Light server.}{8}}
 \newlabel{module:XmlRpcServer}{{2}{8}}
 \newlabel{type:XmlRpcServer.param-underscoretype}{{2}{8}}
-\newlabel{class:XmlRpcServer.base}{{2}{8}}
-\newlabel{val:XmlRpcServer.base.methods}{{2}{8}}
-\newlabel{method:XmlRpcServer.base.set-underscorebase64-underscoreencoder}{{2}{8}}
-\newlabel{method:XmlRpcServer.base.set-underscorebase64-underscoredecoder}{{2}{8}}
-\newlabel{method:XmlRpcServer.base.set-underscoredatetime-underscoreencoder}{{2}{8}}
-\newlabel{method:XmlRpcServer.base.set-underscoredatetime-underscoredecoder}{{2}{8}}
-\newlabel{method:XmlRpcServer.base.set-underscoreerror-underscorehandler}{{2}{9}}
-\newlabel{method:XmlRpcServer.base.register}{{2}{9}}
-\newlabel{method:XmlRpcServer.base.unregister}{{2}{9}}
-\newlabel{method:XmlRpcServer.base.run}{{2}{9}}
-\newlabel{classtype:XmlRpcServer.server}{{2}{9}}
-\newlabel{method:XmlRpcServer.server.run}{{2}{9}}
-\newlabel{class:XmlRpcServer.cgi}{{2}{9}}
-\newlabel{class:XmlRpcServer.netplex}{{2}{10}}
-\newlabel{val:XmlRpcServer.invalid-underscoremethod}{{2}{10}}
-\newlabel{val:XmlRpcServer.invalid-underscoreparams}{{2}{10}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Module {\tt  {XmlRpcBase64}} : Base64 codec.}{10}}
-\newlabel{module:XmlRpcBase64}{{3}{10}}
-\newlabel{exception:XmlRpcBase64.Invalid-underscorechar}{{3}{10}}
-\newlabel{exception:XmlRpcBase64.Invalid-underscoretable}{{3}{10}}
-\newlabel{type:XmlRpcBase64.encoding-underscoretable}{{3}{10}}
-\newlabel{type:XmlRpcBase64.decoding-underscoretable}{{3}{10}}
-\newlabel{val:XmlRpcBase64.str-underscoreencode}{{3}{10}}
-\newlabel{val:XmlRpcBase64.str-underscoredecode}{{3}{10}}
-\newlabel{val:XmlRpcBase64.encode}{{3}{10}}
-\newlabel{val:XmlRpcBase64.decode}{{3}{10}}
-\newlabel{val:XmlRpcBase64.make-underscoredecoding-underscoretable}{{3}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Base classes}{8}}
+\newlabel{class:XmlRpcServer.base}{{2.1}{8}}
+\newlabel{val:XmlRpcServer.base.methods}{{2.1}{8}}
+\newlabel{val:XmlRpcServer.base.base64-underscoreencoder}{{2.1}{9}}
+\newlabel{val:XmlRpcServer.base.base64-underscoredecoder}{{2.1}{9}}
+\newlabel{val:XmlRpcServer.base.datetime-underscoreencoder}{{2.1}{9}}
+\newlabel{val:XmlRpcServer.base.datetime-underscoredecoder}{{2.1}{9}}
+\newlabel{val:XmlRpcServer.base.error-underscorehandler}{{2.1}{9}}
+\newlabel{method:XmlRpcServer.base.set-underscorebase64-underscoreencoder}{{2.1}{9}}
+\newlabel{method:XmlRpcServer.base.set-underscorebase64-underscoredecoder}{{2.1}{9}}
+\newlabel{method:XmlRpcServer.base.set-underscoredatetime-underscoreencoder}{{2.1}{9}}
+\newlabel{method:XmlRpcServer.base.set-underscoredatetime-underscoredecoder}{{2.1}{9}}
+\newlabel{method:XmlRpcServer.base.set-underscoreerror-underscorehandler}{{2.1}{9}}
+\newlabel{method:XmlRpcServer.base.serve}{{2.1}{9}}
+\newlabel{method:XmlRpcServer.base.register}{{2.1}{10}}
+\newlabel{method:XmlRpcServer.base.unregister}{{2.1}{10}}
+\newlabel{method:XmlRpcServer.base.run}{{2.1}{10}}
+\newlabel{classtype:XmlRpcServer.server}{{2.1}{10}}
+\newlabel{method:XmlRpcServer.server.run}{{2.1}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Server implementations}{10}}
+\newlabel{class:XmlRpcServer.cgi}{{2.2}{10}}
+\newlabel{class:XmlRpcServer.netplex}{{2.2}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Utility functions}{11}}
+\newlabel{val:XmlRpcServer.invalid-underscoremethod}{{2.3}{11}}
+\newlabel{val:XmlRpcServer.invalid-underscoreparams}{{2.3}{11}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Module {\tt  {XmlRpcDateTime}} : Date/time type.}{11}}
+\newlabel{module:XmlRpcDateTime}{{3}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Types}{11}}
+\newlabel{exception:XmlRpcDateTime.Parse-underscoreerror}{{3.1}{11}}
+\newlabel{type:XmlRpcDateTime.t}{{3.1}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Comparison}{11}}
+\newlabel{val:XmlRpcDateTime.compare}{{3.2}{11}}
+\newlabel{val:XmlRpcDateTime.equal}{{3.2}{11}}
+\newlabel{val:XmlRpcDateTime.hash}{{3.2}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Current date and time}{11}}
+\newlabel{val:XmlRpcDateTime.now}{{3.3}{11}}
+\newlabel{val:XmlRpcDateTime.now-underscoreutc}{{3.3}{11}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Time zone adjustments}{12}}
+\newlabel{val:XmlRpcDateTime.set-underscoretz-underscoreoffset}{{3.4}{12}}
+\newlabel{val:XmlRpcDateTime.fix-underscoretz-underscoreoffset}{{3.4}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Conversion}{12}}
+\newlabel{val:XmlRpcDateTime.from-underscoreunixfloat}{{3.5}{12}}
+\newlabel{val:XmlRpcDateTime.from-underscoreunixfloat-underscoreutc}{{3.5}{12}}
+\newlabel{val:XmlRpcDateTime.to-underscoreunixfloat}{{3.5}{12}}
+\newlabel{val:XmlRpcDateTime.to-underscoreunixfloat-underscoreutc}{{3.5}{12}}
+\newlabel{val:XmlRpcDateTime.from-underscoreunixtm}{{3.5}{12}}
+\newlabel{val:XmlRpcDateTime.from-underscoreunixtm-underscoreutc}{{3.5}{12}}
+\newlabel{val:XmlRpcDateTime.to-underscoreunixtm}{{3.5}{12}}
+\newlabel{val:XmlRpcDateTime.to-underscoreunixtm-underscoreutc}{{3.5}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}ISO-8601 parsing and generation}{12}}
+\newlabel{val:XmlRpcDateTime.of-underscorestring}{{3.6}{12}}
+\newlabel{val:XmlRpcDateTime.to-underscorestring}{{3.6}{12}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Module {\tt  {XmlRpcBase64}} : Base64 codec.}{13}}
+\newlabel{module:XmlRpcBase64}{{4}{13}}
+\newlabel{exception:XmlRpcBase64.Invalid-underscorechar}{{4}{13}}
+\newlabel{exception:XmlRpcBase64.Invalid-underscoretable}{{4}{13}}
+\newlabel{type:XmlRpcBase64.encoding-underscoretable}{{4}{13}}
+\newlabel{type:XmlRpcBase64.decoding-underscoretable}{{4}{13}}
+\newlabel{val:XmlRpcBase64.str-underscoreencode}{{4}{13}}
+\newlabel{val:XmlRpcBase64.str-underscoredecode}{{4}{13}}
+\newlabel{val:XmlRpcBase64.encode}{{4}{13}}
+\newlabel{val:XmlRpcBase64.decode}{{4}{13}}
+\newlabel{val:XmlRpcBase64.make-underscoredecoding-underscoretable}{{4}{13}}

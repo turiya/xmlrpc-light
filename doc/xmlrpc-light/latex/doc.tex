@@ -39,7 +39,8 @@ Version of XmlRpc-Light as a string.
 
 
 
-High-level interface
+\subsection{High-level interface}
+
 
 
 
@@ -70,10 +71,11 @@ Raised for all errors including XmlRpc faults (code, string).
 type value = [ `Array of value list
   | `Binary of string
   | `Boolean of bool
-  | `DateTime of int * int * int * int * int * int * int
+  | `DateTime of XmlRpcDateTime.t
   | `Double of float
   | `Int of int
   | `Int32 of int32
+  | `Nil
   | `String of string
   | `Struct of (string * value) list ] 
 \end{ocamldoccode}
@@ -83,11 +85,11 @@ Polymorphic variant type for XmlRpc values:\begin{itemize}
 \item {\tt{`Array}}: An ordered list of values
 \item {\tt{`Binary}}: A string containing binary data
 \item {\tt{`Boolean}}: A boolean
-\item {\tt{`DateTime}}: A date-time value
-      (year, month, day, hour, minute, second, timezone offset in minutes)
+\item {\tt{`DateTime}}: A date/time value
 \item {\tt{`Double}}: A floating-point value
 \item {\tt{`Int}}: An integer
 \item {\tt{`Int32}}: A 32-bit integer
+\item {\tt{`Nil}}: A null value
 \item {\tt{`String}}: A string
 \item {\tt{`Struct}}: An association list of (name, value) pairs
 \end{itemize}
@@ -318,8 +320,7 @@ Sets an alternate Base-64 binary decoding function.
 
 
 \label{method:XmlRpc.client.set-underscoredatetime-underscoreencoder}\begin{ocamldoccode}
-method set_datetime_encoder :
-  (int * int * int * int * int * int * int -> string) -> unit
+method set_datetime_encoder : (XmlRpcDateTime.t -> string) -> unit
 \end{ocamldoccode}
 \index{set-underscoredatetime-underscoreencoder@\verb`set_datetime_encoder`}
 \begin{ocamldocdescription}
@@ -330,8 +331,7 @@ Sets an alternate ISO-8601 date/time encoding function.
 
 
 \label{method:XmlRpc.client.set-underscoredatetime-underscoredecoder}\begin{ocamldoccode}
-method set_datetime_decoder :
-  (string -> int * int * int * int * int * int * int) -> unit
+method set_datetime_decoder : (string -> XmlRpcDateTime.t) -> unit
 \end{ocamldoccode}
 \index{set-underscoredatetime-underscoredecoder@\verb`set_datetime_decoder`}
 \begin{ocamldocdescription}
@@ -508,10 +508,13 @@ Convenience class for {\tt{system.multicall}} calls.
 \end{ocamldoccode}
 
     If an XmlRpc fault occurred, the exception will be thrown when the lazy
-    value is forced:
-        \verb`#` Lazy.force b;;
+    value is forced: \begin{ocamldoccode}
+
+        # Lazy.force b;;
         Exception: XmlRpc.Error (-32602, "server error. invalid method parameters").
-    ]\}
+    
+\end{ocamldoccode}
+
     This will not prevent further methods from executing successfully: \begin{ocamldoccode}
 
         # Lazy.force c;;
@@ -520,8 +523,9 @@ Convenience class for {\tt{system.multicall}} calls.
 \end{ocamldoccode}
 
     It is possible for a {\tt{multicall}} to be executed but not completed, for
-    example if a transport occurs. Aside from catching the exception, the
-    {\tt{completed}} property indicates if the call actually went through or not: \begin{ocamldoccode}
+    example if a transport error occurs. Aside from catching the exception,
+    the {\tt{completed}} property indicates if the call actually went through
+    or not: \begin{ocamldoccode}
 
         # mc#completed;;
         -- : bool = true
@@ -549,7 +553,8 @@ Convenience class for {\tt{system.multicall}} calls.
 
 
 
-Utility functions
+\subsection{Utility functions}
+
 
 
 
@@ -566,33 +571,8 @@ Converts an XmlRpc value to a human-readable string.
 
 
 
-\label{val:XmlRpc.iso8601-underscoreof-underscoredatetime}\begin{ocamldoccode}
-val iso8601_of_datetime : int * int * int * int * int * int * int -> string
-\end{ocamldoccode}
-\index{iso8601-underscoreof-underscoredatetime@\verb`iso8601_of_datetime`}
-\begin{ocamldocdescription}
-Converts a date/time tuple to an ISO-8601 string.
+\subsection{Low-level interface}
 
-
-\end{ocamldocdescription}
-
-
-
-
-\label{val:XmlRpc.datetime-underscoreof-underscoreiso8601}\begin{ocamldoccode}
-val datetime_of_iso8601 : string -> int * int * int * int * int * int * int
-\end{ocamldoccode}
-\index{datetime-underscoreof-underscoreiso8601@\verb`datetime_of_iso8601`}
-\begin{ocamldocdescription}
-Converts an ISO-8601 string to a date/time tuple.
-
-
-\end{ocamldocdescription}
-
-
-
-
-Low-level interface
 
 
 
@@ -615,8 +595,7 @@ Type for XmlRpc messages.
 \label{val:XmlRpc.message-underscoreof-underscorexml-underscoreelement}\begin{ocamldoccode}
 val message_of_xml_element :
   ?base64_decoder:(string -> string) ->
-  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
-  Xml.xml -> message
+  ?datetime_decoder:(string -> XmlRpcDateTime.t) -> Xml.xml -> message
 \end{ocamldoccode}
 \index{message-underscoreof-underscorexml-underscoreelement@\verb`message_of_xml_element`}
 \begin{ocamldocdescription}
@@ -631,8 +610,7 @@ Converts an Xml Light element to an XmlRpc message.
 \label{val:XmlRpc.xml-underscoreelement-underscoreof-underscoremessage}\begin{ocamldoccode}
 val xml_element_of_message :
   ?base64_encoder:(string -> string) ->
-  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
-  message -> Xml.xml
+  ?datetime_encoder:(XmlRpcDateTime.t -> string) -> message -> Xml.xml
 \end{ocamldoccode}
 \index{xml-underscoreelement-underscoreof-underscoremessage@\verb`xml_element_of_message`}
 \begin{ocamldocdescription}
@@ -647,8 +625,7 @@ Converts an XmlRpc message to an Xml Light element.
 \label{val:XmlRpc.value-underscoreof-underscorexml-underscoreelement}\begin{ocamldoccode}
 val value_of_xml_element :
   ?base64_decoder:(string -> string) ->
-  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
-  Xml.xml -> value
+  ?datetime_decoder:(string -> XmlRpcDateTime.t) -> Xml.xml -> value
 \end{ocamldoccode}
 \index{value-underscoreof-underscorexml-underscoreelement@\verb`value_of_xml_element`}
 \begin{ocamldocdescription}
@@ -663,8 +640,7 @@ Converts an Xml Light element to an XmlRpc value.
 \label{val:XmlRpc.xml-underscoreelement-underscoreof-underscorevalue}\begin{ocamldoccode}
 val xml_element_of_value :
   ?base64_encoder:(string -> string) ->
-  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
-  value -> Xml.xml
+  ?datetime_encoder:(XmlRpcDateTime.t -> string) -> value -> Xml.xml
 \end{ocamldoccode}
 \index{xml-underscoreelement-underscoreof-underscorevalue@\verb`xml_element_of_value`}
 \begin{ocamldocdescription}
@@ -676,7 +652,8 @@ Converts an XmlRpc value to an Xml Light element.
 
 
 
-Server tools
+\subsection{Server tools}
+
 
 
 
@@ -684,8 +661,8 @@ Server tools
 val serve :
   ?base64_encoder:(string -> string) ->
   ?base64_decoder:(string -> string) ->
-  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
-  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
+  ?datetime_encoder:(XmlRpcDateTime.t -> string) ->
+  ?datetime_decoder:(string -> XmlRpcDateTime.t) ->
   ?error_handler:(exn -> message) ->
   (string -> value list -> value) -> string -> string
 \end{ocamldoccode}
@@ -794,7 +771,8 @@ type param_type = [ `Array
   | `Double
   | `Int
   | `String
-  | `Struct ] 
+  | `Struct
+  | `Undefined ] 
 \end{ocamldoccode}
 \index{param-underscoretype@\verb`param_type`}
 \begin{ocamldocdescription}
@@ -806,7 +784,8 @@ Type of parameters used in method signatures.
 
 
 
-Base classes
+\subsection{Base classes}
+
 
 
 
@@ -823,6 +802,61 @@ val methods : (string, XmlRpc.value list -> XmlRpc.value) Hashtbl.t
 \index{methods@\verb`methods`}
 \begin{ocamldocdescription}
 Hashtable mapping method names to implementation functions.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpcServer.base.base64-underscoreencoder}\begin{ocamldoccode}
+val mutable base64_encoder : string -> string
+\end{ocamldoccode}
+\index{base64-underscoreencoder@\verb`base64_encoder`}
+\begin{ocamldocdescription}
+Base-64 binary encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpcServer.base.base64-underscoredecoder}\begin{ocamldoccode}
+val mutable base64_decoder : string -> string
+\end{ocamldoccode}
+\index{base64-underscoredecoder@\verb`base64_decoder`}
+\begin{ocamldocdescription}
+Base-64 binary decoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpcServer.base.datetime-underscoreencoder}\begin{ocamldoccode}
+val mutable datetime_encoder : XmlRpcDateTime.t -> string
+\end{ocamldoccode}
+\index{datetime-underscoreencoder@\verb`datetime_encoder`}
+\begin{ocamldocdescription}
+ISO-8601 date/time encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpcServer.base.datetime-underscoredecoder}\begin{ocamldoccode}
+val mutable datetime_decoder : string -> XmlRpcDateTime.t
+\end{ocamldoccode}
+\index{datetime-underscoredecoder@\verb`datetime_decoder`}
+\begin{ocamldocdescription}
+ISO-8601 date/time decoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpcServer.base.error-underscorehandler}\begin{ocamldoccode}
+val mutable error_handler : exn -> XmlRpc.message
+\end{ocamldoccode}
+\index{error-underscorehandler@\verb`error_handler`}
+\begin{ocamldocdescription}
+Handler for unhandled exceptions.
 
 
 \end{ocamldocdescription}
@@ -851,8 +885,7 @@ Sets an alternate Base-64 binary decoding function.
 
 
 \label{method:XmlRpcServer.base.set-underscoredatetime-underscoreencoder}\begin{ocamldoccode}
-method set_datetime_encoder :
-  (int * int * int * int * int * int * int -> string) -> unit
+method set_datetime_encoder : (XmlRpcDateTime.t -> string) -> unit
 \end{ocamldoccode}
 \index{set-underscoredatetime-underscoreencoder@\verb`set_datetime_encoder`}
 \begin{ocamldocdescription}
@@ -863,8 +896,7 @@ Sets an alternate ISO-8601 date/time encoding function.
 
 
 \label{method:XmlRpcServer.base.set-underscoredatetime-underscoredecoder}\begin{ocamldoccode}
-method set_datetime_decoder :
-  (string -> int * int * int * int * int * int * int) -> unit
+method set_datetime_decoder : (string -> XmlRpcDateTime.t) -> unit
 \end{ocamldoccode}
 \index{set-underscoredatetime-underscoredecoder@\verb`set_datetime_decoder`}
 \begin{ocamldocdescription}
@@ -882,6 +914,19 @@ method set_error_handler : (exn -> XmlRpc.message) -> unit
 Sets an alternate handler for unhandled exceptions.
       See {\tt{XmlRpc.default\_error\_handler}}[\ref{val:XmlRpc.default-underscoreerror-underscorehandler}] and
       {\tt{XmlRpc.quiet\_error\_handler}}[\ref{val:XmlRpc.quiet-underscoreerror-underscorehandler}] for examples.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.serve}\begin{ocamldoccode}
+method serve :
+  (string -> XmlRpc.value list -> XmlRpc.value) -> string -> string
+\end{ocamldoccode}
+\index{serve@\verb`serve`}
+\begin{ocamldocdescription}
+For use in subclasses; calls {\tt{XmlRpc.serve}}[\ref{val:XmlRpc.serve}] with the current
+      encoders, decoders, and error handler.
 
 
 \end{ocamldocdescription}
@@ -982,7 +1027,8 @@ Type of concrete XmlRpc server classes.
 
 
 
-Server implementations
+\subsection{Server implementations}
+
 
 
 
@@ -1016,7 +1062,8 @@ Stand-alone XmlRpc server based on Netplex.
 
 
 
-Utility functions
+\subsection{Utility functions}
+
 
 
 
@@ -1039,6 +1086,299 @@ val invalid_params : unit -> 'a
 \index{invalid-underscoreparams@\verb`invalid_params`}
 \begin{ocamldocdescription}
 Raise an {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] indicating invalid method parameters.
+
+
+\end{ocamldocdescription}
+
+
+\section{Module {\tt{XmlRpcDateTime}} : Date/time type.}
+\label{module:XmlRpcDateTime}\index{XmlRpcDateTime@\verb`XmlRpcDateTime`}
+
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\subsection{Types}
+
+
+
+
+\label{exception:XmlRpcDateTime.Parse-underscoreerror}\begin{ocamldoccode}
+exception Parse_error of string
+\end{ocamldoccode}
+\index{Parse-underscoreerror@\verb`Parse_error`}
+\begin{ocamldocdescription}
+Raised by {\tt{XmlRpcDateTime.of\_string}}[\ref{val:XmlRpcDateTime.of-underscorestring}] if a string could not be parsed. The exception
+    contains the input string.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:XmlRpcDateTime.t}\begin{ocamldoccode}
+type t = int * int * int * int * int * int * int 
+\end{ocamldoccode}
+\index{t@\verb`t`}
+\begin{ocamldocdescription}
+Type of XmlRpc-compatible date/time values.
+    (year, month, day, hour, minute, second, time zone offset in minutes)
+
+
+\end{ocamldocdescription}
+
+
+
+
+\subsection{Comparison}
+
+
+
+
+\label{val:XmlRpcDateTime.compare}\begin{ocamldoccode}
+val compare : t -> t -> int
+\end{ocamldoccode}
+\index{compare@\verb`compare`}
+\begin{ocamldocdescription}
+Standard comparator for date/time values. Converts all values to UTC
+    before comparing to ensure correct behavior with values of differing
+    time zones.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.equal}\begin{ocamldoccode}
+val equal : t -> t -> bool
+\end{ocamldoccode}
+\index{equal@\verb`equal`}
+\begin{ocamldocdescription}
+Standard equality function for date/time values. Converts all values
+    to UTC before comparing.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.hash}\begin{ocamldoccode}
+val hash : t -> int
+\end{ocamldoccode}
+\index{hash@\verb`hash`}
+\begin{ocamldocdescription}
+Standard hash function for date/time values. Converts values to UTC
+    before hashing.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\subsection{Current date and time}
+
+
+
+
+\label{val:XmlRpcDateTime.now}\begin{ocamldoccode}
+val now : unit -> t
+\end{ocamldoccode}
+\index{now@\verb`now`}
+\begin{ocamldocdescription}
+Returns the current date and time in the local time zone.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.now-underscoreutc}\begin{ocamldoccode}
+val now_utc : unit -> t
+\end{ocamldoccode}
+\index{now-underscoreutc@\verb`now_utc`}
+\begin{ocamldocdescription}
+Returns the current date and time in UTC.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\subsection{Time zone adjustments}
+
+
+
+
+\label{val:XmlRpcDateTime.set-underscoretz-underscoreoffset}\begin{ocamldoccode}
+val set_tz_offset : int -> t -> t
+\end{ocamldoccode}
+\index{set-underscoretz-underscoreoffset@\verb`set_tz_offset`}
+\begin{ocamldocdescription}
+Adjusts the time zone offset, preserving equality.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.fix-underscoretz-underscoreoffset}\begin{ocamldoccode}
+val fix_tz_offset : int -> t -> t
+\end{ocamldoccode}
+\index{fix-underscoretz-underscoreoffset@\verb`fix_tz_offset`}
+\begin{ocamldocdescription}
+Forces the time zone offset to a different value, ignoring all other
+    fields. Use this to correct the time zone of a date/time value that
+    was received without a time zone offset and is known not to be UTC.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\subsection{Conversion}
+
+
+
+
+\label{val:XmlRpcDateTime.from-underscoreunixfloat}\begin{ocamldoccode}
+val from_unixfloat : float -> t
+\end{ocamldoccode}
+\index{from-underscoreunixfloat@\verb`from_unixfloat`}
+\begin{ocamldocdescription}
+Builds a date/time value from epoch seconds in the local time zone.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.from-underscoreunixfloat-underscoreutc}\begin{ocamldoccode}
+val from_unixfloat_utc : float -> t
+\end{ocamldoccode}
+\index{from-underscoreunixfloat-underscoreutc@\verb`from_unixfloat_utc`}
+\begin{ocamldocdescription}
+Builds a date/time value from epoch seconds in UTC.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.to-underscoreunixfloat}\begin{ocamldoccode}
+val to_unixfloat : t -> float
+\end{ocamldoccode}
+\index{to-underscoreunixfloat@\verb`to_unixfloat`}
+\begin{ocamldocdescription}
+Converts a date/time value to epoch seconds in the local time zone.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.to-underscoreunixfloat-underscoreutc}\begin{ocamldoccode}
+val to_unixfloat_utc : t -> float
+\end{ocamldoccode}
+\index{to-underscoreunixfloat-underscoreutc@\verb`to_unixfloat_utc`}
+\begin{ocamldocdescription}
+Converts a date/time value to epoch seconds in UTC.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.from-underscoreunixtm}\begin{ocamldoccode}
+val from_unixtm : Unix.tm -> t
+\end{ocamldoccode}
+\index{from-underscoreunixtm@\verb`from_unixtm`}
+\begin{ocamldocdescription}
+Builds a date/time value from a Unix.tm value in the local time zone.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.from-underscoreunixtm-underscoreutc}\begin{ocamldoccode}
+val from_unixtm_utc : Unix.tm -> t
+\end{ocamldoccode}
+\index{from-underscoreunixtm-underscoreutc@\verb`from_unixtm_utc`}
+\begin{ocamldocdescription}
+Builds a date/time value from a Unix.tm value in UTC.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.to-underscoreunixtm}\begin{ocamldoccode}
+val to_unixtm : t -> Unix.tm
+\end{ocamldoccode}
+\index{to-underscoreunixtm@\verb`to_unixtm`}
+\begin{ocamldocdescription}
+Converts a date/time value to a Unix.tm value in the local time zone.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.to-underscoreunixtm-underscoreutc}\begin{ocamldoccode}
+val to_unixtm_utc : t -> Unix.tm
+\end{ocamldoccode}
+\index{to-underscoreunixtm-underscoreutc@\verb`to_unixtm_utc`}
+\begin{ocamldocdescription}
+Converts a date/time value to a Unix.tm value in UTC.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\subsection{ISO-8601 parsing and generation}
+
+
+
+
+\label{val:XmlRpcDateTime.of-underscorestring}\begin{ocamldoccode}
+val of_string : string -> t
+\end{ocamldoccode}
+\index{of-underscorestring@\verb`of_string`}
+\begin{ocamldocdescription}
+Parses an (XmlRpc-flavor) ISO-8601 date/time value from a string.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcDateTime.to-underscorestring}\begin{ocamldoccode}
+val to_string : t -> string
+\end{ocamldoccode}
+\index{to-underscorestring@\verb`to_string`}
+\begin{ocamldocdescription}
+Generates an ISO-8601 string from a date/time value.
 
 
 \end{ocamldocdescription}
