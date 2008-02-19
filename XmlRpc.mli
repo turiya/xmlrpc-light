@@ -316,6 +316,12 @@ val serve :
   ?error_handler:(exn -> message) ->
   (string -> value list -> value) -> string -> string
 
+(** Performs the same function as [serve], but operates on typed messages
+    instead of strings. *)
+val serve_message :
+  ?error_handler:(exn -> message) ->
+  (string -> value list -> value) -> message -> message
+
 (** The default error handler for [serve].
 
     This error handler catches all exceptions and converts them into
