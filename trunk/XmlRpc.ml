@@ -535,6 +535,17 @@ let default_error_handler e =
 let quiet_error_handler e =
   raise e
 
+let serve_message ?(error_handler=default_error_handler) f message =
+  try
+    match message with
+      | MethodCall (name, params) ->
+          (try MethodResponse (f name params) with
+             | Error _ as e -> raise e
+             | e -> error_handler e)
+      | _ -> invalid_xmlrpc ()
+  with Error (code, string) ->
+    Fault (code, string)
+
 let serve
     ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
     ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
@@ -542,27 +553,23 @@ let serve
     ?(datetime_decoder=XmlRpcDateTime.of_string)
     ?(error_handler=default_error_handler)
     f s =
+  fix_dotted_tags s;
   try
     begin
       try
-        begin
-          fix_dotted_tags s;
-          match (message_of_xml_element
-                   ~base64_decoder
-                   ~datetime_decoder
-                   (Xml.parse_string s))
-          with
-            | MethodCall (name, params) ->
-                Xml.to_string_fmt
-                  (xml_element_of_message
-                     ~base64_encoder
-                     ~datetime_encoder
-                     (try MethodResponse (f name params) with
-                        | Error _ as e -> raise e
-                        | e -> error_handler e))
-            | _ -> invalid_xmlrpc ()
-        end
-      with Xml.Error _ -> invalid_xml ()
+        let message =
+          message_of_xml_element
+            ~base64_decoder
+            ~datetime_decoder
+            (Xml.parse_string s) in
+        let response =
+          xml_element_of_message
+            ~base64_encoder
+            ~datetime_encoder
+            (serve_message ~error_handler f message) in
+        Xml.to_string_fmt response
+      with Xml.Error _ ->
+        invalid_xml ()
     end
   with Error (code, string) ->
     Xml.to_string_fmt (xml_element_of_message (Fault (code, string)))
