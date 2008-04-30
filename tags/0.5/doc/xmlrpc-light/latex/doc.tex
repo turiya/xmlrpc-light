@@ -1,0 +1,1181 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{XmlRpc}} : XmlRpc Light.}
+\label{module:XmlRpc}\index{XmlRpc@\verb`XmlRpc`}
+
+
+
+    XmlRpc Light is a minimal XmlRpc library based on Xml Light and Ocamlnet.
+
+
+    It provides a type for values, a client class with a simple calling
+    interface, and low-level tools that can be used to implement a server.
+
+
+    {\it (c) 2007 Dave Benjamin}
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{val:XmlRpc.version}\begin{ocamldoccode}
+val version : string
+\end{ocamldoccode}
+\index{version@\verb`version`}
+\begin{ocamldocdescription}
+Version of XmlRpc-Light as a string.
+
+
+\end{ocamldocdescription}
+
+
+
+
+High-level interface
+
+
+
+Example: \begin{ocamldoccode}
+
+    let rpc = new XmlRpc.client "http://localhost:8000" in
+    let result = rpc#call "echo" [`String "hello!"] in
+    print_endline (XmlRpc.dump result) 
+\end{ocamldoccode}
+
+
+
+
+\label{exception:XmlRpc.Error}\begin{ocamldoccode}
+exception Error of (int * string)
+\end{ocamldoccode}
+\index{Error@\verb`Error`}
+\begin{ocamldocdescription}
+Raised for all errors including XmlRpc faults (code, string).
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:XmlRpc.value}\begin{ocamldoccode}
+type value = [ `Array of value list
+  | `Binary of string
+  | `Boolean of bool
+  | `DateTime of int * int * int * int * int * int * int
+  | `Double of float
+  | `Int of int
+  | `Int32 of int32
+  | `String of string
+  | `Struct of (string * value) list ] 
+\end{ocamldoccode}
+\index{value@\verb`value`}
+\begin{ocamldocdescription}
+Polymorphic variant type for XmlRpc values:\begin{itemize}
+\item {\tt{`Array}}: An ordered list of values
+\item {\tt{`Binary}}: A string containing binary data
+\item {\tt{`Boolean}}: A boolean
+\item {\tt{`DateTime}}: A date-time value
+      (year, month, day, hour, minute, second, timezone offset in minutes)
+\item {\tt{`Double}}: A floating-point value
+\item {\tt{`Int}}: An integer
+\item {\tt{`Int32}}: A 32-bit integer
+\item {\tt{`String}}: A string
+\item {\tt{`Struct}}: An association list of (name, value) pairs
+\end{itemize}
+
+    Note that base64-encoding of {\tt{`Binary}} values is done automatically.
+    You do not need to do the encoding yourself.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\begin{ocamldoccode}
+{\tt{class client : }}{\tt{?debug:bool -> ?headers:(string * string) list -> ?insecure\_ssl:bool -> ?timeout:float -> ?useragent:string -> string -> }}\end{ocamldoccode}
+\label{class:XmlRpc.client}\index{client@\verb`client`}
+
+\begin{ocamldocobjectend}
+
+
+\label{val:XmlRpc.client.url}\begin{ocamldoccode}
+val url : string
+\end{ocamldoccode}
+\index{url@\verb`url`}
+\begin{ocamldocdescription}
+Url of the remote XmlRpc server.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpc.client.debug}\begin{ocamldoccode}
+val mutable debug : bool
+\end{ocamldoccode}
+\index{debug@\verb`debug`}
+\begin{ocamldocdescription}
+If true, Xml messages will be printed to standard error.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpc.client.headers}\begin{ocamldoccode}
+val mutable headers : (string * string) list
+\end{ocamldoccode}
+\index{headers@\verb`headers`}
+\begin{ocamldocdescription}
+List of custom HTTP headers to send with each request.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpc.client.insecure-underscoressl}\begin{ocamldoccode}
+val mutable insecure_ssl : bool
+\end{ocamldoccode}
+\index{insecure-underscoressl@\verb`insecure_ssl`}
+\begin{ocamldocdescription}
+If true, SSL will be allowed even if the certificate is self-signed.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpc.client.timeout}\begin{ocamldoccode}
+val mutable timeout : float
+\end{ocamldoccode}
+\index{timeout@\verb`timeout`}
+\begin{ocamldocdescription}
+Maximum time to wait for a request to complete, in seconds.
+
+
+\end{ocamldocdescription}
+
+
+\label{val:XmlRpc.client.useragent}\begin{ocamldoccode}
+val mutable useragent : string
+\end{ocamldoccode}
+\index{useragent@\verb`useragent`}
+\begin{ocamldocdescription}
+User-agent to send in request headers.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.url}\begin{ocamldoccode}
+method url : string
+\end{ocamldoccode}
+\index{url@\verb`url`}
+\begin{ocamldocdescription}
+Gets {\tt{url}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.debug}\begin{ocamldoccode}
+method debug : bool
+\end{ocamldoccode}
+\index{debug@\verb`debug`}
+\begin{ocamldocdescription}
+Gets {\tt{debug}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoredebug}\begin{ocamldoccode}
+method set_debug : bool -> unit
+\end{ocamldoccode}
+\index{set-underscoredebug@\verb`set_debug`}
+\begin{ocamldocdescription}
+Sets {\tt{debug}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.headers}\begin{ocamldoccode}
+method headers : (string * string) list
+\end{ocamldoccode}
+\index{headers@\verb`headers`}
+\begin{ocamldocdescription}
+Gets {\tt{headers}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoreheaders}\begin{ocamldoccode}
+method set_headers : (string * string) list -> unit
+\end{ocamldoccode}
+\index{set-underscoreheaders@\verb`set_headers`}
+\begin{ocamldocdescription}
+Sets {\tt{headers}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.insecure-underscoressl}\begin{ocamldoccode}
+method insecure_ssl : bool
+\end{ocamldoccode}
+\index{insecure-underscoressl@\verb`insecure_ssl`}
+\begin{ocamldocdescription}
+Gets {\tt{insecure\_ssl}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoreinsecure-underscoressl}\begin{ocamldoccode}
+method set_insecure_ssl : bool -> unit
+\end{ocamldoccode}
+\index{set-underscoreinsecure-underscoressl@\verb`set_insecure_ssl`}
+\begin{ocamldocdescription}
+Sets {\tt{insecure\_ssl}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.timeout}\begin{ocamldoccode}
+method timeout : float
+\end{ocamldoccode}
+\index{timeout@\verb`timeout`}
+\begin{ocamldocdescription}
+Gets {\tt{timeout}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoretimeout}\begin{ocamldoccode}
+method set_timeout : float -> unit
+\end{ocamldoccode}
+\index{set-underscoretimeout@\verb`set_timeout`}
+\begin{ocamldocdescription}
+Sets {\tt{timeout}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.useragent}\begin{ocamldoccode}
+method useragent : string
+\end{ocamldoccode}
+\index{useragent@\verb`useragent`}
+\begin{ocamldocdescription}
+Gets {\tt{useragent}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoreuseragent}\begin{ocamldoccode}
+method set_useragent : string -> unit
+\end{ocamldoccode}
+\index{set-underscoreuseragent@\verb`set_useragent`}
+\begin{ocamldocdescription}
+Sets {\tt{useragent}}.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscorebase64-underscoreencoder}\begin{ocamldoccode}
+method set_base64_encoder : (string -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscorebase64-underscoreencoder@\verb`set_base64_encoder`}
+\begin{ocamldocdescription}
+Sets an alternate Base-64 binary encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscorebase64-underscoredecoder}\begin{ocamldoccode}
+method set_base64_decoder : (string -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscorebase64-underscoredecoder@\verb`set_base64_decoder`}
+\begin{ocamldocdescription}
+Sets an alternate Base-64 binary decoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoredatetime-underscoreencoder}\begin{ocamldoccode}
+method set_datetime_encoder :
+  (int * int * int * int * int * int * int -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscoredatetime-underscoreencoder@\verb`set_datetime_encoder`}
+\begin{ocamldocdescription}
+Sets an alternate ISO-8601 date/time encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.set-underscoredatetime-underscoredecoder}\begin{ocamldoccode}
+method set_datetime_decoder :
+  (string -> int * int * int * int * int * int * int) -> unit
+\end{ocamldoccode}
+\index{set-underscoredatetime-underscoredecoder@\verb`set_datetime_decoder`}
+\begin{ocamldocdescription}
+Sets an alternate ISO-8601 date/time decoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.client.call}\begin{ocamldoccode}
+method call : string -> XmlRpc.value list -> XmlRpc.value
+\end{ocamldoccode}
+\index{call@\verb`call`}
+\begin{ocamldocdescription}
+{\tt{call name params}} invokes an XmlRpc method and returns the result,
+      or raises {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] on error.
+
+
+\end{ocamldocdescription}
+\end{ocamldocobjectend}
+
+
+\begin{ocamldocdescription}
+Class for XmlRpc clients. Takes a single mandatory argument, {\tt{url}}.
+
+
+    If {\tt{url}} is of the form "http://username:password@$\ldots$", basic
+    authentication will be used.
+
+
+    If {\tt{url}} starts with "https", Curl will be used instead of Ocamlnet.
+    The "curl" command-line program must be in your path for this to work.
+    You can use the {\tt{insecure\_ssl}} setting to allow connections to servers
+    with self-signed certificates; by default this is false and certificates
+    must be valid.
+
+
+    {\tt{timeout}} can be used to specify the maximum amount of time
+    elapsed before a connection is cancelled. It defaults to 300.0 seconds.
+
+
+    {\tt{headers}} may contain an array of (name, value) pairs of additional
+    headers to send with each request.
+
+
+    The {\tt{useragent}} setting provides a convenient way to change the
+    User-Agent header, which defaults to "XmlRpc-Light/$<$version$>$".
+
+
+    The {\tt{debug}} setting, if true, will enable verbose debugging output to
+    the standard error strem.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\begin{ocamldoccode}
+{\tt{class multicall : }}{\tt{client -> }}\end{ocamldoccode}
+\label{class:XmlRpc.multicall}\index{multicall@\verb`multicall`}
+
+\begin{ocamldocobjectend}
+
+
+\label{method:XmlRpc.multicall.call}\begin{ocamldoccode}
+method call : string -> XmlRpc.value list -> XmlRpc.value Lazy.t
+\end{ocamldoccode}
+\index{call@\verb`call`}
+\begin{ocamldocdescription}
+Adds a call to this {\tt{multicall}} instance.
+      If the call has already executed, the following exception will
+      be raised:
+      Failure "multicall\verb`#`call: already executed".
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.multicall.execute}\begin{ocamldoccode}
+method execute : unit -> unit
+\end{ocamldoccode}
+\index{execute@\verb`execute`}
+\begin{ocamldocdescription}
+Forces the call to execute immediately.
+      If the call has already executed and completed successfully, the
+      following exception will be raised:
+      Failure "multicall\verb`#`execute: already completed".
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.multicall.result}\begin{ocamldoccode}
+method result : int -> XmlRpc.value
+\end{ocamldoccode}
+\index{result@\verb`result`}
+\begin{ocamldocdescription}
+Returns a {\tt{multicall}} result, executing the call if necessary.
+      The results are numbered starting with zero.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.multicall.executed}\begin{ocamldoccode}
+method executed : bool
+\end{ocamldoccode}
+\index{executed@\verb`executed`}
+\begin{ocamldocdescription}
+True if the call has executed, whether or not it succeeded.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpc.multicall.completed}\begin{ocamldoccode}
+method completed : bool
+\end{ocamldoccode}
+\index{completed@\verb`completed`}
+\begin{ocamldocdescription}
+True of the call has executed and completed successfully.
+
+
+\end{ocamldocdescription}
+\end{ocamldocobjectend}
+
+
+\begin{ocamldocdescription}
+Convenience class for {\tt{system.multicall}} calls.
+
+
+    Instances take an {\tt{XmlRpc.client}}[\ref{class:XmlRpc.client}] as an argument: \begin{ocamldoccode}
+
+        # let mc = new XmlRpc.multicall client;;
+        val mc : XmlRpc.multicall = <obj>
+    
+\end{ocamldoccode}
+
+    The "call" method works like {\tt{client\verb`#`call}}, but it returns a lazy
+    value: \begin{ocamldoccode}
+
+        # let a = mc#call "demo.addTwoNumbers" [`Int 3; `Int 4];;
+        val a : XmlRpc.value Lazy.t = <lazy>
+        # let b = mc#call "demo.addTwoNumbers" [`Int 42; `String "oh noes!"];;
+        val b : XmlRpc.value Lazy.t = <lazy>
+        # let c = mc#call "demo.addTwoNumbers" [`Double 3.0; `Double 4.0];;
+        val c : XmlRpc.value Lazy.t = <lazy>
+    
+\end{ocamldoccode}
+
+    At this point, the call has not been executed yet: \begin{ocamldoccode}
+
+        # mc#executed;;
+        -- : bool = false
+    
+\end{ocamldoccode}
+
+    As soon as one of the return values is forced, the call is executed: \begin{ocamldoccode}
+
+        # Lazy.force a;;
+        -- : XmlRpc.value = `Int 7
+        # mc#executed;;
+        -- : bool = true
+    
+\end{ocamldoccode}
+
+    Once a call has been executed, this instance cannot be used to make any
+    further calls; instead, a new {\tt{multicall}} instance must be created: \begin{ocamldoccode}
+
+        # mc#call "demo.addTwoNumbers" [`Int 2; `Int 2];;
+        Exception: Failure "multicall#call: already executed".
+    
+\end{ocamldoccode}
+
+    If an XmlRpc fault occurred, the exception will be thrown when the lazy
+    value is forced:
+        \verb`#` Lazy.force b;;
+        Exception: XmlRpc.Error (-32602, "server error. invalid method parameters").
+    ]\}
+    This will not prevent further methods from executing successfully: \begin{ocamldoccode}
+
+        # Lazy.force c;;
+        -- : XmlRpc.value = `Double 7.
+    
+\end{ocamldoccode}
+
+    It is possible for a {\tt{multicall}} to be executed but not completed, for
+    example if a transport occurs. Aside from catching the exception, the
+    {\tt{completed}} property indicates if the call actually went through or not: \begin{ocamldoccode}
+
+        # mc#completed;;
+        -- : bool = true
+    
+\end{ocamldoccode}
+
+    It is not necessary to use lazy values. Instead, the call can be
+    executed explicitly, and the results can be retrieved by number: \begin{ocamldoccode}
+
+        # let mc = new XmlRpc.multicall client;;
+        val mc : XmlRpc.multicall = <obj>
+        # ignore (mc#call "demo.addTwoNumbers" [`Int 2; `Int 2]);;
+        -- : unit = ()
+        # ignore (mc#call "demo.addTwoNumbers" [`Int 3; `Int 3]);;
+        -- : unit = ()
+        # mc#result 1;;
+        -- : XmlRpc.value = `Int 6
+    
+\end{ocamldoccode}
+
+
+
+\end{ocamldocdescription}
+
+
+
+
+Utility functions
+
+
+
+\label{val:XmlRpc.dump}\begin{ocamldoccode}
+val dump : value -> string
+\end{ocamldoccode}
+\index{dump@\verb`dump`}
+\begin{ocamldocdescription}
+Converts an XmlRpc value to a human-readable string.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.iso8601-underscoreof-underscoredatetime}\begin{ocamldoccode}
+val iso8601_of_datetime : int * int * int * int * int * int * int -> string
+\end{ocamldoccode}
+\index{iso8601-underscoreof-underscoredatetime@\verb`iso8601_of_datetime`}
+\begin{ocamldocdescription}
+Converts a date/time tuple to an ISO-8601 string.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.datetime-underscoreof-underscoreiso8601}\begin{ocamldoccode}
+val datetime_of_iso8601 : string -> int * int * int * int * int * int * int
+\end{ocamldoccode}
+\index{datetime-underscoreof-underscoreiso8601@\verb`datetime_of_iso8601`}
+\begin{ocamldocdescription}
+Converts an ISO-8601 string to a date/time tuple.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Low-level interface
+
+
+
+\label{type:XmlRpc.message}\begin{ocamldoccode}
+type message =
+  | MethodCall of (string * value list)
+  | MethodResponse of value
+  | Fault of (int * string)
+\end{ocamldoccode}
+\index{message@\verb`message`}
+\begin{ocamldocdescription}
+Type for XmlRpc messages.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.message-underscoreof-underscorexml-underscoreelement}\begin{ocamldoccode}
+val message_of_xml_element :
+  ?base64_decoder:(string -> string) ->
+  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
+  Xml.xml -> message
+\end{ocamldoccode}
+\index{message-underscoreof-underscorexml-underscoreelement@\verb`message_of_xml_element`}
+\begin{ocamldocdescription}
+Converts an Xml Light element to an XmlRpc message.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.xml-underscoreelement-underscoreof-underscoremessage}\begin{ocamldoccode}
+val xml_element_of_message :
+  ?base64_encoder:(string -> string) ->
+  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
+  message -> Xml.xml
+\end{ocamldoccode}
+\index{xml-underscoreelement-underscoreof-underscoremessage@\verb`xml_element_of_message`}
+\begin{ocamldocdescription}
+Converts an XmlRpc message to an Xml Light element.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.value-underscoreof-underscorexml-underscoreelement}\begin{ocamldoccode}
+val value_of_xml_element :
+  ?base64_decoder:(string -> string) ->
+  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
+  Xml.xml -> value
+\end{ocamldoccode}
+\index{value-underscoreof-underscorexml-underscoreelement@\verb`value_of_xml_element`}
+\begin{ocamldocdescription}
+Converts an Xml Light element to an XmlRpc value.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.xml-underscoreelement-underscoreof-underscorevalue}\begin{ocamldoccode}
+val xml_element_of_value :
+  ?base64_encoder:(string -> string) ->
+  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
+  value -> Xml.xml
+\end{ocamldoccode}
+\index{xml-underscoreelement-underscoreof-underscorevalue@\verb`xml_element_of_value`}
+\begin{ocamldocdescription}
+Converts an XmlRpc value to an Xml Light element.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Server tools
+
+
+
+\label{val:XmlRpc.serve}\begin{ocamldoccode}
+val serve :
+  ?base64_encoder:(string -> string) ->
+  ?base64_decoder:(string -> string) ->
+  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
+  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
+  ?error_handler:(exn -> message) ->
+  (string -> value list -> value) -> string -> string
+\end{ocamldoccode}
+\index{serve@\verb`serve`}
+\begin{ocamldocdescription}
+Creates a function from string (Xml representing a {\tt{MethodCall}}) to
+    string (Xml representing a {\tt{MethodResult}} or {\tt{Fault}}) given a function
+    of the form: ({\tt{name}} $\rightarrow$ {\tt{params}} $\rightarrow$ {\tt{result}}), where {\tt{name}} is the
+    name of the method, {\tt{params}} is a list of parameter values, and
+    {\tt{result}} is the result value.
+
+
+    This function can be used to build many different kinds of XmlRpc
+    servers since it makes no assumptions about the network library
+    or other communications method used.
+
+
+    If an exception other than {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] occurs, the exception is
+    passed to {\tt{error\_handler}}. If {\tt{error\_handler}} returns a message,
+    the message will be used as the result. If an {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] is
+    raised by either the main function or {\tt{error\_handler}}, it will be
+    converted to an XmlRpc {\tt{Fault}}. Any other exception raised by
+    {\tt{error\_handler}} is allowed to escape.
+
+
+    For a full-featured, easy-to-use, network-capable server implementation,
+    see the {\tt{XmlRpcServer}}[\ref{module:XmlRpcServer}] module.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.default-underscoreerror-underscorehandler}\begin{ocamldoccode}
+val default_error_handler : exn -> message
+\end{ocamldoccode}
+\index{default-underscoreerror-underscorehandler@\verb`default_error_handler`}
+\begin{ocamldocdescription}
+The default error handler for {\tt{serve}}.
+
+
+    This error handler catches all exceptions and converts them into
+    faults by wrapping them in {\tt{XmlRpc.Error}}.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpc.quiet-underscoreerror-underscorehandler}\begin{ocamldoccode}
+val quiet_error_handler : exn -> message
+\end{ocamldoccode}
+\index{quiet-underscoreerror-underscorehandler@\verb`quiet_error_handler`}
+\begin{ocamldocdescription}
+A "quiet" error handler for {\tt{serve}}.
+
+
+    This error handler simply re-raises the exception. Use this if you
+    want exceptions to remain unhandled so that they will escape to the
+    error log. The client will receive a generic "transport error",
+    which is more secure since it does not reveal any information about
+    the specific exception that occurred.
+
+
+\end{ocamldocdescription}
+
+
+\section{Module {\tt{XmlRpcServer}} : XmlRpc Light server.}
+\label{module:XmlRpcServer}\index{XmlRpcServer@\verb`XmlRpcServer`}
+
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+Example: \begin{ocamldoccode}
+
+    let server = new XmlRpcServer.cgi () in
+    server#register "demo.sayHello"
+      (fun _ -> `String "Hello!");
+    server#run () 
+\end{ocamldoccode}
+
+
+
+    By inheriting from {\tt{XmlRpcServer.base}}[\ref{class:XmlRpcServer.base}], all servers provide
+    the following introspection functions by default: {\tt{system.listMethods}},
+    {\tt{system.getCapabilities}}. To prevent their use, use {\tt{server\verb`#`unregister}}.
+
+
+    Additionally, the methods {\tt{system.methodHelp}} and {\tt{system.methodSignature}}
+    will be made available if at least one method help or method signature is
+    provided.
+
+
+
+\label{type:XmlRpcServer.param-underscoretype}\begin{ocamldoccode}
+type param_type = [ `Array
+  | `Binary
+  | `Boolean
+  | `DateTime
+  | `Double
+  | `Int
+  | `String
+  | `Struct ] 
+\end{ocamldoccode}
+\index{param-underscoretype@\verb`param_type`}
+\begin{ocamldocdescription}
+Type of parameters used in method signatures.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Base classes
+
+
+
+\begin{ocamldoccode}
+{\tt{class virtual base : }}\end{ocamldoccode}
+\label{class:XmlRpcServer.base}\index{base@\verb`base`}
+
+\begin{ocamldocobjectend}
+
+
+\label{val:XmlRpcServer.base.methods}\begin{ocamldoccode}
+val methods : (string, XmlRpc.value list -> XmlRpc.value) Hashtbl.t
+\end{ocamldoccode}
+\index{methods@\verb`methods`}
+\begin{ocamldocdescription}
+Hashtable mapping method names to implementation functions.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscorebase64-underscoreencoder}\begin{ocamldoccode}
+method set_base64_encoder : (string -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscorebase64-underscoreencoder@\verb`set_base64_encoder`}
+\begin{ocamldocdescription}
+Sets an alternate Base-64 binary encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscorebase64-underscoredecoder}\begin{ocamldoccode}
+method set_base64_decoder : (string -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscorebase64-underscoredecoder@\verb`set_base64_decoder`}
+\begin{ocamldocdescription}
+Sets an alternate Base-64 binary decoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscoredatetime-underscoreencoder}\begin{ocamldoccode}
+method set_datetime_encoder :
+  (int * int * int * int * int * int * int -> string) -> unit
+\end{ocamldoccode}
+\index{set-underscoredatetime-underscoreencoder@\verb`set_datetime_encoder`}
+\begin{ocamldocdescription}
+Sets an alternate ISO-8601 date/time encoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscoredatetime-underscoredecoder}\begin{ocamldoccode}
+method set_datetime_decoder :
+  (string -> int * int * int * int * int * int * int) -> unit
+\end{ocamldoccode}
+\index{set-underscoredatetime-underscoredecoder@\verb`set_datetime_decoder`}
+\begin{ocamldocdescription}
+Sets an alternate ISO-8601 date/time decoding function.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.set-underscoreerror-underscorehandler}\begin{ocamldoccode}
+method set_error_handler : (exn -> XmlRpc.message) -> unit
+\end{ocamldoccode}
+\index{set-underscoreerror-underscorehandler@\verb`set_error_handler`}
+\begin{ocamldocdescription}
+Sets an alternate handler for unhandled exceptions.
+      See {\tt{XmlRpc.default\_error\_handler}}[\ref{val:XmlRpc.default-underscoreerror-underscorehandler}] and
+      {\tt{XmlRpc.quiet\_error\_handler}}[\ref{val:XmlRpc.quiet-underscoreerror-underscorehandler}] for examples.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.register}\begin{ocamldoccode}
+method register :
+  string ->
+  ?help:string ->
+  ?signature:XmlRpcServer.param_type list ->
+  ?signatures:XmlRpcServer.param_type list list ->
+  (XmlRpc.value list -> XmlRpc.value) -> unit
+\end{ocamldoccode}
+\index{register@\verb`register`}
+\begin{ocamldocdescription}
+Registers a method with the server.
+
+
+      If a {\tt{help}} string is specified, its contents will be returned for
+      calls to {\tt{system.methodHelp}} for this method.
+
+
+      If {\tt{signature}} is specified, this method's signature will be published
+      by {\tt{system.methodSignature}} and (shallow) type-checking will be enabled
+      for parameters passed into this method.
+
+
+      Multiple signatures can be supplied via {\tt{signatures}} if desired to
+      provide for overloaded methods.
+
+
+      Signatures are of the form {\tt{return-type; param1-type; param2-type; ...}}
+      where each type is an instance of the {\tt{XmlRpcServer.param\_type}}[\ref{type:XmlRpcServer.param-underscoretype}] variant.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.unregister}\begin{ocamldoccode}
+method unregister : string -> unit
+\end{ocamldoccode}
+\index{unregister@\verb`unregister`}
+\begin{ocamldocdescription}
+Removes a method from the server.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.run}\begin{ocamldoccode}
+method virtual run : unit -> unit
+\end{ocamldoccode}
+\index{run@\verb`run`}
+\begin{ocamldocdescription}
+Starts the main server process.
+
+
+\end{ocamldocdescription}
+\end{ocamldocobjectend}
+
+
+\begin{ocamldocdescription}
+Abstract base class for XmlRpc servers.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\begin{ocamldoccode}
+{\tt{class type server = }}\end{ocamldoccode}
+\label{classtype:XmlRpcServer.server}\index{server@\verb`server`}
+
+\begin{ocamldocobjectend}
+
+
+{\tt{inherit XmlRpcServer.base}} [\ref{class:XmlRpcServer.base}]
+
+\label{method:XmlRpcServer.server.run}\begin{ocamldoccode}
+method run : unit -> unit
+\end{ocamldoccode}
+\index{run@\verb`run`}
+\begin{ocamldocdescription}
+Starts the main server process.
+
+
+\end{ocamldocdescription}
+\end{ocamldocobjectend}
+
+
+\begin{ocamldocdescription}
+Type of concrete XmlRpc server classes.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Server implementations
+
+
+
+\begin{ocamldoccode}
+{\tt{class cgi : }}{\tt{unit -> }}{\tt{server}}\end{ocamldoccode}
+\label{class:XmlRpcServer.cgi}\index{cgi@\verb`cgi`}
+
+
+
+\begin{ocamldocdescription}
+CGI XmlRpc server based on Netcgi2.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\begin{ocamldoccode}
+{\tt{class netplex : }}{\tt{?parallelizer:Netplex\_types.parallelizer -> ?handler:string -> unit -> }}{\tt{server}}\end{ocamldoccode}
+\label{class:XmlRpcServer.netplex}\index{netplex@\verb`netplex`}
+
+
+
+\begin{ocamldocdescription}
+Stand-alone XmlRpc server based on Netplex.
+
+
+\end{ocamldocdescription}
+
+
+
+
+Utility functions
+
+
+
+\label{val:XmlRpcServer.invalid-underscoremethod}\begin{ocamldoccode}
+val invalid_method : string -> 'a
+\end{ocamldoccode}
+\index{invalid-underscoremethod@\verb`invalid_method`}
+\begin{ocamldocdescription}
+Raise an {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] indicating a method name not found.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcServer.invalid-underscoreparams}\begin{ocamldoccode}
+val invalid_params : unit -> 'a
+\end{ocamldoccode}
+\index{invalid-underscoreparams@\verb`invalid_params`}
+\begin{ocamldocdescription}
+Raise an {\tt{XmlRpc.Error}}[\ref{exception:XmlRpc.Error}] indicating invalid method parameters.
+
+
+\end{ocamldocdescription}
+
+
+\section{Module {\tt{XmlRpcBase64}} : Base64 codec.}
+\label{module:XmlRpcBase64}\index{XmlRpcBase64@\verb`XmlRpcBase64`}
+
+
+
+	8-bit characters are encoded into 6-bit ones using ASCII lookup tables.
+	Default tables maps 0..63 values on characters A-Z, a-z, 0-9, '+' and '/'
+	(in that order).
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{exception:XmlRpcBase64.Invalid-underscorechar}\begin{ocamldoccode}
+exception Invalid_char
+\end{ocamldoccode}
+\index{Invalid-underscorechar@\verb`Invalid_char`}
+\begin{ocamldocdescription}
+This exception is raised when reading an invalid character
+	from a base64 input.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{exception:XmlRpcBase64.Invalid-underscoretable}\begin{ocamldoccode}
+exception Invalid_table
+\end{ocamldoccode}
+\index{Invalid-underscoretable@\verb`Invalid_table`}
+\begin{ocamldocdescription}
+This exception is raised if the encoding or decoding table
+	size is not correct.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:XmlRpcBase64.encoding-underscoretable}\begin{ocamldoccode}
+type encoding_table = char array 
+\end{ocamldoccode}
+\index{encoding-underscoretable@\verb`encoding_table`}
+\begin{ocamldocdescription}
+An encoding table maps integers 0..63 to the corresponding char.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{type:XmlRpcBase64.decoding-underscoretable}\begin{ocamldoccode}
+type decoding_table = int array 
+\end{ocamldoccode}
+\index{decoding-underscoretable@\verb`decoding_table`}
+\begin{ocamldocdescription}
+A decoding table maps chars 0..255 to the corresponding 0..63 value
+ or -1 if the char is not accepted.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.str-underscoreencode}\begin{ocamldoccode}
+val str_encode : ?tbl:encoding_table -> string -> string
+\end{ocamldoccode}
+\index{str-underscoreencode@\verb`str_encode`}
+\begin{ocamldocdescription}
+Encode a string into Base64.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.str-underscoredecode}\begin{ocamldoccode}
+val str_decode : ?tbl:decoding_table -> string -> string
+\end{ocamldoccode}
+\index{str-underscoredecode@\verb`str_decode`}
+\begin{ocamldocdescription}
+Decode a string encoded into Base64, raise {\tt{Invalid\_char}} if a
+	character in the input string is not a valid one.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.encode}\begin{ocamldoccode}
+val encode : ?tbl:encoding_table -> char Stream.t -> char Stream.t
+\end{ocamldoccode}
+\index{encode@\verb`encode`}
+\begin{ocamldocdescription}
+Generic base64 encoding over a character stream.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.decode}\begin{ocamldoccode}
+val decode : ?tbl:decoding_table -> char Stream.t -> char Stream.t
+\end{ocamldoccode}
+\index{decode@\verb`decode`}
+\begin{ocamldocdescription}
+Generic base64 decoding over a character stream.
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{val:XmlRpcBase64.make-underscoredecoding-underscoretable}\begin{ocamldoccode}
+val make_decoding_table : encoding_table -> decoding_table
+\end{ocamldoccode}
+\index{make-underscoredecoding-underscoretable@\verb`make_decoding_table`}
+\begin{ocamldocdescription}
+Create a valid decoding table from an encoding one.
+
+
+\end{ocamldocdescription}
+
+
+\end{document}

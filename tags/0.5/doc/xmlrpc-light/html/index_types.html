@@ -1,0 +1,56 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
+<link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
+<link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><title>Index of types</title>
+</head>
+<body>
+<center><h1>Index of types</h1></center>
+<table>
+<tr><td align="left"><br>D</td></tr>
+<tr><td><a href="XmlRpcBase64.html#TYPEdecoding_table">decoding_table</a> [<a href="XmlRpcBase64.html">XmlRpcBase64</a>]</td>
+<td><div class="info">
+A decoding table maps chars 0..255 to the corresponding 0..63 value
+ or -1 if the char is not accepted.
+</div>
+</td></tr>
+<tr><td align="left"><br>E</td></tr>
+<tr><td><a href="XmlRpcBase64.html#TYPEencoding_table">encoding_table</a> [<a href="XmlRpcBase64.html">XmlRpcBase64</a>]</td>
+<td><div class="info">
+An encoding table maps integers 0..63 to the corresponding char.
+</div>
+</td></tr>
+<tr><td align="left"><br>M</td></tr>
+<tr><td><a href="XmlRpc.html#TYPEmessage">message</a> [<a href="XmlRpc.html">XmlRpc</a>]</td>
+<td><div class="info">
+Type for XmlRpc messages.
+</div>
+</td></tr>
+<tr><td align="left"><br>P</td></tr>
+<tr><td><a href="XmlRpcServer.html#TYPEparam_type">param_type</a> [<a href="XmlRpcServer.html">XmlRpcServer</a>]</td>
+<td><div class="info">
+Type of parameters used in method signatures.
+</div>
+</td></tr>
+<tr><td align="left"><br>V</td></tr>
+<tr><td><a href="XmlRpc.html#TYPEvalue">value</a> [<a href="XmlRpc.html">XmlRpc</a>]</td>
+<td><div class="info">
+Polymorphic variant type for XmlRpc values: <code class="code">`Array</code>: An ordered list of values, <code class="code">`Binary</code>: A string containing binary data, <code class="code">`Boolean</code>: A boolean, <code class="code">`DateTime</code>: A date-time value
+      (year, month, day, hour, minute, second, timezone offset in minutes), <code class="code">`Double</code>: A floating-point value, <code class="code">`Int</code>: An integer, <code class="code">`Int32</code>: A 32-bit integer, <code class="code">`String</code>: A string, <code class="code">`Struct</code>: An association list of (name, value) pairs
+    Note that base64-encoding of <code class="code">`Binary</code> values is done automatically.
+</div>
+</td></tr>
+</table><br>
+</body>
+</html>

@@ -1,0 +1,122 @@
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=latex 2007.8.31)  15 SEP 2007 14:33
+entering extended mode
+ %&-line parsing enabled.
+**doc.tex
+(./doc.tex
+LaTeX2e <2005/12/01>
+Babel <v3.8h> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, croatian, bulgarian, russian, ukrainian, czech, slovak, danish, dut
+ch, finnish, finnish, french, basque, french, german, ngerman, german, ngerman,
+ greek, monogreek, ancientgreek, ibycus, hungarian, hungarian, italian, italian
+, latin, latin, mongolian, mongolian, norsk, norsk, coptic, esperanto, estonian
+, icelandic, indonesian, interlingua, romanian, serbian, slovenian, turkish, up
+persorbian, welsh, polish, polish, portuguese, portuguese, spanish, catalan, ga
+lician, spanish, catalan, galician, swedish, swedish, loaded.
+(/usr/share/texmf-texlive/tex/latex/base/article.cls
+Document Class: article 2005/09/16 v1.4f Standard LaTeX document class
+(/usr/share/texmf-texlive/tex/latex/base/size11.clo
+File: size11.clo 2005/09/16 v1.4f Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
+Package: inputenc 2006/05/05 v1.1b Input encoding file
+\inpenc@prehook=\toks14
+\inpenc@posthook=\toks15
+
+(/usr/share/texmf-texlive/tex/latex/base/latin1.def
+File: latin1.def 2006/05/05 v1.1b Input encoding file
+))
+(/usr/share/texmf-texlive/tex/latex/base/fontenc.sty
+Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
+
+(/usr/share/texmf-texlive/tex/latex/base/t1enc.def
+File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 43.
+))
+(/usr/share/texmf-texlive/tex/latex/preprint/fullpage.sty
+Package: fullpage 1999/02/23 1.1 (PWD)
+\FP@margin=\skip43
+)
+(/usr/share/texmf-texlive/tex/latex/ltxmisc/url.sty
+\Urlmuskip=\muskip10
+Package: url 2005/06/27  ver 3.2  Verb mode for urls, etc.
+) (./ocamldoc.sty
+Package: ocamldoc 2001/12/04 v1.0 ocamldoc support
+)
+(./doc.aux)
+\openout1 = `doc.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 7.
+LaTeX Font Info:    ... okay on input line 7.
+ (./doc.toc
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 1.
+ (/usr/share/texmf-texlive/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+))
+\tf@toc=\write3
+\openout3 = `doc.toc'.
+
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 83.
+
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 83.
+ [1
+
+]
+Overfull \hbox (294.12506pt too wide) in paragraph at lines 105--105
+[]\T1/cmtt/m/n/10.95 class client : ?debug:bool -> ?headers:(string * string) l
+ist -> ?insecure_ssl:bool -> ?timeout:float -> ?useragent:string -> string -> 
+ []
+
+[2]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 361.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 361.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 361.
+ [3] [4] [5] [6] [7] [8]
+Overfull \hbox (56.47348pt too wide) in paragraph at lines 1005--1005
+[]\T1/cmtt/m/n/10.95 class netplex : ?parallelizer:Netplex_types.parallelizer -
+> ?handler:string -> unit -> server 
+ []
+
+[9] [10] (./doc.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 712 strings out of 93946
+ 10040 string characters out of 1162066
+ 53927 words of memory out of 1500000
+ 4032 multiletter control sequences out of 10000+50000
+ 10790 words of font info for 30 fonts, out of 1200000 for 2000
+ 743 hyphenation exceptions out of 8191
+ 21i,5n,20p,232b,304s stack positions out of 5000i,500n,6000p,200000b,5000s
+
+Output written on doc.dvi (10 pages, 20512 bytes).
