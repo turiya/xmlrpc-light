@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="XmlRpcServer.html">
+<link rel="next" href="XmlRpcBase64.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
+<link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
+<link title="XmlRpcDateTime" rel="Chapter" href="XmlRpcDateTime.html">
+<link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><link title="Types" rel="Section" href="#2_Types">
+<link title="Comparison" rel="Section" href="#2_Comparison">
+<link title="Current date and time" rel="Section" href="#2_Currentdateandtime">
+<link title="Time zone adjustments" rel="Section" href="#2_Timezoneadjustments">
+<link title="Conversion" rel="Section" href="#2_Conversion">
+<link title="ISO-8601 parsing and generation" rel="Section" href="#2_ISO8601parsingandgeneration">
+<title>XmlRpcDateTime</title>
+</head>
+<body>
+<div class="navbar"><a href="XmlRpcServer.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="XmlRpcBase64.html">Next</a>
+</div>
+<center><h1>Module <a href="type_XmlRpcDateTime.html">XmlRpcDateTime</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> XmlRpcDateTime: <code class="code">sig</code> <a href="XmlRpcDateTime.html">..</a> <code class="code">end</code></pre>Date/time type.<br>
+<hr width="100%">
+<br>
+<a name="2_Types"></a>
+<h2>Types</h2><br>
+<pre><span class="keyword">exception</span> <a name="EXCEPTIONParse_error"></a>Parse_error <span class="keyword">of</span> <code class="type">string</code></pre>
+<div class="info">
+Raised by <a href="XmlRpcDateTime.html#VALof_string"><code class="code">XmlRpcDateTime.of_string</code></a> if a string could not be parsed. The exception
+    contains the input string.<br>
+</div>
+<pre><span class="keyword">type</span> <a name="TYPEt"></a><code class="type"></code>t = <code class="type">int * int * int * int * int * int * int</code> </pre>
+<div class="info">
+Type of XmlRpc-compatible date/time values.
+    (year, month, day, hour, minute, second, time zone offset in minutes)<br>
+</div>
+
+<br>
+<a name="2_Comparison"></a>
+<h2>Comparison</h2><br>
+<pre><span class="keyword">val</span> <a name="VALcompare"></a>compare : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> <a href="XmlRpcDateTime.html#TYPEt">t</a> -> int</code></pre><div class="info">
+Standard comparator for date/time values. Converts all values to UTC
+    before comparing to ensure correct behavior with values of differing
+    time zones.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALequal"></a>equal : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> <a href="XmlRpcDateTime.html#TYPEt">t</a> -> bool</code></pre><div class="info">
+Standard equality function for date/time values. Converts all values
+    to UTC before comparing.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALhash"></a>hash : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> int</code></pre><div class="info">
+Standard hash function for date/time values. Converts values to UTC
+    before hashing.<br>
+</div>
+<br>
+<a name="2_Currentdateandtime"></a>
+<h2>Current date and time</h2><br>
+<pre><span class="keyword">val</span> <a name="VALnow"></a>now : <code class="type">unit -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
+Returns the current date and time in the local time zone.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALnow_utc"></a>now_utc : <code class="type">unit -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
+Returns the current date and time in UTC.<br>
+</div>
+<br>
+<a name="2_Timezoneadjustments"></a>
+<h2>Time zone adjustments</h2><br>
+<pre><span class="keyword">val</span> <a name="VALset_tz_offset"></a>set_tz_offset : <code class="type">int -> <a href="XmlRpcDateTime.html#TYPEt">t</a> -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
+Adjusts the time zone offset, preserving equality.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfix_tz_offset"></a>fix_tz_offset : <code class="type">int -> <a href="XmlRpcDateTime.html#TYPEt">t</a> -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
+Forces the time zone offset to a different value, ignoring all other
+    fields. Use this to correct the time zone of a date/time value that
+    was received without a time zone offset and is known not to be UTC.<br>
+</div>
+<br>
+<a name="2_Conversion"></a>
+<h2>Conversion</h2><br>
+<pre><span class="keyword">val</span> <a name="VALfrom_unixfloat"></a>from_unixfloat : <code class="type">float -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
+Builds a date/time value from epoch seconds in the local time zone.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfrom_unixfloat_utc"></a>from_unixfloat_utc : <code class="type">float -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
+Builds a date/time value from epoch seconds in UTC.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALto_unixfloat"></a>to_unixfloat : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> float</code></pre><div class="info">
+Converts a date/time value to epoch seconds in the local time zone.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALto_unixfloat_utc"></a>to_unixfloat_utc : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> float</code></pre><div class="info">
+Converts a date/time value to epoch seconds in UTC.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfrom_unixtm"></a>from_unixtm : <code class="type">Unix.tm -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
+Builds a date/time value from a Unix.tm value in the local time zone.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfrom_unixtm_utc"></a>from_unixtm_utc : <code class="type">Unix.tm -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
+Builds a date/time value from a Unix.tm value in UTC.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALto_unixtm"></a>to_unixtm : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> Unix.tm</code></pre><div class="info">
+Converts a date/time value to a Unix.tm value in the local time zone.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALto_unixtm_utc"></a>to_unixtm_utc : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> Unix.tm</code></pre><div class="info">
+Converts a date/time value to a Unix.tm value in UTC.<br>
+</div>
+<br>
+<a name="2_ISO8601parsingandgeneration"></a>
+<h2>ISO-8601 parsing and generation</h2><br>
+<pre><span class="keyword">val</span> <a name="VALof_string"></a>of_string : <code class="type">string -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
+Parses an (XmlRpc-flavor) ISO-8601 date/time value from a string.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALto_string"></a>to_string : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> string</code></pre><div class="info">
+Generates an ISO-8601 string from a date/time value.<br>
+</div>
+</body></html>
