@@ -84,11 +84,6 @@ object
   method serve :
     (string -> XmlRpc.value list -> XmlRpc.value) -> string -> string
 
-  (** Like [serve], but operates on messages instead of strings. *)
-  method serve_message :
-    (string -> XmlRpc.value list -> XmlRpc.value) ->
-    XmlRpc.message -> XmlRpc.message
-
   (** Registers a method with the server.
 
       If a [help] string is specified, its contents will be returned for

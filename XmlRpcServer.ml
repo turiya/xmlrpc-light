@@ -230,11 +230,6 @@ object (self)
       ~error_handler
       f input
 
-  method serve_message f input =
-    XmlRpc.serve_message
-      ~error_handler
-      f input
-
   method register name ?(help="") ?(signature=[]) ?(signatures=[]) f =
     if help <> ""
     then (Hashtbl.replace method_help name help;
