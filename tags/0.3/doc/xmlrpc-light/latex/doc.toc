@@ -1,0 +1,2 @@
+\contentsline {section}{\numberline {1}Module {\tt {XmlRpc}} : XmlRpc Light}{1}
+\contentsline {section}{\numberline {2}Module {\tt {XmlRpcBase64}} : Base64 codec.}{4}

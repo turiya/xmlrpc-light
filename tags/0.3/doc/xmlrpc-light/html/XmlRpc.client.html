@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="Up" href="XmlRpc.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
+<link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><title>XmlRpc.client</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="XmlRpc.html">Up</a>
+&nbsp;</div>
+<center><h1>Class <a href="type_XmlRpc.client.html">XmlRpc.client</a></h1></center>
+<br>
+<pre><span class="keyword">class</span> <a name="TYPEclient"></a>client : <code class="type">string -> </code><code class="code">object</code> <a href="XmlRpc.client.html">..</a> <code class="code">end</code></pre>Class for XmlRpc clients. Takes a single argument, the Url.<br>
+<hr width="100%">
+<pre><span class="keyword">val</span> <a name="ATTurl"></a>url : <code class="type">string</code></pre><div class="info">
+Url of the remote XmlRpc server.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="ATTuseragent"></a><span class="keyword">mutable</span> useragent : <code class="type">string</code></pre><div class="info">
+User-agent to send in request headers.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="ATTdebug"></a><span class="keyword">mutable</span> debug : <code class="type">bool</code></pre><div class="info">
+If true, Xml messages will be printed to standard output.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODurl"></a>url : <code class="type">string</code></pre><div class="info">
+Gets <code class="code">url</code>.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODuseragent"></a>useragent : <code class="type">string</code></pre><div class="info">
+Gets <code class="code">useragent</code>.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_useragent"></a>set_useragent : <code class="type">string -> unit</code></pre><div class="info">
+Sets <code class="code">useragent</code>.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODdebug"></a>debug : <code class="type">bool</code></pre><div class="info">
+Gets <code class="code">debug</code>.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_debug"></a>set_debug : <code class="type">bool -> unit</code></pre><div class="info">
+Sets <code class="code">debug</code>.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_base64_encode"></a>set_base64_encode : <code class="type">(string -> string) -> unit</code></pre><div class="info">
+Sets an alternate Base-64 binary encoding function.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_base64_decode"></a>set_base64_decode : <code class="type">(string -> string) -> unit</code></pre><div class="info">
+Sets an alternate Base-64 binary decoding function.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_datetime_encode"></a>set_datetime_encode : <code class="type">(int * int * int * int * int * int * int -> string) -> unit</code></pre><div class="info">
+Sets an alternate ISO-8601 date/time encoding function.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_datetime_decode"></a>set_datetime_decode : <code class="type">(string -> int * int * int * int * int * int * int) -> unit</code></pre><div class="info">
+Sets an alternate ISO-8601 date/time decoding function.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODcall"></a>call : <code class="type">string -> <a href="XmlRpc.html#TYPEvalue">value</a> list -> <a href="XmlRpc.html#TYPEvalue">value</a></code></pre><div class="info">
+<code class="code">call name params</code> invokes an XmlRpc method and returns the result,
+      or raises <a href="XmlRpc.html#EXCEPTIONError"><code class="code">XmlRpc.Error</code></a> on error.<br>
+</div>
+</body></html>
