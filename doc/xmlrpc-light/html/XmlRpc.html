@@ -16,11 +16,10 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
 <link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
-<link title="XmlRpcDateTime" rel="Chapter" href="XmlRpcDateTime.html">
-<link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><link title="High-level interface" rel="Section" href="#2_Highlevelinterface">
-<link title="Utility functions" rel="Section" href="#2_Utilityfunctions">
-<link title="Low-level interface" rel="Section" href="#2_Lowlevelinterface">
-<link title="Server tools" rel="Section" href="#2_Servertools">
+<link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><link title="High-level interface" rel="Section" href="#6_Highlevelinterface">
+<link title="Utility functions" rel="Section" href="#6_Utilityfunctions">
+<link title="Low-level interface" rel="Section" href="#6_Lowlevelinterface">
+<link title="Server tools" rel="Section" href="#6_Servertools">
 <title>XmlRpc</title>
 </head>
 <body>
@@ -41,12 +40,9 @@
 
     <i>(c) 2007 Dave Benjamin</i><br>
 <hr width="100%">
-<pre><span class="keyword">val</span> <a name="VALversion"></a>version : <code class="type">string</code></pre><div class="info">
-Version of XmlRpc-Light as a string.<br>
-</div>
 <br>
-<a name="2_Highlevelinterface"></a>
-<h2>High-level interface</h2><br>
+<a name="6_Highlevelinterface"></a>
+<h6>High-level interface</h6><br>
 <br>
 Example: <pre><code class="code">    let rpc = new XmlRpc.client "http://localhost:8000" in
     let result = rpc#call "echo" [`String "hello!"] in
@@ -55,17 +51,16 @@ Example: <pre><code class="code">    let rpc = new XmlRpc.client "http://localho
 <div class="info">
 Raised for all errors including XmlRpc faults (code, string).<br>
 </div>
-<pre><span class="keyword">type</span> <a name="TYPEvalue"></a><code class="type"></code>value = <code class="type">[ `Array of <a href="XmlRpc.html#TYPEvalue">value</a> list<br>       | `Binary of string<br>       | `Boolean of bool<br>       | `DateTime of <a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a><br>       | `Double of float<br>       | `Int of int<br>       | `Int32 of int32<br>       | `Nil<br>       | `String of string<br>       | `Struct of (string * <a href="XmlRpc.html#TYPEvalue">value</a>) list ]</code> </pre>
+<pre><span class="keyword">type</span> <a name="TYPEvalue"></a><code class="type"></code>value = <code class="type">[ `Array of <a href="XmlRpc.html#TYPEvalue">value</a> list<br>       | `Binary of string<br>       | `Boolean of bool<br>       | `DateTime of int * int * int * int * int * int * int<br>       | `Double of float<br>       | `Int of int<br>       | `String of string<br>       | `Struct of (string * <a href="XmlRpc.html#TYPEvalue">value</a>) list ]</code> </pre>
 <div class="info">
 Polymorphic variant type for XmlRpc values:<ul>
 <li><code class="code">`Array</code>: An ordered list of values</li>
 <li><code class="code">`Binary</code>: A string containing binary data</li>
 <li><code class="code">`Boolean</code>: A boolean</li>
-<li><code class="code">`DateTime</code>: A date/time value</li>
+<li><code class="code">`DateTime</code>: A date-time value
+      (year, month, day, hour, minute, second, timezone offset in minutes)</li>
 <li><code class="code">`Double</code>: A floating-point value</li>
 <li><code class="code">`Int</code>: An integer</li>
-<li><code class="code">`Int32</code>: A 32-bit integer</li>
-<li><code class="code">`Nil</code>: A null value</li>
 <li><code class="code">`String</code>: A string</li>
 <li><code class="code">`Struct</code>: An association list of (name, value) pairs</li>
 </ul>
@@ -74,21 +69,24 @@ Polymorphic variant type for XmlRpc values:<ul>
     You do not need to do the encoding yourself.<br>
 </div>
 
-<pre><span class="keyword">class</span> <a name="TYPEclient"></a><a href="XmlRpc.client.html">client</a> : <code class="type">?debug:bool -> ?headers:(string * string) list -> ?insecure_ssl:bool -> ?timeout:float -> ?useragent:string -> string -> </code><code class="code">object</code> <a href="XmlRpc.client.html">..</a> <code class="code">end</code></pre><div class="info">
+<pre><span class="keyword">class</span> <a name="TYPEclient"></a><a href="XmlRpc.client.html">client</a> : <code class="type">string -> </code><code class="code">object</code> <a href="XmlRpc.client.html">..</a> <code class="code">end</code></pre><div class="info">
 Class for XmlRpc clients.
 </div>
-<pre><span class="keyword">class</span> <a name="TYPEmulticall"></a><a href="XmlRpc.multicall.html">multicall</a> : <code class="type"><a href="XmlRpc.client.html">client</a> -> </code><code class="code">object</code> <a href="XmlRpc.multicall.html">..</a> <code class="code">end</code></pre><div class="info">
-Convenience class for <code class="code">system.multicall</code> calls.
-</div>
 <br>
-<a name="2_Utilityfunctions"></a>
-<h2>Utility functions</h2><br>
+<a name="6_Utilityfunctions"></a>
+<h6>Utility functions</h6><br>
 <pre><span class="keyword">val</span> <a name="VALdump"></a>dump : <code class="type"><a href="XmlRpc.html#TYPEvalue">value</a> -> string</code></pre><div class="info">
 Converts an XmlRpc value to a human-readable string.<br>
 </div>
+<pre><span class="keyword">val</span> <a name="VALiso8601_of_datetime"></a>iso8601_of_datetime : <code class="type">int * int * int * int * int * int * int -> string</code></pre><div class="info">
+Converts a date/time tuple to an ISO-8601 string.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALdatetime_of_iso8601"></a>datetime_of_iso8601 : <code class="type">string -> int * int * int * int * int * int * int</code></pre><div class="info">
+Converts an ISO-8601 string to a date/time tuple.<br>
+</div>
 <br>
-<a name="2_Lowlevelinterface"></a>
-<h2>Low-level interface</h2><br>
+<a name="6_Lowlevelinterface"></a>
+<h6>Low-level interface</h6><br>
 <br><code><span class="keyword">type</span> <a name="TYPEmessage"></a><code class="type"></code>message = </code><table class="typetable">
 <tr>
 <td align="left" valign="top" >
@@ -116,22 +114,22 @@ Converts an XmlRpc value to a human-readable string.<br>
 Type for XmlRpc messages.<br>
 </div>
 
-<pre><span class="keyword">val</span> <a name="VALmessage_of_xml_element"></a>message_of_xml_element : <code class="type">?base64_decoder:(string -> string) -><br>       ?datetime_decoder:(string -> <a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a>) -> Xml.xml -> <a href="XmlRpc.html#TYPEmessage">message</a></code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALmessage_of_xml_element"></a>message_of_xml_element : <code class="type">?base64_decode:(string -> string) -><br>       ?datetime_decode:(string -> int * int * int * int * int * int * int) -><br>       Xml.xml -> <a href="XmlRpc.html#TYPEmessage">message</a></code></pre><div class="info">
 Converts an Xml Light element to an XmlRpc message.<br>
 </div>
-<pre><span class="keyword">val</span> <a name="VALxml_element_of_message"></a>xml_element_of_message : <code class="type">?base64_encoder:(string -> string) -><br>       ?datetime_encoder:(<a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a> -> string) -> <a href="XmlRpc.html#TYPEmessage">message</a> -> Xml.xml</code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALxml_element_of_message"></a>xml_element_of_message : <code class="type">?base64_encode:(string -> string) -><br>       ?datetime_encode:(int * int * int * int * int * int * int -> string) -><br>       <a href="XmlRpc.html#TYPEmessage">message</a> -> Xml.xml</code></pre><div class="info">
 Converts an XmlRpc message to an Xml Light element.<br>
 </div>
-<pre><span class="keyword">val</span> <a name="VALvalue_of_xml_element"></a>value_of_xml_element : <code class="type">?base64_decoder:(string -> string) -><br>       ?datetime_decoder:(string -> <a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a>) -> Xml.xml -> <a href="XmlRpc.html#TYPEvalue">value</a></code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALvalue_of_xml_element"></a>value_of_xml_element : <code class="type">?base64_decode:(string -> string) -><br>       ?datetime_decode:(string -> int * int * int * int * int * int * int) -><br>       Xml.xml -> <a href="XmlRpc.html#TYPEvalue">value</a></code></pre><div class="info">
 Converts an Xml Light element to an XmlRpc value.<br>
 </div>
-<pre><span class="keyword">val</span> <a name="VALxml_element_of_value"></a>xml_element_of_value : <code class="type">?base64_encoder:(string -> string) -><br>       ?datetime_encoder:(<a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a> -> string) -> <a href="XmlRpc.html#TYPEvalue">value</a> -> Xml.xml</code></pre><div class="info">
+<pre><span class="keyword">val</span> <a name="VALxml_element_of_value"></a>xml_element_of_value : <code class="type">?base64_encode:(string -> string) -><br>       ?datetime_encode:(int * int * int * int * int * int * int -> string) -><br>       <a href="XmlRpc.html#TYPEvalue">value</a> -> Xml.xml</code></pre><div class="info">
 Converts an XmlRpc value to an Xml Light element.<br>
 </div>
 <br>
-<a name="2_Servertools"></a>
-<h2>Server tools</h2><br>
-<pre><span class="keyword">val</span> <a name="VALserve"></a>serve : <code class="type">?base64_encoder:(string -> string) -><br>       ?base64_decoder:(string -> string) -><br>       ?datetime_encoder:(<a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a> -> string) -><br>       ?datetime_decoder:(string -> <a href="XmlRpcDateTime.html#TYPEt">XmlRpcDateTime.t</a>) -><br>       ?error_handler:(exn -> <a href="XmlRpc.html#TYPEmessage">message</a>) -><br>       (string -> <a href="XmlRpc.html#TYPEvalue">value</a> list -> <a href="XmlRpc.html#TYPEvalue">value</a>) -> string -> string</code></pre><div class="info">
+<a name="6_Servertools"></a>
+<h6>Server tools</h6><br>
+<pre><span class="keyword">val</span> <a name="VALserve"></a>serve : <code class="type">?base64_encode:(string -> string) -><br>       ?base64_decode:(string -> string) -><br>       ?datetime_encode:(int * int * int * int * int * int * int -> string) -><br>       ?datetime_decode:(string -> int * int * int * int * int * int * int) -><br>       ?error_handler:(exn -> <a href="XmlRpc.html#TYPEmessage">message</a>) -><br>       (string -> <a href="XmlRpc.html#TYPEvalue">value</a> list -> <a href="XmlRpc.html#TYPEvalue">value</a>) -> string -> string</code></pre><div class="info">
 Creates a function from string (Xml representing a <code class="code">MethodCall</code>) to
     string (Xml representing a <code class="code">MethodResult</code> or <code class="code">Fault</code>) given a function
     of the form: (<code class="code">name</code> -&gt; <code class="code">params</code> -&gt; <code class="code">result</code>), where <code class="code">name</code> is the

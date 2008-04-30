@@ -13,19 +13,17 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
 <link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
-<link title="XmlRpcDateTime" rel="Chapter" href="XmlRpcDateTime.html">
 <link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><title>Index of values</title>
 </head>
 <body>
 <center><h1>Index of values</h1></center>
 <table>
-<tr><td align="left"><br>C</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALcompare">compare</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
+<tr><td align="left"><br>D</td></tr>
+<tr><td><a href="XmlRpc.html#VALdatetime_of_iso8601">datetime_of_iso8601</a> [<a href="XmlRpc.html">XmlRpc</a>]</td>
 <td><div class="info">
-Standard comparator for date/time values.
+Converts an ISO-8601 string to a date/time tuple.
 </div>
 </td></tr>
-<tr><td align="left"><br>D</td></tr>
 <tr><td><a href="XmlRpcBase64.html#VALdecode">decode</a> [<a href="XmlRpcBase64.html">XmlRpcBase64</a>]</td>
 <td><div class="info">
 Generic base64 decoding over a character stream.
@@ -47,44 +45,6 @@ Converts an XmlRpc value to a human-readable string.
 Generic base64 encoding over a character stream.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALequal">equal</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Standard equality function for date/time values.
-</div>
-</td></tr>
-<tr><td align="left"><br>F</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALfix_tz_offset">fix_tz_offset</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Forces the time zone offset to a different value, ignoring all other
-    fields.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALfrom_unixfloat">from_unixfloat</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Builds a date/time value from epoch seconds in the local time zone.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALfrom_unixfloat_utc">from_unixfloat_utc</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Builds a date/time value from epoch seconds in UTC.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALfrom_unixtm">from_unixtm</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Builds a date/time value from a Unix.tm value in the local time zone.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALfrom_unixtm_utc">from_unixtm_utc</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Builds a date/time value from a Unix.tm value in UTC.
-</div>
-</td></tr>
-<tr><td align="left"><br>H</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALhash">hash</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Standard hash function for date/time values.
-</div>
-</td></tr>
 <tr><td align="left"><br>I</td></tr>
 <tr><td><a href="XmlRpcServer.html#VALinvalid_method">invalid_method</a> [<a href="XmlRpcServer.html">XmlRpcServer</a>]</td>
 <td><div class="info">
@@ -96,6 +56,11 @@ Raise an <a href="XmlRpc.html#EXCEPTIONError"><code class="code">XmlRpc.Error</c
 Raise an <a href="XmlRpc.html#EXCEPTIONError"><code class="code">XmlRpc.Error</code></a> indicating invalid method parameters.
 </div>
 </td></tr>
+<tr><td><a href="XmlRpc.html#VALiso8601_of_datetime">iso8601_of_datetime</a> [<a href="XmlRpc.html">XmlRpc</a>]</td>
+<td><div class="info">
+Converts a date/time tuple to an ISO-8601 string.
+</div>
+</td></tr>
 <tr><td align="left"><br>M</td></tr>
 <tr><td><a href="XmlRpcBase64.html#VALmake_decoding_table">make_decoding_table</a> [<a href="XmlRpcBase64.html">XmlRpcBase64</a>]</td>
 <td><div class="info">
@@ -105,23 +70,6 @@ Create a valid decoding table from an encoding one.
 <tr><td><a href="XmlRpc.html#VALmessage_of_xml_element">message_of_xml_element</a> [<a href="XmlRpc.html">XmlRpc</a>]</td>
 <td><div class="info">
 Converts an Xml Light element to an XmlRpc message.
-</div>
-</td></tr>
-<tr><td align="left"><br>N</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALnow">now</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Returns the current date and time in the local time zone.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALnow_utc">now_utc</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Returns the current date and time in UTC.
-</div>
-</td></tr>
-<tr><td align="left"><br>O</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALof_string">of_string</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Parses an (XmlRpc-flavor) ISO-8601 date/time value from a string.
 </div>
 </td></tr>
 <tr><td align="left"><br>Q</td></tr>
@@ -140,11 +88,6 @@ Creates a function from string (Xml representing a <code class="code">MethodCall
     <code class="code">result</code> is the result value.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALset_tz_offset">set_tz_offset</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Adjusts the time zone offset, preserving equality.
-</div>
-</td></tr>
 <tr><td><a href="XmlRpcBase64.html#VALstr_decode">str_decode</a> [<a href="XmlRpcBase64.html">XmlRpcBase64</a>]</td>
 <td><div class="info">
 Decode a string encoded into Base64, raise <code class="code">Invalid_char</code> if a
@@ -156,41 +99,10 @@ Decode a string encoded into Base64, raise <code class="code">Invalid_char</code
 Encode a string into Base64.
 </div>
 </td></tr>
-<tr><td align="left"><br>T</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALto_string">to_string</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Generates an ISO-8601 string from a date/time value.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALto_unixfloat">to_unixfloat</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Converts a date/time value to epoch seconds in the local time zone.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALto_unixfloat_utc">to_unixfloat_utc</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Converts a date/time value to epoch seconds in UTC.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALto_unixtm">to_unixtm</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Converts a date/time value to a Unix.tm value in the local time zone.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#VALto_unixtm_utc">to_unixtm_utc</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Converts a date/time value to a Unix.tm value in UTC.
-</div>
-</td></tr>
 <tr><td align="left"><br>V</td></tr>
 <tr><td><a href="XmlRpc.html#VALvalue_of_xml_element">value_of_xml_element</a> [<a href="XmlRpc.html">XmlRpc</a>]</td>
 <td><div class="info">
 Converts an Xml Light element to an XmlRpc value.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpc.html#VALversion">version</a> [<a href="XmlRpc.html">XmlRpc</a>]</td>
-<td><div class="info">
-Version of XmlRpc-Light as a string.
 </div>
 </td></tr>
 <tr><td align="left"><br>X</td></tr>

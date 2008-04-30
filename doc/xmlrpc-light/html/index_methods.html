@@ -13,27 +13,16 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
 <link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
-<link title="XmlRpcDateTime" rel="Chapter" href="XmlRpcDateTime.html">
 <link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><title>Index of class methods</title>
 </head>
 <body>
 <center><h1>Index of class methods</h1></center>
 <table>
 <tr><td align="left"><br>C</td></tr>
-<tr><td><a href="XmlRpc.multicall.html#METHODcall">call</a> [<a href="XmlRpc.multicall.html">XmlRpc.multicall</a>]</td>
-<td><div class="info">
-Adds a call to this <code class="code">multicall</code> instance.
-</div>
-</td></tr>
 <tr><td><a href="XmlRpc.client.html#METHODcall">call</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
 <td><div class="info">
 <code class="code">call name params</code> invokes an XmlRpc method and returns the result,
       or raises <a href="XmlRpc.html#EXCEPTIONError"><code class="code">XmlRpc.Error</code></a> on error.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpc.multicall.html#METHODcompleted">completed</a> [<a href="XmlRpc.multicall.html">XmlRpc.multicall</a>]</td>
-<td><div class="info">
-True of the call has executed and completed successfully.
 </div>
 </td></tr>
 <tr><td align="left"><br>D</td></tr>
@@ -42,38 +31,10 @@ True of the call has executed and completed successfully.
 Gets <code class="code">debug</code>.
 </div>
 </td></tr>
-<tr><td align="left"><br>E</td></tr>
-<tr><td><a href="XmlRpc.multicall.html#METHODexecute">execute</a> [<a href="XmlRpc.multicall.html">XmlRpc.multicall</a>]</td>
-<td><div class="info">
-Forces the call to execute immediately.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpc.multicall.html#METHODexecuted">executed</a> [<a href="XmlRpc.multicall.html">XmlRpc.multicall</a>]</td>
-<td><div class="info">
-True if the call has executed, whether or not it succeeded.
-</div>
-</td></tr>
-<tr><td align="left"><br>H</td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODheaders">headers</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
-<td><div class="info">
-Gets <code class="code">headers</code>.
-</div>
-</td></tr>
-<tr><td align="left"><br>I</td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODinsecure_ssl">insecure_ssl</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
-<td><div class="info">
-Gets <code class="code">insecure_ssl</code>.
-</div>
-</td></tr>
 <tr><td align="left"><br>R</td></tr>
 <tr><td><a href="XmlRpcServer.base.html#METHODregister">register</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
 <td><div class="info">
 Registers a method with the server.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpc.multicall.html#METHODresult">result</a> [<a href="XmlRpc.multicall.html">XmlRpc.multicall</a>]</td>
-<td><div class="info">
-Returns a <code class="code">multicall</code> result, executing the call if necessary.
 </div>
 </td></tr>
 <tr><td><a href="XmlRpcServer.server.html#METHODrun">run</a> [<a href="XmlRpcServer.server.html">XmlRpcServer.server</a>]</td>
@@ -87,48 +48,42 @@ Starts the main server process.
 </div>
 </td></tr>
 <tr><td align="left"><br>S</td></tr>
-<tr><td><a href="XmlRpcServer.base.html#METHODserve">serve</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
-<td><div class="info">
-For use in subclasses; calls <a href="XmlRpc.html#VALserve"><code class="code">XmlRpc.serve</code></a> with the current
-      encoders, decoders, and error handler.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpcServer.base.html#METHODset_base64_decoder">set_base64_decoder</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
+<tr><td><a href="XmlRpcServer.base.html#METHODset_base64_decode">set_base64_decode</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
 <td><div class="info">
 Sets an alternate Base-64 binary decoding function.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODset_base64_decoder">set_base64_decoder</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
+<tr><td><a href="XmlRpc.client.html#METHODset_base64_decode">set_base64_decode</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
 <td><div class="info">
 Sets an alternate Base-64 binary decoding function.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpcServer.base.html#METHODset_base64_encoder">set_base64_encoder</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
+<tr><td><a href="XmlRpcServer.base.html#METHODset_base64_encode">set_base64_encode</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
 <td><div class="info">
 Sets an alternate Base-64 binary encoding function.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODset_base64_encoder">set_base64_encoder</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
+<tr><td><a href="XmlRpc.client.html#METHODset_base64_encode">set_base64_encode</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
 <td><div class="info">
 Sets an alternate Base-64 binary encoding function.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpcServer.base.html#METHODset_datetime_decoder">set_datetime_decoder</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
+<tr><td><a href="XmlRpcServer.base.html#METHODset_datetime_decode">set_datetime_decode</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
 <td><div class="info">
 Sets an alternate ISO-8601 date/time decoding function.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODset_datetime_decoder">set_datetime_decoder</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
+<tr><td><a href="XmlRpc.client.html#METHODset_datetime_decode">set_datetime_decode</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
 <td><div class="info">
 Sets an alternate ISO-8601 date/time decoding function.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpcServer.base.html#METHODset_datetime_encoder">set_datetime_encoder</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
+<tr><td><a href="XmlRpcServer.base.html#METHODset_datetime_encode">set_datetime_encode</a> [<a href="XmlRpcServer.base.html">XmlRpcServer.base</a>]</td>
 <td><div class="info">
 Sets an alternate ISO-8601 date/time encoding function.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODset_datetime_encoder">set_datetime_encoder</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
+<tr><td><a href="XmlRpc.client.html#METHODset_datetime_encode">set_datetime_encode</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
 <td><div class="info">
 Sets an alternate ISO-8601 date/time encoding function.
 </div>
@@ -143,30 +98,9 @@ Sets <code class="code">debug</code>.
 Sets an alternate handler for unhandled exceptions.
 </div>
 </td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODset_headers">set_headers</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
-<td><div class="info">
-Sets <code class="code">headers</code>.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODset_insecure_ssl">set_insecure_ssl</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
-<td><div class="info">
-Sets <code class="code">insecure_ssl</code>.
-</div>
-</td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODset_timeout">set_timeout</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
-<td><div class="info">
-Sets <code class="code">timeout</code>.
-</div>
-</td></tr>
 <tr><td><a href="XmlRpc.client.html#METHODset_useragent">set_useragent</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
 <td><div class="info">
 Sets <code class="code">useragent</code>.
-</div>
-</td></tr>
-<tr><td align="left"><br>T</td></tr>
-<tr><td><a href="XmlRpc.client.html#METHODtimeout">timeout</a> [<a href="XmlRpc.client.html">XmlRpc.client</a>]</td>
-<td><div class="info">
-Gets <code class="code">timeout</code>.
 </div>
 </td></tr>
 <tr><td align="left"><br>U</td></tr>

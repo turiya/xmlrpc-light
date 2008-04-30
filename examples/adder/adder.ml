@@ -20,12 +20,6 @@
 let () =
   let server = new XmlRpcServer.netplex () in
   server#register "demo.addTwoNumbers"
-    ~help:"Add two numbers together"
-    ~signatures:[[`Int; `Int; `Int];
-                 [`Double; `Int; `Double];
-                 [`Double; `Double; `Int];
-                 [`Double; `Double; `Double];
-                 [`Double; `String; `String]]
     (function
        | [`Int x; `Int y] -> `Int (x + y)
        | [`Int x; `Double y] -> `Double (float_of_int x +. y)
