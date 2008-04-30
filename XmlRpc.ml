@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
 
-let version = "0.6"
+let version = "0.5"
 
 exception Error of (int * string)
 
@@ -25,11 +25,10 @@ type value =
     [ `Array of value list
     | `Binary of string
     | `Boolean of bool
-    | `DateTime of XmlRpcDateTime.t
+    | `DateTime of int * int * int * int * int * int * int
     | `Double of float
     | `Int of int
     | `Int32 of int32
-    | `Nil
     | `String of string
     | `Struct of (string * value) list ]
 
@@ -48,11 +47,38 @@ let invalid_xmlrpc () =
   raise (Error (-32600,
                 "server error. invalid xml-rpc. not conforming to spec"))
 
+let string_of_tz_offset offset =
+  Printf.sprintf "%c%02d:%02d"
+    (if offset >= 0 then '+' else '-')
+    (abs (offset / 60))
+    (abs (offset mod 60))
+
+let tz_offset_of_string = function
+  | "" | "Z" -> 0
+  | string ->
+      Scanf.sscanf string "%c%02d:%02d"
+        (fun sign hour min ->
+           min + hour * (if sign = '-' then -60 else 60))
+
+let iso8601_of_datetime (y, m, d, h, m', s, tz_offset) =
+  Printf.sprintf "%04d%02d%02dT%02d:%02d:%02d%s"
+    y m d h m' s (string_of_tz_offset tz_offset)
+
+let datetime_of_iso8601 string =
+  try
+    Scanf.sscanf string "%04d%02d%02dT%02d:%02d:%02d%s"
+      (fun y m d h m' s tz ->
+         (y, m, d, h, m', s, (tz_offset_of_string tz)))
+  with
+    | Scanf.Scan_failure _
+    | End_of_file ->
+        raise (Error (-32600,
+                      "server error. unable to parse dateTime value"))
+
 let rec dump = function
   | `String data -> data
   | `Int data -> string_of_int data
   | `Int32 data -> Int32.to_string data
-  | `Nil -> "(nil)"
   | `Boolean data -> if data then "true" else "false"
   | `Double data -> string_of_float data
   | `Binary data -> data
@@ -63,18 +89,17 @@ let rec dump = function
                                 (fun (n, v) ->
                                    n ^ ": " ^ (dump v))
                                 data)) ^ "}"
-  | `DateTime data -> XmlRpcDateTime.to_string data
+  | `DateTime data -> iso8601_of_datetime data
 
 let rec xml_element_of_value
     ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
-    ?(datetime_encoder=XmlRpcDateTime.to_string)
+    ?(datetime_encoder=iso8601_of_datetime)
     value =
   Xml.Element
     (match value with
        | `String data -> ("string", [], [Xml.PCData data])
        | `Int data -> ("int", [], [Xml.PCData (string_of_int data)])
        | `Int32 data -> ("int", [], [Xml.PCData (Int32.to_string data)])
-       | `Nil -> ("nil", [], [])
        | `Boolean data -> ("boolean", [], [Xml.PCData
                                              (if data then "1" else "0")])
        | `Double data -> ("double", [], [Xml.PCData (string_of_float data)])
@@ -109,7 +134,7 @@ let rec xml_element_of_value
 
 let rec value_of_xml_element
     ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
-    ?(datetime_decoder=XmlRpcDateTime.of_string)
+    ?(datetime_decoder=datetime_of_iso8601)
     = function
       | Xml.Element ("string", [], []) -> `String ""
       | Xml.Element ("string", [], [Xml.PCData data]) -> `String data
@@ -117,7 +142,6 @@ let rec value_of_xml_element
       | Xml.Element ("i4", [], [Xml.PCData data]) ->
           (try `Int (int_of_string data)
            with Failure "int_of_string" -> `Int32 (Int32.of_string data))
-      | Xml.Element ("nil", [], []) -> `Nil
       | Xml.Element ("boolean", [], [Xml.PCData data]) ->
           `Boolean (data <> "0")
       | Xml.Element ("double", [], [Xml.PCData data]) ->
@@ -144,23 +168,10 @@ let rec value_of_xml_element
             (safe_map
                (function
                   | Xml.Element ("member", [],
-                                 [Xml.Element ("name", [], []);
-                                  Xml.Element ("value", [], [])]) ->
-                      (* Empty value is assumed to be an empty string. *)
-                      ("", `String "")
-                  | Xml.Element ("member", [],
                                  [Xml.Element ("name", [], [Xml.PCData name]);
                                   Xml.Element ("value", [], [])]) ->
                       (* Empty value is assumed to be an empty string. *)
                       (name, `String "")
-                  | Xml.Element ("member", [],
-                                 [Xml.Element ("name", [], []);
-                                  Xml.Element ("value", [], [value])]) ->
-                      ("",
-                       value_of_xml_element
-                         ~base64_decoder
-                         ~datetime_decoder
-                         value)
                   | Xml.Element ("member", [],
                                  [Xml.Element ("name", [], [Xml.PCData name]);
                                   Xml.Element ("value", [], [value])]) ->
@@ -182,7 +193,7 @@ let rec value_of_xml_element
 
 let xml_element_of_message
     ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
-    ?(datetime_encoder=XmlRpcDateTime.to_string)
+    ?(datetime_encoder=iso8601_of_datetime)
     message =
   let make_param param =
     Xml.Element ("param", [],
@@ -212,7 +223,7 @@ let xml_element_of_message
 
 let message_of_xml_element
     ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
-    ?(datetime_decoder=XmlRpcDateTime.of_string)
+    ?(datetime_decoder=datetime_of_iso8601)
     xml_element =
   let parse_params params =
     safe_map
@@ -241,9 +252,6 @@ let message_of_xml_element
                    [Xml.Element ("methodName", [], [Xml.PCData name]);
                     Xml.Element ("params", [], params)]) ->
         MethodCall (name, parse_params params)
-    | Xml.Element ("methodCall", [],
-                   [Xml.Element ("methodName", [], [Xml.PCData name])]) ->
-        MethodCall (name, [])
     | Xml.Element ("methodResponse", [],
                    [Xml.Element ("params", [], params)]) ->
         MethodResponse (List.hd (parse_params params))
@@ -314,8 +322,8 @@ object (self)
   val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
 
-  val mutable datetime_encoder = XmlRpcDateTime.to_string
-  val mutable datetime_decoder = XmlRpcDateTime.of_string
+  val mutable datetime_encoder = iso8601_of_datetime
+  val mutable datetime_decoder = datetime_of_iso8601
 
   method url =
     let parsed_url = Neturl.parse_url url in
@@ -535,41 +543,34 @@ let default_error_handler e =
 let quiet_error_handler e =
   raise e
 
-let serve_message ?(error_handler=default_error_handler) f message =
-  try
-    match message with
-      | MethodCall (name, params) ->
-          (try MethodResponse (f name params) with
-             | Error _ as e -> raise e
-             | e -> error_handler e)
-      | _ -> invalid_xmlrpc ()
-  with Error (code, string) ->
-    Fault (code, string)
-
 let serve
     ?(base64_encoder=fun s -> XmlRpcBase64.str_encode s)
     ?(base64_decoder=fun s -> XmlRpcBase64.str_decode s)
-    ?(datetime_encoder=XmlRpcDateTime.to_string)
-    ?(datetime_decoder=XmlRpcDateTime.of_string)
+    ?(datetime_encoder=iso8601_of_datetime)
+    ?(datetime_decoder=datetime_of_iso8601)
     ?(error_handler=default_error_handler)
     f s =
-  fix_dotted_tags s;
   try
     begin
       try
-        let message =
-          message_of_xml_element
-            ~base64_decoder
-            ~datetime_decoder
-            (Xml.parse_string s) in
-        let response =
-          xml_element_of_message
-            ~base64_encoder
-            ~datetime_encoder
-            (serve_message ~error_handler f message) in
-        Xml.to_string_fmt response
-      with Xml.Error _ ->
-        invalid_xml ()
+        begin
+          fix_dotted_tags s;
+          match (message_of_xml_element
+                   ~base64_decoder
+                   ~datetime_decoder
+                   (Xml.parse_string s))
+          with
+            | MethodCall (name, params) ->
+                Xml.to_string_fmt
+                  (xml_element_of_message
+                     ~base64_encoder
+                     ~datetime_encoder
+                     (try MethodResponse (f name params) with
+                        | Error _ as e -> raise e
+                        | e -> error_handler e))
+            | _ -> invalid_xmlrpc ()
+        end
+      with Xml.Error _ -> invalid_xml ()
     end
   with Error (code, string) ->
     Xml.to_string_fmt (xml_element_of_message (Fault (code, string)))

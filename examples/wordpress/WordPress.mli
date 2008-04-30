@@ -20,6 +20,8 @@
 exception Type_error of string
 exception Unknown_field of string
 
+type datetime = int * int * int * int * int * int * int
+
 module Category :
 sig
   type t = {
@@ -30,6 +32,13 @@ sig
              mutable html_url : string;
              mutable rss_url : string;
            }
+  val make : unit -> t
+  val of_xmlrpc : XmlRpc.value -> t
+end
+
+module CategorySearchResult :
+sig
+  type t = { mutable category_id : int; mutable category_name : string; }
   val make : unit -> t
   val of_xmlrpc : XmlRpc.value -> t
 end
@@ -53,7 +62,7 @@ sig
              mutable page_id : int;
              mutable page_title : string;
              mutable page_parent_id : int;
-             mutable date_created : XmlRpcDateTime.t;
+             mutable date_created : datetime;
            }
   val make : unit -> t
   val of_xmlrpc : XmlRpc.value -> t
@@ -62,7 +71,7 @@ end
 module Page :
 sig
   type t = {
-             mutable date_created : XmlRpcDateTime.t;
+             mutable date_created : datetime;
              mutable user_id : int;
              mutable page_id : int;
              mutable page_status : string;
@@ -94,7 +103,7 @@ sig
   type t = {
              mutable user_id : int;
              mutable post_id : int;
-             mutable date_created : XmlRpcDateTime.t;
+             mutable date_created : datetime;
              mutable description : string;
              mutable title : string;
              mutable link : string;
@@ -104,7 +113,6 @@ sig
              mutable text_more : string;
              mutable mt_allow_comments : bool;
              mutable mt_allow_pings : bool;
-             mutable mt_keywords : string;
              mutable wp_slug : string;
              mutable wp_password : string;
              mutable wp_author_id : int;
@@ -126,7 +134,6 @@ object
   val rpc : XmlRpc.client
   val std_args : XmlRpc.value list
   val username : string
-  method rpc : XmlRpc.client
   method delete_page : int -> unit
   method delete_post : int -> unit
   method edit_page : int -> Page.t -> bool -> unit
@@ -143,7 +150,8 @@ object
     slug:string -> parent_id:int -> description:string -> int
   method new_page : Page.t -> bool -> int
   method new_post : Post.t -> bool -> int
-  method suggest_categories : string -> int -> XmlRpc.value
+  method rpc : XmlRpc.client
+  method suggest_categories : string -> int -> CategorySearchResult.t list
   method upload_file :
     name:string ->
     typ:string -> bits:string -> overwrite:bool -> string * string * string

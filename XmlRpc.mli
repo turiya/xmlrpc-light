@@ -30,7 +30,7 @@
 (** Version of XmlRpc-Light as a string. *)
 val version : string
 
-(** {2 High-level interface} *)
+(** {6 High-level interface} *)
 
 (** Example: {[
     let rpc = new XmlRpc.client "http://localhost:8000" in
@@ -45,11 +45,11 @@ exception Error of (int * string)
     - [`Array]: An ordered list of values
     - [`Binary]: A string containing binary data
     - [`Boolean]: A boolean
-    - [`DateTime]: A date/time value
+    - [`DateTime]: A date-time value
+      (year, month, day, hour, minute, second, timezone offset in minutes)
     - [`Double]: A floating-point value
     - [`Int]: An integer
     - [`Int32]: A 32-bit integer
-    - [`Nil]: A null value
     - [`String]: A string
     - [`Struct]: An association list of (name, value) pairs
 
@@ -60,11 +60,10 @@ type value =
     [ `Array of value list
     | `Binary of string
     | `Boolean of bool
-    | `DateTime of XmlRpcDateTime.t
+    | `DateTime of int * int * int * int * int * int * int
     | `Double of float
     | `Int of int
     | `Int32 of int32
-    | `Nil
     | `String of string
     | `Struct of (string * value) list ]
 
@@ -157,10 +156,10 @@ object
   method set_base64_decoder : (string -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time encoding function. *)
-  method set_datetime_encoder : (XmlRpcDateTime.t -> string) -> unit
+  method set_datetime_encoder : (int * int * int * int * int * int * int -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time decoding function. *)
-  method set_datetime_decoder : (string -> XmlRpcDateTime.t) -> unit
+  method set_datetime_decoder : (string -> int * int * int * int * int * int * int) -> unit
 
   (** [call name params] invokes an XmlRpc method and returns the result,
       or raises {!XmlRpc.Error} on error. *)
@@ -250,12 +249,18 @@ object
   method completed : bool
 end
 
-(** {2 Utility functions} *)
+(** {6 Utility functions} *)
 
 (** Converts an XmlRpc value to a human-readable string. *)
 val dump : value -> string
 
-(** {2 Low-level interface} *)
+(** Converts a date/time tuple to an ISO-8601 string. *)
+val iso8601_of_datetime : int * int * int * int * int * int * int -> string
+
+(** Converts an ISO-8601 string to a date/time tuple. *)
+val datetime_of_iso8601 : string -> int * int * int * int * int * int * int
+
+(** {6 Low-level interface} *)
 
 (** Type for XmlRpc messages. *)
 type message =
@@ -266,28 +271,28 @@ type message =
 (** Converts an Xml Light element to an XmlRpc message. *)
 val message_of_xml_element :
   ?base64_decoder:(string -> string) ->
-  ?datetime_decoder:(string -> XmlRpcDateTime.t) ->
+  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
   Xml.xml -> message
 
 (** Converts an XmlRpc message to an Xml Light element. *)
 val xml_element_of_message :
   ?base64_encoder:(string -> string) ->
-  ?datetime_encoder:(XmlRpcDateTime.t -> string) ->
+  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
   message -> Xml.xml
 
 (** Converts an Xml Light element to an XmlRpc value. *)
 val value_of_xml_element :
   ?base64_decoder:(string -> string) ->
-  ?datetime_decoder:(string -> XmlRpcDateTime.t) ->
+  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
   Xml.xml -> value
 
 (** Converts an XmlRpc value to an Xml Light element. *)
 val xml_element_of_value :
   ?base64_encoder:(string -> string) ->
-  ?datetime_encoder:(XmlRpcDateTime.t -> string) ->
+  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
   value -> Xml.xml
 
-(** {2 Server tools} *)
+(** {6 Server tools} *)
 
 (** Creates a function from string (Xml representing a [MethodCall]) to
     string (Xml representing a [MethodResult] or [Fault]) given a function
@@ -311,16 +316,10 @@ val xml_element_of_value :
 val serve :
   ?base64_encoder:(string -> string) ->
   ?base64_decoder:(string -> string) ->
-  ?datetime_encoder:(XmlRpcDateTime.t -> string) ->
-  ?datetime_decoder:(string -> XmlRpcDateTime.t) ->
+  ?datetime_encoder:(int * int * int * int * int * int * int -> string) ->
+  ?datetime_decoder:(string -> int * int * int * int * int * int * int) ->
   ?error_handler:(exn -> message) ->
   (string -> value list -> value) -> string -> string
-
-(** Performs the same function as [serve], but operates on typed messages
-    instead of strings. *)
-val serve_message :
-  ?error_handler:(exn -> message) ->
-  (string -> value list -> value) -> message -> message
 
 (** The default error handler for [serve].
 

@@ -25,8 +25,7 @@ type param_type =
     | `Double
     | `Int
     | `String
-    | `Struct
-    | `Undefined ]
+    | `Struct ]
 
 let invalid_method name =
   raise
@@ -65,13 +64,6 @@ let system_get_capabilities introspection _ =
         [
           "specUrl", `String "http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php";
           "specVersion", `Int 20010516;
-        ];
-
-      "nil",
-      `Struct
-        [
-          "specUrl", `String "http://www.ontosys.com/xml-rpc/extensions.php";
-          "specVersion", `Int 20010518;
         ];
     ] in
   let capabilities =
@@ -115,8 +107,7 @@ let system_method_signature method_signatures = function
                                 | `Double -> `String "double"
                                 | `Int -> `String "int"
                                 | `String -> `String "string"
-                                | `Struct -> `String "struct"
-                                | `Undefined -> `String "undefined")
+                                | `Struct -> `String "struct")
                              signature))
                      (Hashtbl.find method_signatures name))
        with Not_found -> invalid_method name)
@@ -172,8 +163,6 @@ let check_signatures signatures f params =
                    | (`Int, `Int32 _)
                    | (`String, `String _)
                    | (`Struct, `Struct _)
-                   | (`Undefined, _)
-                   | (_, `Nil)
                      -> ()
                    | _ -> passed := false)
               param_types
@@ -210,8 +199,8 @@ object (self)
   val mutable base64_encoder = fun s -> XmlRpcBase64.str_encode s
   val mutable base64_decoder = fun s -> XmlRpcBase64.str_decode s
 
-  val mutable datetime_encoder = XmlRpcDateTime.to_string
-  val mutable datetime_decoder = XmlRpcDateTime.of_string
+  val mutable datetime_encoder = XmlRpc.iso8601_of_datetime
+  val mutable datetime_decoder = XmlRpc.datetime_of_iso8601
 
   val mutable error_handler = XmlRpc.default_error_handler
 
@@ -222,18 +211,6 @@ object (self)
   method set_datetime_decoder f = datetime_decoder <- f
 
   method set_error_handler f = error_handler <- f
-
-  method serve f input =
-    XmlRpc.serve
-      ~base64_encoder ~base64_decoder
-      ~datetime_encoder ~datetime_decoder
-      ~error_handler
-      f input
-
-  method serve_message f input =
-    XmlRpc.serve_message
-      ~error_handler
-      f input
 
   method register name ?(help="") ?(signature=[]) ?(signatures=[]) f =
     if help <> ""
@@ -280,10 +257,6 @@ object (self)
           ~help:"Returns an array describing the return type and required parameters of a method"
           ~signature:[`Array; `String]
           (system_method_signature method_signatures);
-        self#register "system.multicall"
-          ~help:"Boxcar multiple RPC calls in one request"
-          ~signature:[`Array; `Array]
-          (system_multicall methods);
       end
 
   initializer
@@ -307,7 +280,10 @@ object (self)
       | `POST ->
           let input = cgi#argument_value "BODY" in
           let output =
-            self#serve
+            XmlRpc.serve
+              ~base64_encoder ~base64_decoder
+              ~datetime_encoder ~datetime_decoder
+              ~error_handler
               (fun name ->
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)
@@ -342,7 +318,10 @@ object (self)
       | `POST ->
           let input = cgi#argument_value "BODY" in
           let output =
-            self#serve
+            XmlRpc.serve
+              ~base64_encoder ~base64_decoder
+              ~datetime_encoder ~datetime_decoder
+              ~error_handler
               (fun name ->
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)

@@ -1,17 +1,3 @@
 \contentsline {section}{\numberline {1}Module {\tt {XmlRpc}} : XmlRpc Light.}{1}
-\contentsline {subsection}{\numberline {1.1}High-level interface}{1}
-\contentsline {subsection}{\numberline {1.2}Utility functions}{6}
-\contentsline {subsection}{\numberline {1.3}Low-level interface}{6}
-\contentsline {subsection}{\numberline {1.4}Server tools}{7}
 \contentsline {section}{\numberline {2}Module {\tt {XmlRpcServer}} : XmlRpc Light server.}{8}
-\contentsline {subsection}{\numberline {2.1}Base classes}{8}
-\contentsline {subsection}{\numberline {2.2}Server implementations}{10}
-\contentsline {subsection}{\numberline {2.3}Utility functions}{11}
-\contentsline {section}{\numberline {3}Module {\tt {XmlRpcDateTime}} : Date/time type.}{11}
-\contentsline {subsection}{\numberline {3.1}Types}{11}
-\contentsline {subsection}{\numberline {3.2}Comparison}{11}
-\contentsline {subsection}{\numberline {3.3}Current date and time}{11}
-\contentsline {subsection}{\numberline {3.4}Time zone adjustments}{12}
-\contentsline {subsection}{\numberline {3.5}Conversion}{12}
-\contentsline {subsection}{\numberline {3.6}ISO-8601 parsing and generation}{12}
-\contentsline {section}{\numberline {4}Module {\tt {XmlRpcBase64}} : Base64 codec.}{13}
+\contentsline {section}{\numberline {3}Module {\tt {XmlRpcBase64}} : Base64 codec.}{10}

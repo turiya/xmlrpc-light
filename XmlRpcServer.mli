@@ -36,31 +36,16 @@
 
 (** Type of parameters used in method signatures. *)
 type param_type =
-    [ `Array | `Binary | `Boolean | `DateTime | `Double
-    | `Int | `String | `Struct | `Undefined ]
+    [ `Array | `Binary | `Boolean | `DateTime
+    | `Double | `Int | `String | `Struct ]
 
-(** {2 Base classes} *)
+(** {6 Base classes} *)
 
 (** Abstract base class for XmlRpc servers. *)
 class virtual base :
 object
   (** Hashtable mapping method names to implementation functions. *)
   val methods : (string, XmlRpc.value list -> XmlRpc.value) Hashtbl.t
-
-  (** Base-64 binary encoding function. *)
-  val mutable base64_encoder : string -> string
-
-  (** Base-64 binary decoding function. *)
-  val mutable base64_decoder : string -> string
-
-  (** ISO-8601 date/time encoding function. *)
-  val mutable datetime_encoder : XmlRpcDateTime.t -> string
-
-  (** ISO-8601 date/time decoding function. *)
-  val mutable datetime_decoder : string -> XmlRpcDateTime.t
-
-  (** Handler for unhandled exceptions. *)
-  val mutable error_handler : exn -> XmlRpc.message
 
   (** Sets an alternate Base-64 binary encoding function. *)
   method set_base64_encoder : (string -> string) -> unit
@@ -69,25 +54,17 @@ object
   method set_base64_decoder : (string -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time encoding function. *)
-  method set_datetime_encoder : (XmlRpcDateTime.t -> string) -> unit
+  method set_datetime_encoder :
+    (int * int * int * int * int * int * int -> string) -> unit
 
   (** Sets an alternate ISO-8601 date/time decoding function. *)
-  method set_datetime_decoder : (string -> XmlRpcDateTime.t) -> unit
+  method set_datetime_decoder :
+    (string -> int * int * int * int * int * int * int) -> unit
 
   (** Sets an alternate handler for unhandled exceptions.
       See {!XmlRpc.default_error_handler} and
       {!XmlRpc.quiet_error_handler} for examples. *)
   method set_error_handler : (exn -> XmlRpc.message) -> unit
-
-  (** For use in subclasses; calls {!XmlRpc.serve} with the current
-      encoders, decoders, and error handler. *)
-  method serve :
-    (string -> XmlRpc.value list -> XmlRpc.value) -> string -> string
-
-  (** Like [serve], but operates on messages instead of strings. *)
-  method serve_message :
-    (string -> XmlRpc.value list -> XmlRpc.value) ->
-    XmlRpc.message -> XmlRpc.message
 
   (** Registers a method with the server.
 
@@ -126,7 +103,7 @@ object
   method run : unit -> unit
 end
 
-(** {2 Server implementations} *)
+(** {6 Server implementations} *)
 
 (** CGI XmlRpc server based on Netcgi2. *)
 class cgi : unit -> server
@@ -137,7 +114,7 @@ class netplex :
   ?handler:string ->
   unit -> server
 
-(** {2 Utility functions} *)
+(** {6 Utility functions} *)
 
 (** Raise an {!XmlRpc.Error} indicating a method name not found. *)
 val invalid_method : string -> 'a

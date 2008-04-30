@@ -13,7 +13,6 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
 <link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
-<link title="XmlRpcDateTime" rel="Chapter" href="XmlRpcDateTime.html">
 <link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><title>Index of types</title>
 </head>
 <body>
@@ -44,16 +43,11 @@ Type for XmlRpc messages.
 Type of parameters used in method signatures.
 </div>
 </td></tr>
-<tr><td align="left"><br>T</td></tr>
-<tr><td><a href="XmlRpcDateTime.html#TYPEt">t</a> [<a href="XmlRpcDateTime.html">XmlRpcDateTime</a>]</td>
-<td><div class="info">
-Type of XmlRpc-compatible date/time values.
-</div>
-</td></tr>
 <tr><td align="left"><br>V</td></tr>
 <tr><td><a href="XmlRpc.html#TYPEvalue">value</a> [<a href="XmlRpc.html">XmlRpc</a>]</td>
 <td><div class="info">
-Polymorphic variant type for XmlRpc values: <code class="code">`Array</code>: An ordered list of values, <code class="code">`Binary</code>: A string containing binary data, <code class="code">`Boolean</code>: A boolean, <code class="code">`DateTime</code>: A date/time value, <code class="code">`Double</code>: A floating-point value, <code class="code">`Int</code>: An integer, <code class="code">`Int32</code>: A 32-bit integer, <code class="code">`Nil</code>: A null value, <code class="code">`String</code>: A string, <code class="code">`Struct</code>: An association list of (name, value) pairs
+Polymorphic variant type for XmlRpc values: <code class="code">`Array</code>: An ordered list of values, <code class="code">`Binary</code>: A string containing binary data, <code class="code">`Boolean</code>: A boolean, <code class="code">`DateTime</code>: A date-time value
+      (year, month, day, hour, minute, second, timezone offset in minutes), <code class="code">`Double</code>: A floating-point value, <code class="code">`Int</code>: An integer, <code class="code">`Int32</code>: A 32-bit integer, <code class="code">`String</code>: A string, <code class="code">`Struct</code>: An association list of (name, value) pairs
     Note that base64-encoding of <code class="code">`Binary</code> values is done automatically.
 </div>
 </td></tr>
