@@ -1,5 +1,5 @@
 (*
- * XmlRpc Light, a small XmlRpc library based on Xml Light and Ocamlnet
+ * XmlRpc Light, a small XmlRpc client based on Xml Light and Ocamlnet
  * Copyright (C) 2007 Dave Benjamin (dave@ramenlabs.com)
  *
  * This library is free software; you can redistribute it and/or
