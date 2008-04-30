@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="next" href="XmlRpcServer.cgi.html">
+<link rel="Up" href="XmlRpcServer.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class attributes" rel=Appendix href="index_attributes.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="XmlRpc" rel="Chapter" href="XmlRpc.html">
+<link title="XmlRpcServer" rel="Chapter" href="XmlRpcServer.html">
+<link title="XmlRpcBase64" rel="Chapter" href="XmlRpcBase64.html"><title>XmlRpcServer.base</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="XmlRpcServer.html">Up</a>
+&nbsp;<a href="XmlRpcServer.cgi.html">Next</a>
+</div>
+<center><h1>Class virtual <a href="type_XmlRpcServer.base.html">XmlRpcServer.base</a></h1></center>
+<br>
+<pre><span class="keyword">class</span> <a name="TYPEbase"></a><span class="keyword">virtual</span> base : <code class="type"></code><code class="code">object</code> <a href="XmlRpcServer.base.html">..</a> <code class="code">end</code></pre>Abstract base class for XmlRpc servers.<br>
+<hr width="100%">
+<pre><span class="keyword">val</span> <a name="ATTmethods"></a>methods : <code class="type">(string, <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a> list -> <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a>) Hashtbl.t</code></pre><div class="info">
+Hashtable mapping method names to implementation functions.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_base64_encode"></a>set_base64_encode : <code class="type">(string -> string) -> unit</code></pre><div class="info">
+Sets an alternate Base-64 binary encoding function.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_base64_decode"></a>set_base64_decode : <code class="type">(string -> string) -> unit</code></pre><div class="info">
+Sets an alternate Base-64 binary decoding function.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_datetime_encode"></a>set_datetime_encode : <code class="type">(int * int * int * int * int * int * int -> string) -> unit</code></pre><div class="info">
+Sets an alternate ISO-8601 date/time encoding function.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_datetime_decode"></a>set_datetime_decode : <code class="type">(string -> int * int * int * int * int * int * int) -> unit</code></pre><div class="info">
+Sets an alternate ISO-8601 date/time decoding function.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODset_error_handler"></a>set_error_handler : <code class="type">(exn -> <a href="XmlRpc.html#TYPEmessage">XmlRpc.message</a>) -> unit</code></pre><div class="info">
+Sets an alternate handler for unhandled exceptions.
+      See <a href="XmlRpc.html#VALdefault_error_handler"><code class="code">XmlRpc.default_error_handler</code></a> and
+      <a href="XmlRpc.html#VALquiet_error_handler"><code class="code">XmlRpc.quiet_error_handler</code></a> for examples.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODregister"></a>register : <code class="type">string -> (<a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a> list -> <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a>) -> unit</code></pre><div class="info">
+Registers a method with the server.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODunregister"></a>unregister : <code class="type">string -> unit</code></pre><div class="info">
+Removes a method from the server.<br>
+</div>
+<pre><span class="keyword">method</span> <a name="METHODrun"></a><span class="keyword">virtual</span> run : <code class="type">unit -> unit</code></pre><div class="info">
+Starts the main server process.<br>
+</div>
+</body></html>
