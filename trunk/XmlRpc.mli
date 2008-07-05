@@ -89,7 +89,7 @@ type value =
     User-Agent header, which defaults to "XmlRpc-Light/<version>".
 
     The [debug] setting, if true, will enable verbose debugging output to
-    the standard error strem.
+    the standard error stream.
 *)
 class client :
   ?debug:bool ->
