@@ -99,12 +99,41 @@ module Category = struct
     result
 end
 
+module CommentCount = struct
+  type t = { mutable approved : int;
+             mutable awaiting_moderation : int;
+             mutable spam : int;
+             mutable total_comments : int; }
+
+  let make () =
+    {approved=0;
+     awaiting_moderation=0;
+     spam=0;
+     total_comments=0}
+
+  let of_xmlrpc value =
+    let result = make () in
+    iter_struct
+      (function
+         | ("approved", `String v) -> result.approved <- int_of_string v
+         | ("approved", `Int v) -> result.approved <- v
+         | ("awaiting_moderation", `Int v) -> result.awaiting_moderation <- v
+         | ("spam", `Int v) -> result.spam <- v
+         | ("total_comments", `Int v) -> result.total_comments <- v
+         | (field, _) -> warn (Unknown_field field))
+      value;
+    result
+end
+
 module CustomField = struct
   type t = { mutable id : int option;
              mutable key : string option;
              mutable value : string }
 
-  let make () = {id=None; key=None; value=""}
+  let make () =
+    {id=None;
+     key=None;
+     value=""}
 
   let of_xmlrpc value =
     let result = make () in
@@ -485,6 +514,10 @@ object (self)
   method get_blogs () =
     map_array Blog.of_xmlrpc (rpc#call "wp.getUsersBlogs" [`String username;
                                                            `String password])
+
+  method get_comment_count post_id =
+    CommentCount.of_xmlrpc
+      (rpc#call "wp.getCommentCount" (std_args @ [`Int post_id]))
 
   method get_categories () =
     map_array Category.of_xmlrpc (rpc#call "wp.getCategories" std_args)
