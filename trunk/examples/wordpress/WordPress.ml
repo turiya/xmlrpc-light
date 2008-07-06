@@ -415,6 +415,11 @@ object (self)
   method get_page_list () =
     map_array PageListItem.of_xmlrpc (rpc#call "wp.getPageList" std_args)
 
+  method get_page_templates () =
+    match rpc#call "wp.getPageTemplates" std_args with
+      | `Struct pairs -> List.map (fun (k, v) -> (k, XmlRpc.dump v)) pairs
+      | other -> raise (Type_error (XmlRpc.dump other))
+
   method new_page content publish =
     int_value
       (rpc#call "wp.newPage"
