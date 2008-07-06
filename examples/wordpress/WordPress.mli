@@ -73,6 +73,17 @@ sig
   val to_xmlrpc : t -> XmlRpc.value
 end
 
+module Option :
+sig
+  type t = {
+             mutable desc : string;
+             mutable readonly : bool;
+             mutable value : string;
+           }
+  val make : unit -> t
+  val of_xmlrpc : XmlRpc.value -> t
+end
+
 module User :
 sig
   type t = {
@@ -178,6 +189,7 @@ object
   method get_blogs : unit -> Blog.t list
   method get_categories : unit -> Category.t list
   method get_comment_count : int -> CommentCount.t
+  method get_options : string list -> (string * Option.t) list
   method get_page : int -> Page.t
   method get_page_list : unit -> PageListItem.t list
   method get_page_status_list : unit -> (string * string) list
@@ -191,6 +203,7 @@ object
     slug:string -> parent_id:int -> description:string -> int
   method new_page : Page.t -> bool -> int
   method new_post : Post.t -> bool -> int
+  method set_options : (string * string) list -> (string * Option.t) list
   method suggest_categories : string -> int -> XmlRpc.value
   method upload_file :
     name:string ->
