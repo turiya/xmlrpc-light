@@ -167,9 +167,11 @@ object
   method get_categories : unit -> Category.t list
   method get_page : int -> Page.t
   method get_page_list : unit -> PageListItem.t list
+  method get_page_status_list : unit -> (string * string) list
   method get_page_templates : unit -> (string * string) list
   method get_pages : unit -> Page.t list
   method get_post : int -> Post.t
+  method get_post_status_list : unit -> (string * string) list
   method get_recent_posts : int -> Post.t list
   method new_category :
     name:string ->
