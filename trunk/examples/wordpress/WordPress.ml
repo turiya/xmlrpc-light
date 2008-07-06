@@ -158,6 +158,28 @@ module CustomField = struct
           `Struct ["id", `Int id; "key", `String key; "value", `String value]
 end
 
+module Option = struct
+  type t = { mutable desc : string;
+             mutable readonly : bool;
+             mutable value : string; }
+
+  let make () =
+    {desc="";
+     readonly=false;
+     value=""}
+
+  let of_xmlrpc value =
+    let result = make () in
+    iter_struct
+      (function
+         | ("desc", `String v) -> result.desc <- v
+         | ("readonly", `Boolean v) -> result.readonly <- v
+         | ("value", `String v) -> result.value <- v
+         | (field, _) -> warn (Unknown_field field))
+      value;
+    result
+end
+
 module User = struct
   type t = { mutable user_id : int;
              mutable user_login : string;
@@ -533,6 +555,29 @@ object (self)
   method suggest_categories category max_results =
     rpc#call "wp.suggestCategories"
       (std_args @ [`String category; `Int max_results])
+
+  method get_options names =
+    let result =
+      rpc#call
+        "wp.getOptions"
+        (std_args @ [`Array (List.map (fun s -> `String s) names)]) in
+    match result with
+      | `Struct pairs ->
+          List.map (fun (name, opt) -> (name, Option.of_xmlrpc opt)) pairs
+      | `Array [] -> []
+      | other -> raise (Type_error (XmlRpc.dump other))
+
+  method set_options options =
+    let result =
+      rpc#call
+        "wp.setOptions"
+        (std_args @ [`Struct (List.map (fun (name, value) ->
+                                          (name, `String value)) options)]) in
+    match result with
+      | `Struct pairs ->
+          List.map (fun (name, opt) -> (name, Option.of_xmlrpc opt)) pairs
+      | `Array [] -> []
+      | other -> raise (Type_error (XmlRpc.dump other))
 
   method upload_file ~name ~typ ~bits ~overwrite =
     let value =
