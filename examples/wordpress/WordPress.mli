@@ -49,6 +49,18 @@ sig
   val of_xmlrpc : XmlRpc.value -> t
 end
 
+module CommentCount :
+sig
+  type t = {
+             mutable approved : int;
+             mutable awaiting_moderation : int;
+             mutable spam : int;
+             mutable total_comments : int;
+           }
+  val make : unit -> t
+  val of_xmlrpc : XmlRpc.value -> t
+end
+
 module CustomField :
 sig
   type t = {
@@ -165,6 +177,7 @@ object
   method get_authors : unit -> User.t list
   method get_blogs : unit -> Blog.t list
   method get_categories : unit -> Category.t list
+  method get_comment_count : int -> CommentCount.t
   method get_page : int -> Page.t
   method get_page_list : unit -> PageListItem.t list
   method get_page_status_list : unit -> (string * string) list
