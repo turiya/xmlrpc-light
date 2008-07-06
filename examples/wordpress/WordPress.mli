@@ -20,6 +20,21 @@
 exception Type_error of string
 exception Unknown_field of string
 
+val strict : bool ref
+
+module Blog :
+sig
+  type t = {
+             mutable is_admin : bool;
+             mutable url : string;
+             mutable blog_id : int;
+             mutable blog_name : string;
+             mutable xmlrpc : string;
+           }
+  val make : unit -> t
+  val of_xmlrpc : XmlRpc.value -> t
+end
+
 module Category :
 sig
   type t = {
@@ -32,6 +47,18 @@ sig
            }
   val make : unit -> t
   val of_xmlrpc : XmlRpc.value -> t
+end
+
+module CustomField :
+sig
+  type t = {
+             mutable id : int option;
+             mutable key : string option;
+             mutable value : string;
+           }
+  val make : unit -> t
+  val of_xmlrpc : XmlRpc.value -> t
+  val to_xmlrpc : t -> XmlRpc.value
 end
 
 module User :
@@ -83,6 +110,8 @@ sig
              mutable wp_page_order : int;
              mutable wp_author_id : int;
              mutable wp_author_display_name : string;
+             mutable custom_fields : CustomField.t list;
+             mutable wp_page_template : string;
            }
   val make : unit -> t
   val of_xmlrpc : XmlRpc.value -> t
@@ -94,6 +123,7 @@ sig
   type t = {
              mutable user_id : int;
              mutable post_id : int;
+             mutable post_status : string;
              mutable date_created : XmlRpcDateTime.t;
              mutable description : string;
              mutable title : string;
@@ -109,6 +139,7 @@ sig
              mutable wp_password : string;
              mutable wp_author_id : int;
              mutable wp_author_display_name : string;
+             mutable custom_fields : CustomField.t list;
            }
   val make : unit -> t
   val of_xmlrpc : XmlRpc.value -> t
@@ -132,6 +163,7 @@ object
   method edit_page : int -> Page.t -> bool -> unit
   method edit_post : int -> Post.t -> bool -> unit
   method get_authors : unit -> User.t list
+  method get_blogs : unit -> Blog.t list
   method get_categories : unit -> Category.t list
   method get_page : int -> Page.t
   method get_page_list : unit -> PageListItem.t list

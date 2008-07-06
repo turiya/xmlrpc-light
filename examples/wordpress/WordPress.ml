@@ -20,6 +20,13 @@
 exception Type_error of string
 exception Unknown_field of string
 
+let strict = ref false
+
+let warn exn =
+  if !strict
+  then raise exn
+  else prerr_endline (Printexc.to_string exn)
+
 let map_array f = function
   | `Array items -> List.map f items
   | other -> raise (Type_error (XmlRpc.dump other))
@@ -32,6 +39,34 @@ let int_value = function
   | `Int n -> n
   | `String s -> int_of_string s
   | other -> raise (Type_error (XmlRpc.dump other))
+
+module Blog = struct
+  type t = { mutable is_admin : bool;
+             mutable url : string;
+             mutable blog_id : int;
+             mutable blog_name : string;
+             mutable xmlrpc : string; }
+
+  let make () =
+    {is_admin=false;
+     url="";
+     blog_id=0;
+     blog_name="";
+     xmlrpc=""}
+
+  let of_xmlrpc value =
+    let result = make () in
+    iter_struct
+      (function
+         | ("isAdmin", `Boolean v) -> result.is_admin <- v
+         | ("url", `String v) -> result.url <- v
+         | ("blogid", `String v) -> result.blog_id <- int_of_string v
+         | ("blogName", `String v) -> result.blog_name <- v
+         | ("xmlrpc", `String v) -> result.xmlrpc <- v
+         | (field, _) -> warn (Unknown_field field))
+      value;
+    result
+end
 
 module Category = struct
   type t = { mutable category_id : int;
@@ -59,9 +94,39 @@ module Category = struct
          | ("categoryName", `String v) -> result.category_name <- v
          | ("htmlUrl", `String v) -> result.html_url <- v
          | ("rssUrl", `String v) -> result.rss_url <- v
-         | (field, _) -> raise (Unknown_field field))
+         | (field, _) -> warn (Unknown_field field))
       value;
     result
+end
+
+module CustomField = struct
+  type t = { mutable id : int option;
+             mutable key : string option;
+             mutable value : string }
+
+  let make () = {id=None; key=None; value=""}
+
+  let of_xmlrpc value =
+    let result = make () in
+    iter_struct
+      (function
+         | ("id", `String v) -> result.id <- Some (int_of_string v)
+         | ("key", `String v) -> result.key <- Some v
+         | ("value", `String v) -> result.value <- v
+         | (field, _) -> warn (Unknown_field field))
+      value;
+    result
+
+  let to_xmlrpc field =
+    match field with
+      | {id=None; key=None; value=value} ->
+          `Struct ["value", `String value]
+      | {id=Some id; key=None; value=value} ->
+          `Struct ["id", `Int id; "value", `String value]
+      | {id=None; key=Some key; value=value} ->
+          `Struct ["key", `String key; "value", `String value]
+      | {id=Some id; key=Some key; value=value} ->
+          `Struct ["id", `Int id; "key", `String key; "value", `String value]
 end
 
 module User = struct
@@ -87,7 +152,7 @@ module User = struct
          | ("display_name", `String v) -> result.display_name <- v
          | ("user_email", `String v) -> result.user_email <- v
          | ("meta_value", `String v) -> result.meta_value <- v
-         | (field, _) -> raise (Unknown_field field))
+         | (field, _) -> warn (Unknown_field field))
       value;
     result
 end
@@ -114,7 +179,7 @@ module PageListItem = struct
          | ("page_parent_id", `String v) -> result.page_parent_id <- int_of_string v
          | ("dateCreated", `DateTime v) -> result.date_created <- v
          | ("date_created_gmt", `DateTime v) -> result.date_created <- v
-         | (field, _) -> raise (Unknown_field field))
+         | (field, _) -> warn (Unknown_field field))
       value;
     result
 end
@@ -140,7 +205,9 @@ module Page = struct
              mutable wp_page_parent_title : string;
              mutable wp_page_order : int;
              mutable wp_author_id : int;
-             mutable wp_author_display_name : string; }
+             mutable wp_author_display_name : string;
+             mutable custom_fields : CustomField.t list;
+             mutable wp_page_template : string; }
 
   let make () =
     {date_created=(0,0,0,0,0,0,0);
@@ -163,7 +230,9 @@ module Page = struct
      wp_page_parent_title="";
      wp_page_order=0;
      wp_author_id=0;
-     wp_author_display_name=""}
+     wp_author_display_name="";
+     custom_fields=[];
+     wp_page_template=""}
 
   let of_xmlrpc value =
     let result = make () in
@@ -187,6 +256,8 @@ module Page = struct
          | ("wp_slug", `String v) -> result.wp_slug <- v
          | ("wp_password", `String v) -> result.wp_password <- v
          | ("wp_author", `String v) -> result.wp_author <- v
+         | ("wp_author_display_name", `String v) ->
+             result.wp_author_display_name <- v
          | ("wp_page_parent_id", `Int v) ->
              result.wp_page_parent_id <- v
          | ("wp_page_parent_id", `String v) ->
@@ -195,11 +266,15 @@ module Page = struct
              result.wp_page_parent_title <- v
          | ("wp_page_order", `Int v) ->
              result.wp_page_order <- v
+         | ("wp_page_order", `String v) ->
+             result.wp_page_order <- int_of_string v
          | ("wp_author_id", `String v) ->
              result.wp_author_id <- int_of_string v
-         | ("wp_author_display_name", `String v) ->
-             result.wp_author_display_name <- v
-         | (field, _) -> raise (Unknown_field field))
+         | ("custom_fields", `Array v) ->
+             result.custom_fields <- List.map CustomField.of_xmlrpc v
+         | ("wp_page_template", `String v) ->
+             result.wp_page_template <- v
+         | (field, _) -> warn (Unknown_field field))
       value;
     result
 
@@ -218,12 +293,17 @@ module Page = struct
              "dateCreated", `DateTime page.date_created;
              "categories", `Array (List.map
                                      (fun s -> `String s)
-                                     page.categories)]
+                                     page.categories);
+             "custom_fields", `Array (List.map
+                                        CustomField.to_xmlrpc
+                                        page.custom_fields);
+             "wp_page_template", `String page.wp_page_template]
 end
 
 module Post = struct
   type t = { mutable user_id : int;
              mutable post_id : int;
+             mutable post_status : string;
              mutable date_created : XmlRpcDateTime.t;
              mutable description : string;
              mutable title : string;
@@ -238,12 +318,14 @@ module Post = struct
              mutable wp_slug : string;
              mutable wp_password : string;
              mutable wp_author_id : int;
-             mutable wp_author_display_name : string; }
+             mutable wp_author_display_name : string;
+             mutable custom_fields : CustomField.t list; }
 
   let make () =
     {date_created=(0,0,0,0,0,0,0);
      user_id=0;
      post_id=0;
+     post_status="";
      description="";
      title="";
      link="";
@@ -257,7 +339,8 @@ module Post = struct
      wp_slug="";
      wp_password="";
      wp_author_id=0;
-     wp_author_display_name=""}
+     wp_author_display_name="";
+     custom_fields=[]}
 
   let of_xmlrpc value =
     let result = make () in
@@ -267,6 +350,7 @@ module Post = struct
          | ("date_created_gmt", `DateTime v) -> result.date_created <- v
          | ("userid", `String v) -> result.user_id <- int_of_string v
          | ("postid", `String v) -> result.post_id <- int_of_string v
+         | ("post_status", `String v) -> result.post_status <- v
          | ("description", `String v) -> result.description <- v
          | ("title", `String v) -> result.title <- v
          | ("link", `String v) -> result.link <- v
@@ -282,7 +366,9 @@ module Post = struct
          | ("wp_password", `String v) -> result.wp_password <- v
          | ("wp_author_id", `String v) -> result.wp_author_id <- int_of_string v
          | ("wp_author_display_name", `String v) -> result.wp_author_display_name <- v
-         | (field, _) -> raise (Unknown_field field))
+         | ("custom_fields", `Array v) ->
+             result.custom_fields <- List.map CustomField.of_xmlrpc v
+         | (field, _) -> warn (Unknown_field field))
       value;
     result
 
@@ -300,7 +386,10 @@ module Post = struct
              "mt_keywords", `String post.mt_keywords;
              "wp_slug", `String post.wp_slug;
              "wp_password", `String post.wp_password;
-             "wp_author_id", `Int post.wp_author_id]
+             "wp_author_id", `Int post.wp_author_id;
+             "custom_fields", `Array (List.map
+                                        CustomField.to_xmlrpc
+                                        post.custom_fields)];
 end
 
 class api ~url ~blog_id ~username ~password =
@@ -378,6 +467,10 @@ object (self)
   method get_authors () =
     map_array User.of_xmlrpc (rpc#call "wp.getAuthors" std_args)
 
+  method get_blogs () =
+    map_array Blog.of_xmlrpc (rpc#call "wp.getUsersBlogs" [`String username;
+                                                           `String password])
+
   method get_categories () =
     map_array Category.of_xmlrpc (rpc#call "wp.getCategories" std_args)
 
@@ -406,7 +499,7 @@ object (self)
          | ("file", `String v) -> file := v
          | ("url", `String v) -> url := v
          | ("type", `String v) -> typ := v
-         | (field, _) -> raise (Unknown_field field))
+         | (field, _) -> warn (Unknown_field field))
       value;
     (!file, !url, !typ)
 end
