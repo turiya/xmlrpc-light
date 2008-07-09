@@ -54,7 +54,7 @@ let () =
     ["-i", Arg.Set use_int32, "Use int32 for all integers";
      "-m", Arg.Set use_multicall, "Generate lazy interface using multicall";
      "-v", Arg.Set verbose, "Display verbose debugging output"] in
-  let usage = (sprintf "Usage: %s [-i] url" Sys.argv.(0)) in
+  let usage = (sprintf "Usage: %s [-i] [-m] [-v] url" Sys.argv.(0)) in
   Arg.parse specs (fun url' -> url := url') usage;
   if !url = "" then (Arg.usage specs usage; exit 2)
 
