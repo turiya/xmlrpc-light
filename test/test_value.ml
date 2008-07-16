@@ -51,11 +51,13 @@ let test = "test_value" >:::
 
     "to_int32" >::
       (fun () ->
-         assert_equal
-           ~printer:XmlRpc.dump
-           (`Int32 2000000000l)
-           (XmlRpc.value_of_xml_element
-              (Xml.Element ("int", [], [Xml.PCData "2000000000"]))));
+         if Sys.word_size = 32
+         then
+           assert_equal
+             ~printer:XmlRpc.dump
+             (`Int32 2000000000l)
+             (XmlRpc.value_of_xml_element
+                (Xml.Element ("int", [], [Xml.PCData "2000000000"]))));
 
     "of_double" >::
       (fun () ->
