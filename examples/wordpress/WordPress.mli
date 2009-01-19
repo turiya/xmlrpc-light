@@ -204,8 +204,10 @@ object
   val std_args : XmlRpc.value list
   val username : string
   method rpc : XmlRpc.client
+  method delete_comment : int -> unit
   method delete_page : int -> unit
   method delete_post : int -> unit
+  method edit_comment : int -> Comment.t -> unit
   method edit_page : int -> Page.t -> bool -> unit
   method edit_post : int -> Post.t -> bool -> unit
   method get_authors : unit -> User.t list
@@ -229,6 +231,7 @@ object
   method new_category :
     name:string ->
     slug:string -> parent_id:int -> description:string -> int
+  method new_comment : Comment.t -> int
   method new_page : Page.t -> bool -> int
   method new_post : Post.t -> bool -> int
   method set_options : (string * string) list -> (string * Option.t) list
