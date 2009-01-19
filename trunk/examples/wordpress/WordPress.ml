@@ -623,11 +623,27 @@ object (self)
 
   method get_comments ?(status="") ?(post_id=0) ?(offset=0) ?(number=10) () =
     map_array Comment.of_xmlrpc
-      (rpc#call "wp.getComments" (std_args @ [`Struct ["status", `String status;
-                                                       (* if post_id > 0 then `Int post_id else `String ""; *)
-                                                       "post_id", `Int post_id;
-                                                       "offset", `Int offset;
-                                                       "number", `Int number]]))
+      (rpc#call "wp.getComments"
+         (std_args @ [`Struct ["status", `String status;
+                               "post_id", `Int post_id;
+                               "offset", `Int offset;
+                               "number", `Int number]]))
+
+  method new_comment comment =
+    int_value
+      (rpc#call "wp.newComment"
+         (std_args @ [`Int comment.Comment.post_id;
+                      Comment.to_xmlrpc comment]))
+
+  method edit_comment comment_id comment =
+    ignore
+      (rpc#call "wp.editComment"
+         (std_args @ [`Int comment_id;
+                      Comment.to_xmlrpc comment]))
+
+  method delete_comment comment_id =
+    ignore
+      (rpc#call "wp.deleteComment" (std_args @ [`Int comment_id]))
 
   method get_categories () =
     map_array Category.of_xmlrpc (rpc#call "wp.getCategories" std_args)
