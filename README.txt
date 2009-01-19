@@ -1,5 +1,5 @@
-XmlRpc Light, a small XmlRpc client based on Xml Light and Ocamlnet
-===================================================================
+XmlRpc Light, a small XmlRpc library based on Xml Light and Ocamlnet
+====================================================================
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -18,25 +18,31 @@ XmlRpc Light, a small XmlRpc client based on Xml Light and Ocamlnet
 What is XmlRpc Light?
 ---------------------
 
-XmlRpc Light is an XmlRpc client written in OCaml. It requires Xml-Light and
-Ocamlnet. This code should be considered Alpha software, and the interface may
-change to better fit the needs of the community.
+XmlRpc-Light is an XmlRpc client and server library written in
+OCaml. It is based on the the Xml-Light and Ocamlnet libraries.
 
 Installation:
 -------------
 
-For Debian users:
+Debian binary:
+
+    sudo apt-get install libxmlrpc-light-ocaml-dev    
+
+Debian source:
 
     sudo apt-get install libxml-light-ocaml-dev libnethttpd-ocaml-dev
-
     make
     sudo make install
+
+Fedora binary:
+
+    sudo yum install ocaml-xmlrpc-light
 
 For other environments, install xml-light and ocamlnet from sources available
 at the following locations:
 
     Xml-Light: http://tech.motion-twin.com/xmllight.html
-    Ocamlnet: http://sourceforge.net/projects/ocamlnet
+    Ocamlnet: http://projects.camlcity.org/projects/ocamlnet.html
 
 And then run, as usual:
 
@@ -51,11 +57,18 @@ already installed a previous version, type:
 Usage:
 ------
 
-Simple example:
+Client example:
 
     let rpc = new XmlRpc.client "http://localhost:8000" in
     let result = rpc#call "echo" [`String "hello!"] in
     print_endline (XmlRpc.dump result) ]}
+
+Server example:
+
+    let server = new XmlRpcServer.cgi () in
+    server#register "demo.sayHello"
+      (fun _ -> `String "Hello!");
+    server#run () 
 
 See the Ocamldoc-generated documentation in the "doc" directory for more
 details.
