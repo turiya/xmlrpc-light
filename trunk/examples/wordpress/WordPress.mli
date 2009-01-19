@@ -61,6 +61,29 @@ sig
   val of_xmlrpc : XmlRpc.value -> t
 end
 
+module Comment :
+sig
+  type t = {
+             mutable date_created : XmlRpcDateTime.t;
+             mutable user_id : int;
+             mutable comment_id : int;
+             mutable parent : int;
+             mutable status : string;
+             mutable content : string;
+             mutable link : string;
+             mutable post_id : int;
+             mutable post_title : string;
+             mutable author : string;
+             mutable author_url : string;
+             mutable author_email : string;
+             mutable author_ip : string;
+             mutable type' : string;
+           }
+  val make : unit -> t
+  val of_xmlrpc : XmlRpc.value -> t
+  val to_xmlrpc : t -> XmlRpc.value
+end
+
 module CustomField :
 sig
   type t = {
@@ -188,7 +211,12 @@ object
   method get_authors : unit -> User.t list
   method get_blogs : unit -> Blog.t list
   method get_categories : unit -> Category.t list
+  method get_comment : int -> Comment.t
   method get_comment_count : int -> CommentCount.t
+  method get_comment_status_list : unit -> (string * string) list
+  method get_comments :
+    ?status:string ->
+    ?post_id:int -> ?offset:int -> ?number:int -> unit -> Comment.t list
   method get_options : string list -> (string * Option.t) list
   method get_page : int -> Page.t
   method get_page_list : unit -> PageListItem.t list

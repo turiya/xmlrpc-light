@@ -125,6 +125,77 @@ module CommentCount = struct
     result
 end
 
+module Comment = struct
+  type t = { mutable date_created : XmlRpcDateTime.t;
+             mutable user_id : int;
+             mutable comment_id : int;
+             mutable parent : int;
+             mutable status : string;
+             mutable content : string;
+             mutable link : string;
+             mutable post_id : int;
+             mutable post_title : string;
+             mutable author : string;
+             mutable author_url : string;
+             mutable author_email : string;
+             mutable author_ip : string;
+             mutable type' : string }
+
+  let make () =
+    {date_created=(0,0,0,0,0,0,0);
+     user_id=0;
+     comment_id=0;
+     parent=0;
+     status="";
+     content="";
+     link="";
+     post_id=0;
+     post_title="";
+     author="";
+     author_url="";
+     author_email="";
+     author_ip="";
+     type'=""}
+
+  let of_xmlrpc value =
+    let result = make () in
+    iter_struct
+      (function
+         | ("date_created_gmt", `DateTime v) -> result.date_created <- v
+         | ("user_id", `String v) -> result.user_id <- int_of_string v
+         | ("comment_id", `String v) -> result.comment_id <- int_of_string v
+         | ("parent", `String v) -> result.parent <- int_of_string v
+         | ("status", `String v) -> result.status <- v
+         | ("content", `String v) -> result.content <- v
+         | ("link", `String v) -> result.link <- v
+         | ("post_id", `String v) -> result.post_id <- int_of_string v
+         | ("post_title", `String v) -> result.post_title <- v
+         | ("author", `String v) -> result.author <- v
+         | ("author_url", `String v) -> result.author_url <- v
+         | ("author_email", `String v) -> result.author_email <- v
+         | ("author_ip", `String v) -> result.author_ip <- v
+         | ("type", `String v) -> result.type' <- v
+         | (field, _) -> warn (Unknown_field field))
+      value;
+    result
+
+  let to_xmlrpc comment =
+    `Struct ["date_created_gmt", `DateTime comment.date_created;
+             "user_id", `Int comment.user_id;
+             "comment_id", `Int comment.comment_id;
+             "parent", `Int comment.parent;
+             "status", `String comment.status;
+             "content", `String comment.content;
+             "link", `String comment.link;
+             "post_id", `Int comment.post_id;
+             "post_title", `String comment.post_title;
+             "author", `String comment.author;
+             "author_url", `String comment.author_url;
+             "author_email", `String comment.author_email;
+             "author_ip", `String comment.author_ip;
+             "type", `String comment.type']
+end
+
 module CustomField = struct
   type t = { mutable id : int option;
              mutable key : string option;
@@ -540,6 +611,23 @@ object (self)
   method get_comment_count post_id =
     CommentCount.of_xmlrpc
       (rpc#call "wp.getCommentCount" (std_args @ [`Int post_id]))
+
+  method get_comment_status_list () =
+    match rpc#call "wp.getCommentStatusList" std_args with
+      | `Struct pairs -> List.map (fun (k, v) -> (k, XmlRpc.dump v)) pairs
+      | other -> raise (Type_error (XmlRpc.dump other))
+
+  method get_comment comment_id =
+    Comment.of_xmlrpc
+      (rpc#call "wp.getComment" (std_args @ [`Int comment_id]))
+
+  method get_comments ?(status="") ?(post_id=0) ?(offset=0) ?(number=10) () =
+    map_array Comment.of_xmlrpc
+      (rpc#call "wp.getComments" (std_args @ [`Struct ["status", `String status;
+                                                       (* if post_id > 0 then `Int post_id else `String ""; *)
+                                                       "post_id", `Int post_id;
+                                                       "offset", `Int offset;
+                                                       "number", `Int number]]))
 
   method get_categories () =
     map_array Category.of_xmlrpc (rpc#call "wp.getCategories" std_args)
