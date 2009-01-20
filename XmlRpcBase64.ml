@@ -1,6 +1,6 @@
 (*
  * XmlRpcBase64 - Base64 codec for XmlRpc
- * Copyright (C) 2007 Dave Benjamin
+ * Copyright (C) 2007-2009 Dave Benjamin
  * Copyright (C) 2003 Nicolas Cannasse
  *
  * This library is free software; you can redistribute it and/or
