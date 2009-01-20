@@ -18,7 +18,7 @@
     interface, and low-level tools that can be used to implement a server.
 
 
-    {\it (c) 2007 Dave Benjamin}
+    {\it (c) 2007-2009 Dave Benjamin}
 
 
 
@@ -382,7 +382,7 @@ Class for XmlRpc clients. Takes a single mandatory argument, {\tt{url}}.
 
 
     The {\tt{debug}} setting, if true, will enable verbose debugging output to
-    the standard error strem.
+    the standard error stream.
 
 
 \end{ocamldocdescription}
@@ -697,6 +697,23 @@ Creates a function from string (Xml representing a {\tt{MethodCall}}) to
 
 
 
+\label{val:XmlRpc.serve-underscoremessage}\begin{ocamldoccode}
+val serve_message :
+  ?error_handler:(exn -> message) ->
+  (string -> value list -> value) ->
+  message -> message
+\end{ocamldoccode}
+\index{serve-underscoremessage@\verb`serve_message`}
+\begin{ocamldocdescription}
+Performs the same function as {\tt{serve}}, but operates on typed messages
+    instead of strings.
+
+
+\end{ocamldocdescription}
+
+
+
+
 \label{val:XmlRpc.default-underscoreerror-underscorehandler}\begin{ocamldoccode}
 val default_error_handler : exn -> message
 \end{ocamldoccode}
@@ -927,6 +944,19 @@ method serve :
 \begin{ocamldocdescription}
 For use in subclasses; calls {\tt{XmlRpc.serve}}[\ref{val:XmlRpc.serve}] with the current
       encoders, decoders, and error handler.
+
+
+\end{ocamldocdescription}
+
+
+\label{method:XmlRpcServer.base.serve-underscoremessage}\begin{ocamldoccode}
+method serve_message :
+  (string -> XmlRpc.value list -> XmlRpc.value) ->
+  XmlRpc.message -> XmlRpc.message
+\end{ocamldoccode}
+\index{serve-underscoremessage@\verb`serve_message`}
+\begin{ocamldocdescription}
+Like {\tt{serve}}, but operates on messages instead of strings.
 
 
 \end{ocamldocdescription}

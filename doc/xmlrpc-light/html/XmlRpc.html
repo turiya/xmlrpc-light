@@ -39,7 +39,7 @@
     interface, and low-level tools that can be used to implement a server.
 <p>
 
-    <i>(c) 2007 Dave Benjamin</i><br>
+    <i>(c) 2007-2009 Dave Benjamin</i><br>
 <hr width="100%">
 <pre><span class="keyword">val</span> <a name="VALversion"></a>version : <code class="type">string</code></pre><div class="info">
 Version of XmlRpc-Light as a string.<br>
@@ -154,6 +154,10 @@ Creates a function from string (Xml representing a <code class="code">MethodCall
 
     For a full-featured, easy-to-use, network-capable server implementation,
     see the <a href="XmlRpcServer.html"><code class="code">XmlRpcServer</code></a> module.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALserve_message"></a>serve_message : <code class="type">?error_handler:(exn -> <a href="XmlRpc.html#TYPEmessage">message</a>) -><br>       (string -> <a href="XmlRpc.html#TYPEvalue">value</a> list -> <a href="XmlRpc.html#TYPEvalue">value</a>) -><br>       <a href="XmlRpc.html#TYPEmessage">message</a> -> <a href="XmlRpc.html#TYPEmessage">message</a></code></pre><div class="info">
+Performs the same function as <code class="code">serve</code>, but operates on typed messages
+    instead of strings.<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALdefault_error_handler"></a>default_error_handler : <code class="type">exn -> <a href="XmlRpc.html#TYPEmessage">message</a></code></pre><div class="info">
 The default error handler for <code class="code">serve</code>.

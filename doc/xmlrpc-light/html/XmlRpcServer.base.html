@@ -66,6 +66,9 @@ Sets an alternate handler for unhandled exceptions.
 For use in subclasses; calls <a href="XmlRpc.html#VALserve"><code class="code">XmlRpc.serve</code></a> with the current
       encoders, decoders, and error handler.<br>
 </div>
+<pre><span class="keyword">method</span> <a name="METHODserve_message"></a>serve_message : <code class="type">(string -> <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a> list -> <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a>) -><br>       <a href="XmlRpc.html#TYPEmessage">XmlRpc.message</a> -> <a href="XmlRpc.html#TYPEmessage">XmlRpc.message</a></code></pre><div class="info">
+Like <code class="code">serve</code>, but operates on messages instead of strings.<br>
+</div>
 <pre><span class="keyword">method</span> <a name="METHODregister"></a>register : <code class="type">string -><br>       ?help:string -><br>       ?signature:<a href="XmlRpcServer.html#TYPEparam_type">param_type</a> list -><br>       ?signatures:<a href="XmlRpcServer.html#TYPEparam_type">param_type</a> list list -><br>       (<a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a> list -> <a href="XmlRpc.html#TYPEvalue">XmlRpc.value</a>) -> unit</code></pre><div class="info">
 Registers a method with the server.
 <p>
