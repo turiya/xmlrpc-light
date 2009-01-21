@@ -61,6 +61,7 @@ module Blog = struct
          | ("isAdmin", `Boolean v) -> result.is_admin <- v
          | ("url", `String v) -> result.url <- v
          | ("blogid", `String v) -> result.blog_id <- int_of_string v
+         | ("blogid", `Int v) -> result.blog_id <- v
          | ("blogName", `String v) -> result.blog_name <- v
          | ("xmlrpc", `String v) -> result.xmlrpc <- v
          | (field, _) -> warn (Unknown_field field))
@@ -89,7 +90,9 @@ module Category = struct
     iter_struct
       (function
          | ("categoryId", `String v) -> result.category_id <- int_of_string v
+         | ("categoryId", `Int v) -> result.category_id <- v
          | ("parentId", `String v) -> result.parent_id <- int_of_string v
+         | ("parentId", `Int v) -> result.parent_id <- v
          | ("description", `String v) -> result.description <- v
          | ("categoryName", `String v) -> result.category_name <- v
          | ("htmlUrl", `String v) -> result.html_url <- v
@@ -163,12 +166,16 @@ module Comment = struct
       (function
          | ("date_created_gmt", `DateTime v) -> result.date_created <- v
          | ("user_id", `String v) -> result.user_id <- int_of_string v
+         | ("user_id", `Int v) -> result.user_id <- v
          | ("comment_id", `String v) -> result.comment_id <- int_of_string v
+         | ("comment_id", `Int v) -> result.comment_id <- v
          | ("parent", `String v) -> result.parent <- int_of_string v
+         | ("parent", `Int v) -> result.parent <- v
          | ("status", `String v) -> result.status <- v
          | ("content", `String v) -> result.content <- v
          | ("link", `String v) -> result.link <- v
          | ("post_id", `String v) -> result.post_id <- int_of_string v
+         | ("post_id", `Int v) -> result.post_id <- v
          | ("post_title", `String v) -> result.post_title <- v
          | ("author", `String v) -> result.author <- v
          | ("author_url", `String v) -> result.author_url <- v
@@ -211,6 +218,7 @@ module CustomField = struct
     iter_struct
       (function
          | ("id", `String v) -> result.id <- Some (int_of_string v)
+         | ("id", `Int v) -> result.id <- Some v
          | ("key", `String v) -> result.key <- Some v
          | ("value", `String v) -> result.value <- v
          | (field, _) -> warn (Unknown_field field))
@@ -270,6 +278,7 @@ module User = struct
     iter_struct
       (function
          | ("user_id", `String v) -> result.user_id <- int_of_string v
+         | ("user_id", `Int v) -> result.user_id <- v
          | ("user_login", `String v) -> result.user_login <- v
          | ("display_name", `String v) -> result.display_name <- v
          | ("user_email", `String v) -> result.user_email <- v
@@ -297,8 +306,10 @@ module PageListItem = struct
     iter_struct
       (function
          | ("page_id", `String v) -> result.page_id <- int_of_string v
+         | ("page_id", `Int v) -> result.page_id <- v
          | ("page_title", `String v) -> result.page_title <- v
          | ("page_parent_id", `String v) -> result.page_parent_id <- int_of_string v
+         | ("page_parent_id", `Int v) -> result.page_parent_id <- v
          | ("dateCreated", `DateTime v) -> result.date_created <- v
          | ("date_created_gmt", `DateTime v) -> result.date_created <- v
          | (field, _) -> warn (Unknown_field field))
@@ -363,7 +374,9 @@ module Page = struct
          | ("dateCreated", `DateTime v) -> result.date_created <- v
          | ("date_created_gmt", `DateTime v) -> result.date_created <- v
          | ("userid", `String v) -> result.user_id <- int_of_string v
+         | ("userid", `Int v) -> result.user_id <- v
          | ("page_id", `String v) -> result.page_id <- int_of_string v
+         | ("page_id", `Int v) -> result.page_id <- v
          | ("page_status", `String v) -> result.page_status <- v
          | ("description", `String v) -> result.description <- v
          | ("title", `String v) -> result.title <- v
@@ -373,25 +386,31 @@ module Page = struct
              result.categories <- List.map XmlRpc.dump v
          | ("excerpt", `String v) -> result.excerpt <- v
          | ("text_more", `String v) -> result.text_more <- v
+         | ("mt_excerpt", `String v) -> result.excerpt <- v
+         | ("mt_text_more", `String v) -> result.text_more <- v
          | ("mt_allow_comments", `Int v) -> result.mt_allow_comments <- v<>0
+         | ("mt_allow_comments", `Boolean v) -> result.mt_allow_comments <- v
          | ("mt_allow_pings", `Int v) -> result.mt_allow_pings <- v<>0
+         | ("mt_allow_pings", `Boolean v) -> result.mt_allow_pings <- v
          | ("wp_slug", `String v) -> result.wp_slug <- v
          | ("wp_password", `String v) -> result.wp_password <- v
          | ("wp_author", `String v) -> result.wp_author <- v
          | ("wp_author_display_name", `String v) ->
              result.wp_author_display_name <- v
-         | ("wp_page_parent_id", `Int v) ->
-             result.wp_page_parent_id <- v
          | ("wp_page_parent_id", `String v) ->
              result.wp_page_parent_id <- int_of_string v
+         | ("wp_page_parent_id", `Int v) ->
+             result.wp_page_parent_id <- v
          | ("wp_page_parent_title", `String v) ->
              result.wp_page_parent_title <- v
-         | ("wp_page_order", `Int v) ->
-             result.wp_page_order <- v
          | ("wp_page_order", `String v) ->
              result.wp_page_order <- int_of_string v
+         | ("wp_page_order", `Int v) ->
+             result.wp_page_order <- v
          | ("wp_author_id", `String v) ->
              result.wp_author_id <- int_of_string v
+         | ("wp_author_id", `Int v) ->
+             result.wp_author_id <- v
          | ("custom_fields", `Array v) ->
              result.custom_fields <- List.map CustomField.of_xmlrpc v
          | ("wp_page_template", `String v) ->
@@ -401,18 +420,27 @@ module Page = struct
     result
 
   let to_xmlrpc page =
-    `Struct ["wp_slug", `String page.wp_slug;
+    `Struct ["userid", `Int page.user_id;
+             "page_id", `Int page.page_id;
+             "page_status", `String page.page_status;
+             "wp_slug", `String page.wp_slug;
              "wp_password", `String page.wp_password;
+             "wp_author", `String page.wp_author;
+             "wp_author_display_name", `String page.wp_author_display_name;
              "wp_page_parent_id", `Int page.wp_page_parent_id;
+             "wp_page_parent_title", `String page.wp_page_parent_title;
              "wp_page_order", `Int page.wp_page_order;
              "wp_author_id", `Int page.wp_author_id;
              "title", `String page.title;
              "description", `String page.description;
+             "link", `String page.link;
+             "permaLink", `String page.permalink;
              "mt_excerpt", `String page.excerpt;
              "mt_text_more", `String page.text_more;
              "mt_allow_comments", `Boolean page.mt_allow_comments;
              "mt_allow_pings", `Boolean page.mt_allow_pings;
              "dateCreated", `DateTime page.date_created;
+             "date_created_gmt", `DateTime page.date_created;
              "categories", `Array (List.map
                                      (fun s -> `String s)
                                      page.categories);
@@ -471,7 +499,9 @@ module Post = struct
          | ("dateCreated", `DateTime v) -> result.date_created <- v
          | ("date_created_gmt", `DateTime v) -> result.date_created <- v
          | ("userid", `String v) -> result.user_id <- int_of_string v
+         | ("userid", `Int v) -> result.user_id <- v
          | ("postid", `String v) -> result.post_id <- int_of_string v
+         | ("postid", `Int v) -> result.post_id <- v
          | ("post_status", `String v) -> result.post_status <- v
          | ("description", `String v) -> result.description <- v
          | ("title", `String v) -> result.title <- v
@@ -482,12 +512,16 @@ module Post = struct
          | ("mt_excerpt", `String v) -> result.excerpt <- v
          | ("mt_text_more", `String v) -> result.text_more <- v
          | ("mt_allow_comments", `Int v) -> result.mt_allow_comments <- v<>0
+         | ("mt_allow_comments", `Boolean v) -> result.mt_allow_comments <- v
          | ("mt_allow_pings", `Int v) -> result.mt_allow_pings <- v<>0
+         | ("mt_allow_pings", `Boolean v) -> result.mt_allow_pings <- v
          | ("mt_keywords", `String v) -> result.mt_keywords <- v
          | ("wp_slug", `String v) -> result.wp_slug <- v
          | ("wp_password", `String v) -> result.wp_password <- v
          | ("wp_author_id", `String v) -> result.wp_author_id <- int_of_string v
-         | ("wp_author_display_name", `String v) -> result.wp_author_display_name <- v
+         | ("wp_author_id", `Int v) -> result.wp_author_id <- v
+         | ("wp_author_display_name", `String v) ->
+             result.wp_author_display_name <- v
          | ("custom_fields", `Array v) ->
              result.custom_fields <- List.map CustomField.of_xmlrpc v
          | (field, _) -> warn (Unknown_field field))
@@ -496,8 +530,14 @@ module Post = struct
 
   let to_xmlrpc post =
     `Struct ["dateCreated", `DateTime post.date_created;
+             "date_created_gmt", `DateTime post.date_created;
+             "userid", `Int post.user_id;
+             "postid", `Int post.post_id;
+             "post_status", `String post.post_status;
              "description", `String post.description;
              "title", `String post.title;
+             "link", `String post.link;
+             "permaLink", `String post.permalink;
              "categories", `Array (List.map
                                      (fun s -> `String s)
                                      post.categories);
@@ -509,6 +549,7 @@ module Post = struct
              "wp_slug", `String post.wp_slug;
              "wp_password", `String post.wp_password;
              "wp_author_id", `Int post.wp_author_id;
+             "wp_author_display_name", `String post.wp_author_display_name;
              "custom_fields", `Array (List.map
                                         CustomField.to_xmlrpc
                                         post.custom_fields)];
