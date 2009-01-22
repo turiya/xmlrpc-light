@@ -77,7 +77,7 @@ sig
              mutable author_url : string;
              mutable author_email : string;
              mutable author_ip : string;
-             mutable type' : string;
+             mutable typ : string;
            }
   val make : unit -> t
   val of_xmlrpc : XmlRpc.value -> t

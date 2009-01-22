@@ -142,7 +142,7 @@ module Comment = struct
              mutable author_url : string;
              mutable author_email : string;
              mutable author_ip : string;
-             mutable type' : string }
+             mutable typ : string }
 
   let make () =
     {date_created=(0,0,0,0,0,0,0);
@@ -158,7 +158,7 @@ module Comment = struct
      author_url="";
      author_email="";
      author_ip="";
-     type'=""}
+     typ=""}
 
   let of_xmlrpc value =
     let result = make () in
@@ -181,7 +181,7 @@ module Comment = struct
          | ("author_url", `String v) -> result.author_url <- v
          | ("author_email", `String v) -> result.author_email <- v
          | ("author_ip", `String v) -> result.author_ip <- v
-         | ("type", `String v) -> result.type' <- v
+         | ("type", `String v) -> result.typ <- v
          | (field, _) -> warn (Unknown_field field))
       value;
     result
@@ -200,7 +200,7 @@ module Comment = struct
              "author_url", `String comment.author_url;
              "author_email", `String comment.author_email;
              "author_ip", `String comment.author_ip;
-             "type", `String comment.type']
+             "type", `String comment.typ]
 end
 
 module CustomField = struct
