@@ -187,7 +187,8 @@ module Comment = struct
     result
 
   let to_xmlrpc comment =
-    `Struct ["date_created_gmt", `DateTime comment.date_created;
+    `Struct ["date_created_gmt", `DateTime (XmlRpcDateTime.set_tz_offset 0
+                                              comment.date_created);
              "user_id", `Int comment.user_id;
              "comment_id", `Int comment.comment_id;
              "parent", `Int comment.parent;
@@ -440,7 +441,8 @@ module Page = struct
              "mt_allow_comments", `Boolean page.mt_allow_comments;
              "mt_allow_pings", `Boolean page.mt_allow_pings;
              "dateCreated", `DateTime page.date_created;
-             "date_created_gmt", `DateTime page.date_created;
+             "date_created_gmt", `DateTime (XmlRpcDateTime.set_tz_offset 0
+                                              page.date_created);
              "categories", `Array (List.map
                                      (fun s -> `String s)
                                      page.categories);
@@ -530,7 +532,8 @@ module Post = struct
 
   let to_xmlrpc post =
     `Struct ["dateCreated", `DateTime post.date_created;
-             "date_created_gmt", `DateTime post.date_created;
+             "date_created_gmt", `DateTime (XmlRpcDateTime.set_tz_offset 0
+                                              post.date_created);
              "userid", `Int post.user_id;
              "postid", `Int post.post_id;
              "post_status", `String post.post_status;
