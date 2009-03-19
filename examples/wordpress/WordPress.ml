@@ -94,6 +94,7 @@ module Category = struct
          | ("parentId", `String v) -> result.parent_id <- int_of_string v
          | ("parentId", `Int v) -> result.parent_id <- v
          | ("description", `String v) -> result.description <- v
+         | ("categoryDescription", `String v) -> result.description <- v
          | ("categoryName", `String v) -> result.category_name <- v
          | ("htmlUrl", `String v) -> result.html_url <- v
          | ("rssUrl", `String v) -> result.rss_url <- v
