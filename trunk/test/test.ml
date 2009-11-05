@@ -21,7 +21,7 @@
 
 #require "oUnit";;
 #require "netclient";;
-#require "nethttpd-for-netcgi2";;
+#require "nethttpd";;
 #require "xml-light";;
 
 #load "xmlrpc-light.cma";;
