@@ -190,14 +190,6 @@ let check_signatures signatures f params =
 
   f params
 
-let rec parse_version ver =
-  try let i = String.index ver '.' in
-      (String.sub ver 0 i) ::
-        parse_version (String.sub ver (i + 1) (String.length ver - i - 1))
-  with Not_found -> [ver]
-
-let ocamlnet_version = parse_version Netconst.ocamlnet_version
-
 class virtual base =
 object (self)
   val methods =
@@ -345,15 +337,11 @@ object (self)
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)
               input in
-          if ocamlnet_version < ["2"; "2"; "8"]
-          then env#send_output_header ()
-          else (cgi#set_header ~content_type:"text/xml" ();
-                cgi#output#output_string "<?xml version=\"1.0\"?>\n");
+          cgi#set_header ~content_type:"text/xml" ();
+          cgi#output#output_string "<?xml version=\"1.0\"?>\n";
           cgi#output#output_string output;
           cgi#output#commit_work ()
       | _ ->
-          if ocamlnet_version < ["2"; "2"; "8"]
-          then env#send_output_header ();
           cgi#output#output_string
             "XML-RPC server accepts POST requests only.\n";
           cgi#output#commit_work ()
