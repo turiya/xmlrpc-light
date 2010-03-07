@@ -21,11 +21,6 @@ exception Parse_error of string
 
 type t = (int * int * int * int * int * int * int)
 
-let local_tz_offset () =
-  let time = Unix.time () in
-  let utc = fst (Unix.mktime (Unix.gmtime time)) in
-  int_of_float (time -. utc) / 60
-
 let from_unixtm tm =
   (tm.Unix.tm_year + 1900,
    tm.Unix.tm_mon + 1,
@@ -33,7 +28,7 @@ let from_unixtm tm =
    tm.Unix.tm_hour,
    tm.Unix.tm_min,
    tm.Unix.tm_sec,
-   local_tz_offset ())
+   Netdate.localzone)
 
 let from_unixtm_utc tm =
   (tm.Unix.tm_year + 1900,
@@ -44,29 +39,31 @@ let from_unixtm_utc tm =
    tm.Unix.tm_sec,
    0)
 
-let from_unixfloat time = from_unixtm (Unix.localtime time)
-let from_unixfloat_utc time = from_unixtm_utc (Unix.localtime time)
+let from_unixfloat time =
+  match Netdate.create ~zone:Netdate.localzone time with
+    | {Netdate.year=y; month=m; day=d;
+       hour=h; minute=m'; second=s; zone=tz} ->
+        (y, m, d, h, m', s, tz)
+
+let from_unixfloat_utc time =
+  match Netdate.create time with
+    | {Netdate.year=y; month=m; day=d;
+       hour=h; minute=m'; second=s; zone=tz} ->
+        (y, m, d, h, m', s, tz)
 
 let to_unixfloat_utc (y, m, d, h, m', s, tz) =
-  fst (Unix.mktime {Unix.tm_year=y - 1900;
-                    tm_mon=m - 1;
-                    tm_mday=d;
-                    tm_hour=h;
-                    tm_min=m';
-                    tm_sec=s;
-                    tm_wday=0;
-                    tm_yday=0;
-                    tm_isdst=false}) -. (float tz *. 60.0)
+  Netdate.since_epoch
+    {Netdate.year=y; month=m; day=d;
+     hour=h; minute=m'; second=s; zone=tz;
+     week_day=0}
 
-let to_unixfloat dt =
-  to_unixfloat_utc dt +. (float (local_tz_offset ()) *. 60.0)
+let to_unixfloat = to_unixfloat_utc
 
 let to_unixtm dt = Unix.localtime (to_unixfloat dt)
-let to_unixtm_utc dt = Unix.localtime (to_unixfloat_utc dt)
+let to_unixtm_utc dt = Unix.gmtime (to_unixfloat_utc dt)
 
 let now () = from_unixfloat (Unix.time ())
-let now_utc () =
-  from_unixfloat_utc (Unix.time () -. (float (local_tz_offset ()) *. 60.0))
+let now_utc () = from_unixfloat_utc (Unix.time ())
 
 let set_tz_offset offset dt =
   let time = to_unixfloat_utc dt +. (float offset *. 60.0) in
