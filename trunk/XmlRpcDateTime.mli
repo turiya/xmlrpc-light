@@ -64,28 +64,28 @@ val fix_tz_offset : int -> t -> t
 
 (** {2 Conversion} *)
 
-(** Builds a date/time value from epoch seconds in the local time zone. *)
+(** Builds a local date/time value from UTC epoch seconds. *)
 val from_unixfloat : float -> t
 
-(** Builds a date/time value from epoch seconds in UTC. *)
+(** Builds a UTC date/time value from UTC epoch seconds. *)
 val from_unixfloat_utc : float -> t
 
-(** Converts a date/time value to epoch seconds in the local time zone. *)
+(** Converts a date/time value to UTC epoch seconds (alias for [to_unixfloat_utc]). *)
 val to_unixfloat : t -> float
 
-(** Converts a date/time value to epoch seconds in UTC. *)
+(** Converts a date/time value to UTC epoch seconds. *)
 val to_unixfloat_utc : t -> float
 
-(** Builds a date/time value from a Unix.tm value in the local time zone. *)
+(** Builds a date/time value from a local Unix.tm value. *)
 val from_unixtm : Unix.tm -> t
 
-(** Builds a date/time value from a Unix.tm value in UTC. *)
+(** Builds a date/time value from a UTC Unix.tm value. *)
 val from_unixtm_utc : Unix.tm -> t
 
-(** Converts a date/time value to a Unix.tm value in the local time zone. *)
+(** Converts a date/time value to a local Unix.tm value. *)
 val to_unixtm : t -> Unix.tm
 
-(** Converts a date/time value to a Unix.tm value in UTC. *)
+(** Converts a date/time value to a UTC Unix.tm value. *)
 val to_unixtm_utc : t -> Unix.tm
 
 (** {2 ISO-8601 parsing and generation} *)
