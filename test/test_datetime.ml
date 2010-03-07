@@ -84,19 +84,18 @@ let test = "test_datetime" >:::
 
     "to_unixtm" >::
       (fun () ->
-         let dt = (2007, 1, 1, 18, 34, 9, -420) in
+         let dt = (2007, 1, 1, 14, 34, 9, Netdate.localzone) in
          assert_equal
            ~printer:string_of_unixtm
-           (snd (Unix.mktime
-                   {Unix.tm_year=107;
-                    tm_mon=0;
-                    tm_mday=1;
-                    tm_hour=18;
-                    tm_min=34;
-                    tm_sec=9;
-                    tm_yday=0;
-                    tm_wday=0;
-                    tm_isdst=false}))
+           {Unix.tm_year=107;
+            tm_mon=0;
+            tm_mday=1;
+            tm_hour=14;
+            tm_min=34;
+            tm_sec=9;
+            tm_yday=0;
+            tm_wday=1;
+            tm_isdst=false}
            (XmlRpcDateTime.to_unixtm dt));
 
     "to_unixtm_utc" >::
@@ -104,17 +103,29 @@ let test = "test_datetime" >:::
          let dt = (2007, 1, 1, 14, 34, 9, -420) in
          assert_equal
            ~printer:string_of_unixtm
-           (snd (Unix.mktime
-                   {Unix.tm_year=107;
-                    tm_mon=0;
-                    tm_mday=1;
-                    tm_hour=21;
-                    tm_min=34;
-                    tm_sec=9;
-                    tm_yday=0;
-                    tm_wday=0;
-                    tm_isdst=false}))
+           {Unix.tm_year=107;
+            tm_mon=0;
+            tm_mday=1;
+            tm_hour=21;
+            tm_min=34;
+            tm_sec=9;
+            tm_yday=0;
+            tm_wday=1;
+            tm_isdst=false}
            (XmlRpcDateTime.to_unixtm_utc dt));
+
+    "daylight_savings" >::
+      (fun () ->
+         let dt1 = (2007, 3, 11, 2, 57, 38, 0) in
+         let dt2 = (2007, 3, 11, 3, 57, 38, 0) in
+         assert_equal
+           ~printer:string_of_float
+           (1173581858.)
+           (XmlRpcDateTime.to_unixfloat_utc dt1);
+         assert_equal
+           ~printer:string_of_float
+           (XmlRpcDateTime.to_unixfloat_utc dt1 +. 3600.)
+           (XmlRpcDateTime.to_unixfloat_utc dt2));
 
     "to_string" >::
       (fun () ->
