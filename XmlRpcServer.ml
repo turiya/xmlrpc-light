@@ -190,6 +190,14 @@ let check_signatures signatures f params =
 
   f params
 
+let rec parse_version ver =
+  try let i = String.index ver '.' in
+      int_of_string (String.sub ver 0 i) ::
+        parse_version (String.sub ver (i + 1) (String.length ver - i - 1))
+  with Not_found -> [int_of_string ver]
+
+let ocamlnet_version = parse_version Netconst.ocamlnet_version
+
 class virtual base =
 object (self)
   val methods =
@@ -323,11 +331,13 @@ object (self)
     Netcgi_cgi.run ~config ~output_type:(`Transactional buffered) self#process
 end
 
+open Netcgi1_compat
+
 class netplex ?(parallelizer=Netplex_mp.mp()) ?(handler="xmlrpc") () =
 object (self)
   inherit base
 
-  method private process env (cgi : Netcgi.cgi_activation) =
+  method private process env (cgi : Netcgi_types.cgi_activation) =
     match cgi#request_method with
       | `POST ->
           let input = cgi#argument_value "BODY" in
@@ -337,11 +347,15 @@ object (self)
                  try Hashtbl.find methods name
                  with Not_found -> invalid_method name)
               input in
-          cgi#set_header ~content_type:"text/xml" ();
-          cgi#output#output_string "<?xml version=\"1.0\"?>\n";
+          if ocamlnet_version < [2; 2; 8]
+          then env#send_output_header ()
+          else (cgi#set_header ~content_type:"text/xml" ();
+                cgi#output#output_string "<?xml version=\"1.0\"?>\n");
           cgi#output#output_string output;
           cgi#output#commit_work ()
       | _ ->
+          if ocamlnet_version < [2; 2; 8]
+          then env#send_output_header ();
           cgi#output#output_string
             "XML-RPC server accepts POST requests only.\n";
           cgi#output#commit_work ()
@@ -363,8 +377,8 @@ object (self)
       } in
 
     let config_cgi =
-      { Netcgi.default_config with
-          Netcgi.permitted_input_content_types = [ "text/xml" ]
+      { Netcgi_env.default_config with
+          Netcgi_env.permitted_input_content_types = [ "text/xml" ]
       } in
 
     let handlers = [handler, xmlrpc] in
