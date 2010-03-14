@@ -89,28 +89,28 @@ Forces the time zone offset to a different value, ignoring all other
 <a name="2_Conversion"></a>
 <h2>Conversion</h2><br>
 <pre><span class="keyword">val</span> <a name="VALfrom_unixfloat"></a>from_unixfloat : <code class="type">float -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
-Builds a date/time value from epoch seconds in the local time zone.<br>
+Builds a local date/time value from UTC epoch seconds.<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALfrom_unixfloat_utc"></a>from_unixfloat_utc : <code class="type">float -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
-Builds a date/time value from epoch seconds in UTC.<br>
+Builds a UTC date/time value from UTC epoch seconds.<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALto_unixfloat"></a>to_unixfloat : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> float</code></pre><div class="info">
-Converts a date/time value to epoch seconds in the local time zone.<br>
+Converts a date/time value to UTC epoch seconds (alias for <code class="code">to_unixfloat_utc</code>).<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALto_unixfloat_utc"></a>to_unixfloat_utc : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> float</code></pre><div class="info">
-Converts a date/time value to epoch seconds in UTC.<br>
+Converts a date/time value to UTC epoch seconds.<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALfrom_unixtm"></a>from_unixtm : <code class="type">Unix.tm -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
-Builds a date/time value from a Unix.tm value in the local time zone.<br>
+Builds a date/time value from a local Unix.tm value.<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALfrom_unixtm_utc"></a>from_unixtm_utc : <code class="type">Unix.tm -> <a href="XmlRpcDateTime.html#TYPEt">t</a></code></pre><div class="info">
-Builds a date/time value from a Unix.tm value in UTC.<br>
+Builds a date/time value from a UTC Unix.tm value.<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALto_unixtm"></a>to_unixtm : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> Unix.tm</code></pre><div class="info">
-Converts a date/time value to a Unix.tm value in the local time zone.<br>
+Converts a date/time value to a local Unix.tm value.<br>
 </div>
 <pre><span class="keyword">val</span> <a name="VALto_unixtm_utc"></a>to_unixtm_utc : <code class="type"><a href="XmlRpcDateTime.html#TYPEt">t</a> -> Unix.tm</code></pre><div class="info">
-Converts a date/time value to a Unix.tm value in UTC.<br>
+Converts a date/time value to a UTC Unix.tm value.<br>
 </div>
 <br>
 <a name="2_ISO8601parsingandgeneration"></a>
