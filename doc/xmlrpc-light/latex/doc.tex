@@ -18,7 +18,7 @@
     interface, and low-level tools that can be used to implement a server.
 
 
-    {\it (c) 2007-2009 Dave Benjamin}
+    {\it (c) 2007-2010 Dave Benjamin}
 
 
 
@@ -1286,7 +1286,7 @@ val from_unixfloat : float -> t
 \end{ocamldoccode}
 \index{from-underscoreunixfloat@\verb`from_unixfloat`}
 \begin{ocamldocdescription}
-Builds a date/time value from epoch seconds in the local time zone.
+Builds a local date/time value from UTC epoch seconds.
 
 
 \end{ocamldocdescription}
@@ -1299,7 +1299,7 @@ val from_unixfloat_utc : float -> t
 \end{ocamldoccode}
 \index{from-underscoreunixfloat-underscoreutc@\verb`from_unixfloat_utc`}
 \begin{ocamldocdescription}
-Builds a date/time value from epoch seconds in UTC.
+Builds a UTC date/time value from UTC epoch seconds.
 
 
 \end{ocamldocdescription}
@@ -1312,7 +1312,7 @@ val to_unixfloat : t -> float
 \end{ocamldoccode}
 \index{to-underscoreunixfloat@\verb`to_unixfloat`}
 \begin{ocamldocdescription}
-Converts a date/time value to epoch seconds in the local time zone.
+Converts a date/time value to UTC epoch seconds (alias for {\tt{to\_unixfloat\_utc}}).
 
 
 \end{ocamldocdescription}
@@ -1325,7 +1325,7 @@ val to_unixfloat_utc : t -> float
 \end{ocamldoccode}
 \index{to-underscoreunixfloat-underscoreutc@\verb`to_unixfloat_utc`}
 \begin{ocamldocdescription}
-Converts a date/time value to epoch seconds in UTC.
+Converts a date/time value to UTC epoch seconds.
 
 
 \end{ocamldocdescription}
@@ -1338,7 +1338,7 @@ val from_unixtm : Unix.tm -> t
 \end{ocamldoccode}
 \index{from-underscoreunixtm@\verb`from_unixtm`}
 \begin{ocamldocdescription}
-Builds a date/time value from a Unix.tm value in the local time zone.
+Builds a date/time value from a local Unix.tm value.
 
 
 \end{ocamldocdescription}
@@ -1351,7 +1351,7 @@ val from_unixtm_utc : Unix.tm -> t
 \end{ocamldoccode}
 \index{from-underscoreunixtm-underscoreutc@\verb`from_unixtm_utc`}
 \begin{ocamldocdescription}
-Builds a date/time value from a Unix.tm value in UTC.
+Builds a date/time value from a UTC Unix.tm value.
 
 
 \end{ocamldocdescription}
@@ -1364,7 +1364,7 @@ val to_unixtm : t -> Unix.tm
 \end{ocamldoccode}
 \index{to-underscoreunixtm@\verb`to_unixtm`}
 \begin{ocamldocdescription}
-Converts a date/time value to a Unix.tm value in the local time zone.
+Converts a date/time value to a local Unix.tm value.
 
 
 \end{ocamldocdescription}
@@ -1377,7 +1377,7 @@ val to_unixtm_utc : t -> Unix.tm
 \end{ocamldoccode}
 \index{to-underscoreunixtm-underscoreutc@\verb`to_unixtm_utc`}
 \begin{ocamldocdescription}
-Converts a date/time value to a Unix.tm value in UTC.
+Converts a date/time value to a UTC Unix.tm value.
 
 
 \end{ocamldocdescription}
