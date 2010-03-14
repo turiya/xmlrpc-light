@@ -84,7 +84,9 @@ let test = "test_datetime" >:::
 
     "to_unixtm" >::
       (fun () ->
-         let dt = (2007, 1, 1, 14, 34, 9, Netdate.localzone) in
+         let dst_correct =
+           if (Unix.localtime (Unix.time ())).Unix.tm_isdst then -60 else 0 in
+         let dt = (2007, 1, 1, 14, 34, 9, Netdate.localzone + dst_correct) in
          assert_equal
            ~printer:string_of_unixtm
            {Unix.tm_year=107;
