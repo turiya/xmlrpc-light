@@ -21,6 +21,11 @@ exception Parse_error of string
 
 type t = (int * int * int * int * int * int * int)
 
+let local_tz_offset () =
+  let time = Unix.time () in
+  let utc = fst (Unix.mktime (Unix.gmtime time)) in
+  int_of_float (time -. utc) / 60
+
 let from_unixtm tm =
   (tm.Unix.tm_year + 1900,
    tm.Unix.tm_mon + 1,
@@ -28,7 +33,7 @@ let from_unixtm tm =
    tm.Unix.tm_hour,
    tm.Unix.tm_min,
    tm.Unix.tm_sec,
-   Netdate.localzone)
+   local_tz_offset ())
 
 let from_unixtm_utc tm =
   (tm.Unix.tm_year + 1900,
@@ -40,7 +45,7 @@ let from_unixtm_utc tm =
    0)
 
 let from_unixfloat time =
-  match Netdate.create ~zone:Netdate.localzone time with
+  match Netdate.create ~zone:(local_tz_offset ()) time with
     | {Netdate.year=y; month=m; day=d;
        hour=h; minute=m'; second=s; zone=tz} ->
         (y, m, d, h, m', s, tz)
